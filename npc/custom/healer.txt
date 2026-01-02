@@ -17,9 +17,10 @@
 
 -	script	Angela	FAKE_NPC,{
 
-	.@price = 10000;	// Zeny required for heal
-	.@Buffs = 1;	// Also buff players? (1: yes / 0: no)
-	.@Delay = 0;	// Heal delay, in seconds
+	.@price_heal = 5000;		// Zeny required for heal only
+	.@price_full = 10000;		// Zeny required for heal + buffs
+	.@Delay = 0;				// Heal delay, in seconds
+	.@level_threshold = 40;		// Base level for free healing
 
 	if (@HD > gettimetick(2)) {
 		mes .npc_name$;
@@ -30,24 +31,51 @@
 	mes .npc_name$;
 	mes "^FF69B4Greetings dear friend! I'm Angela, a traveling priestess.^000000";
 	mes "My mission is to share the divine blessings with everyone in need.";
+	next;
 	
-	if (.@price) {
-		mes "For a small donation of "+.@price+" Zeny, I can channel";
-		mes "healing energies to restore your vitality.";
-		if (Zeny < .@price) {
-			mes "^FF0000But I see you can't afford it right now...^000000";
-			mes "Don't worry! Come back when you can, I'll be here to help!";
-			close;
-		}
+	// Check if player is below level threshold for free healing
+	if (BaseLevel < .@level_threshold) {
+		mes .npc_name$;
+		mes "I can see you're still starting your journey, young adventurer.";
+		mes "I dedicate myself to helping those in need, so this healing is free!";
 		next;
-		if(select("^00FF00Receive Blessing^000000", "^777777Maybe later^000000") == 2) {
-			mes .npc_name$;
-			mes "May the light guide your path! Come back whenever you need healing!";
-			close;
-		}
-		Zeny -= .@price;
+		specialeffect(EF_HEAL2, AREA, playerattached());
+		percentheal 100,100;
+		mes .npc_name$;
+		mes "^00FF00Divine light, embrace this soul!^000000";
+		mes "Go forth and face your challenges with strength!";
+		if (.@Delay) @HD = gettimetick(2)+.@Delay;
+		close;
 	}
 	
+	// For experienced adventurers, offer options
+	mes "I can offer you two types of blessings:";
+	next;
+	.@choice = select(
+		"^00FF00Healing only (" + .@price_heal + " Zeny)^000000",
+		"^FF69B4Full Blessing (" + .@price_full + " Zeny) - Heal + Buffs^000000",
+		"^777777Maybe later^000000"
+	);
+	
+	if (.@choice == 3) {
+		mes .npc_name$;
+		mes "May the light guide your path! Come back whenever you need my help!";
+		close;
+	}
+	
+	// Determine which service was chosen
+	.@cost = (.@choice == 1) ? .@price_heal : .@price_full;
+	
+	if (Zeny < .@cost) {
+		mes .npc_name$;
+		mes "^FF0000I see you don't have enough Zeny right now...^000000";
+		mes "Don't worry! Come back when you can afford it, I'll be here!";
+		close;
+	}
+	
+	Zeny -= .@cost;
+	
+	// Apply healing
 	specialeffect(EF_HEAL2, AREA, playerattached());
 	percentheal 100,100;
 	
@@ -55,7 +83,8 @@
 	mes "^00FF00Divine light, embrace this soul!^000000";
 	mes "How do you feel? Better, right?";
 	
-	if (.@Buffs) {
+	// Apply buffs if full blessing was chosen
+	if (.@choice == 2) {
 		next;
 		mes .npc_name$;
 		mes "Let me share some additional blessings with you...";
