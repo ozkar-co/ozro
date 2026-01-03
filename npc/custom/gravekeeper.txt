@@ -1,0 +1,31 @@
+//===== Hercules Script ======================================
+//= Gravekeeper Ludovico
+//===== By: ==================================================
+//= Ozcodex
+//===== Current Version: =====================================
+//= 1.0
+//===== Description: =========================================
+//= Tracks and narrates a player's death count.
+//============================================================
+
+prontera,274,352,3	script	Gravekeeper Ludovico	457,{
+
+    .@deaths = PC_DIE_COUNTER;
+
+    mes "^FF0000[Gravekeeper Ludovico]^000000";
+    mes "Every time a soul departs from its vessel, it leaves a cold echo in this world.";
+    mes "I am the one who listens to those echoes.";
+    next;
+
+    if (.@deaths == 0) {
+        mes "^FF0000[Ludovico]^000000";
+        mes "Your thread of life is remarkably strong, traveler. Not a single knot, not a single break.";
+        mes "May the gods keep it that way.";
+    } else {
+        mes "^FF0000[Ludovico]^000000";
+        mes "I see the weight of ^FF0000" + .@deaths + " deaths^000000 upon your shoulders.";
+        mes "Do not be ashamed. Each return from the abyss is a victory over Hel herself.";
+    }
+    
+    close;
+}
