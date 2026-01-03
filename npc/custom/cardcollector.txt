@@ -224,10 +224,18 @@ function FindMissing {
 	.@search$ = strtoupper(.@search$);
 	
 	// Validate input
-	if (.@search$ == "" || (strlen(.@search$) > 1 && .@search$ != "BOSS" && .@search$ != "MVP")) {
+	set .@len, strlen(.@search$);
+	if (.@search$ == "") {
 		mes .npc_name$;
 		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
 		close;
+	}
+	if (.@len > 1) {
+		if (.@search$ != "BOSS" && .@search$ != "MVP") {
+			mes .npc_name$;
+			mes "Please enter a single letter or 'BOSS' or 'MVP'.";
+			close;
+		}
 	}
 	
 	// Handle letter search
@@ -355,10 +363,18 @@ function ViewCollect {
 	.@search$ = strtoupper(.@search$);
 	
 	// Validate input
-	if (.@search$ == "" || (strlen(.@search$) > 1 && .@search$ != "BOSS" && .@search$ != "MVP")) {
+	set .@len, strlen(.@search$);
+	if (.@search$ == "") {
 		mes .npc_name$;
 		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
 		close;
+	}
+	if (.@len > 1) {
+		if (.@search$ != "BOSS" && .@search$ != "MVP") {
+			mes .npc_name$;
+			mes "Please enter a single letter or 'BOSS' or 'MVP'.";
+			close;
+		}
 	}
 	
 	// Handle letter search
