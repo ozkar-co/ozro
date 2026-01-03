@@ -105,33 +105,45 @@ function ShowProgress {
 	set .@cA, callfunc("CountFound", "A");
 	set .@cB, callfunc("CountFound", "B");
 	set .@cC, callfunc("CountFound", "C");
-	set .@line1$ = "A: " + .@cA + "/" + getarraysize(.carta_A) + "  ";
-	set .@line1$ = .@line1$ + "B: " + .@cB + "/" + getarraysize(.carta_B) + "  ";
-	set .@line1$ = .@line1$ + "C: " + .@cC + "/" + getarraysize(.carta_C);
+	set .@tA, getarraysize(.carta_A);
+	set .@tB, getarraysize(.carta_B);
+	set .@tC, getarraysize(.carta_C);
+	set .@line1$, "A: " + .@cA + "/" + .@tA + "  ";
+	set .@line1$, .@line1$ + "B: " + .@cB + "/" + .@tB + "  ";
+	set .@line1$, .@line1$ + "C: " + .@cC + "/" + .@tC;
 	
 	// Line 2: D, F, G
 	set .@cD, callfunc("CountFound", "D");
 	set .@cF, callfunc("CountFound", "F");
 	set .@cG, callfunc("CountFound", "G");
-	set .@line2$ = "D: " + .@cD + "/" + getarraysize(.carta_D) + "  ";
-	set .@line2$ = .@line2$ + "F: " + .@cF + "/" + getarraysize(.carta_F) + "  ";
-	set .@line2$ = .@line2$ + "G: " + .@cG + "/" + getarraysize(.carta_G);
+	set .@tD, getarraysize(.carta_D);
+	set .@tF, getarraysize(.carta_F);
+	set .@tG, getarraysize(.carta_G);
+	set .@line2$, "D: " + .@cD + "/" + .@tD + "  ";
+	set .@line2$, .@line2$ + "F: " + .@cF + "/" + .@tF + "  ";
+	set .@line2$, .@line2$ + "G: " + .@cG + "/" + .@tG;
 	
 	// Line 3: H, I, J
 	set .@cH, callfunc("CountFound", "H");
 	set .@cI, callfunc("CountFound", "I");
 	set .@cJ, callfunc("CountFound", "J");
-	set .@line3$ = "H: " + .@cH + "/" + getarraysize(.carta_H) + "  ";
-	set .@line3$ = .@line3$ + "I: " + .@cI + "/" + getarraysize(.carta_I) + "  ";
-	set .@line3$ = .@line3$ + "J: " + .@cJ + "/" + getarraysize(.carta_J);
+	set .@tH, getarraysize(.carta_H);
+	set .@tI, getarraysize(.carta_I);
+	set .@tJ, getarraysize(.carta_J);
+	set .@line3$, "H: " + .@cH + "/" + .@tH + "  ";
+	set .@line3$, .@line3$ + "I: " + .@cI + "/" + .@tI + "  ";
+	set .@line3$, .@line3$ + "J: " + .@cJ + "/" + .@tJ;
 	
 	// Line 4: K, L, M
 	set .@cK, callfunc("CountFound", "K");
 	set .@cL, callfunc("CountFound", "L");
 	set .@cM, callfunc("CountFound", "M");
-	set .@line4$ = "K: " + .@cK + "/" + getarraysize(.carta_K) + "  ";
-	set .@line4$ = .@line4$ + "L: " + .@cL + "/" + getarraysize(.carta_L) + "  ";
-	set .@line4$ = .@line4$ + "M: " + .@cM + "/" + getarraysize(.carta_M);
+	set .@tK, getarraysize(.carta_K);
+	set .@tL, getarraysize(.carta_L);
+	set .@tM, getarraysize(.carta_M);
+	set .@line4$, "K: " + .@cK + "/" + .@tK + "  ";
+	set .@line4$, .@line4$ + "L: " + .@cL + "/" + .@tL + "  ";
+	set .@line4$, .@line4$ + "M: " + .@cM + "/" + .@tM;
 	
 	mes .@line1$;
 	mes .@line2$;
@@ -143,33 +155,45 @@ function ShowProgress {
 	set .@cN, callfunc("CountFound", "N");
 	set .@cO, callfunc("CountFound", "O");
 	set .@cP, callfunc("CountFound", "P");
-	set .@line5$ = "N: " + .@cN + "/" + getarraysize(.carta_N) + "  ";
-	set .@line5$ = .@line5$ + "O: " + .@cO + "/" + getarraysize(.carta_O) + "  ";
-	set .@line5$ = .@line5$ + "P: " + .@cP + "/" + getarraysize(.carta_P);
+	set .@tN, getarraysize(.carta_N);
+	set .@tO, getarraysize(.carta_O);
+	set .@tP, getarraysize(.carta_P);
+	set .@line5$, "N: " + .@cN + "/" + .@tN + "  ";
+	set .@line5$, .@line5$ + "O: " + .@cO + "/" + .@tO + "  ";
+	set .@line5$, .@line5$ + "P: " + .@cP + "/" + .@tP;
 	
 	// Line 6: Q, R, S
 	set .@cQ, callfunc("CountFound", "Q");
 	set .@cR, callfunc("CountFound", "R");
 	set .@cS, callfunc("CountFound", "S");
-	set .@line6$ = "Q: " + .@cQ + "/" + getarraysize(.carta_Q) + "  ";
-	set .@line6$ = .@line6$ + "R: " + .@cR + "/" + getarraysize(.carta_R) + "  ";
-	set .@line6$ = .@line6$ + "S: " + .@cS + "/" + getarraysize(.carta_S);
+	set .@tQ, getarraysize(.carta_Q);
+	set .@tR, getarraysize(.carta_R);
+	set .@tS, getarraysize(.carta_S);
+	set .@line6$, "Q: " + .@cQ + "/" + .@tQ + "  ";
+	set .@line6$, .@line6$ + "R: " + .@cR + "/" + .@tR + "  ";
+	set .@line6$, .@line6$ + "S: " + .@cS + "/" + .@tS;
 	
 	// Line 7: T, U, V
 	set .@cT, callfunc("CountFound", "T");
 	set .@cU, callfunc("CountFound", "U");
 	set .@cV, callfunc("CountFound", "V");
-	set .@line7$ = "T: " + .@cT + "/" + getarraysize(.carta_T) + "  ";
-	set .@line7$ = .@line7$ + "U: " + .@cU + "/" + getarraysize(.carta_U) + "  ";
-	set .@line7$ = .@line7$ + "V: " + .@cV + "/" + getarraysize(.carta_V);
+	set .@tT, getarraysize(.carta_T);
+	set .@tU, getarraysize(.carta_U);
+	set .@tV, getarraysize(.carta_V);
+	set .@line7$, "T: " + .@cT + "/" + .@tT + "  ";
+	set .@line7$, .@line7$ + "U: " + .@cU + "/" + .@tU + "  ";
+	set .@line7$, .@line7$ + "V: " + .@cV + "/" + .@tV;
 	
 	// Line 8: W, Y, Z
 	set .@cW, callfunc("CountFound", "W");
 	set .@cY, callfunc("CountFound", "Y");
 	set .@cZ, callfunc("CountFound", "Z");
-	set .@line8$ = "W: " + .@cW + "/" + getarraysize(.carta_W) + "  ";
-	set .@line8$ = .@line8$ + "Y: " + .@cY + "/" + getarraysize(.carta_Y) + "  ";
-	set .@line8$ = .@line8$ + "Z: " + .@cZ + "/" + getarraysize(.carta_Z);
+	set .@tW, getarraysize(.carta_W);
+	set .@tY, getarraysize(.carta_Y);
+	set .@tZ, getarraysize(.carta_Z);
+	set .@line8$, "W: " + .@cW + "/" + .@tW + "  ";
+	set .@line8$, .@line8$ + "Y: " + .@cY + "/" + .@tY + "  ";
+	set .@line8$, .@line8$ + "Z: " + .@cZ + "/" + .@tZ;
 	
 	mes .@line5$;
 	mes .@line6$;
@@ -180,9 +204,11 @@ function ShowProgress {
 	// Special categories
 	set .@cBOSS, callfunc("CountFound", "BOSS");
 	set .@cMVP, callfunc("CountFound", "MVP");
+	set .@tBOSS, getarraysize(.carta_BOSS);
+	set .@tMVP, getarraysize(.carta_MVP);
 	mes "^FF0000=== SPECIAL CARDS ===^000000";
-	mes "BOSS: " + .@cBOSS + "/" + getarraysize(.carta_BOSS);
-	mes "MVP: " + .@cMVP + "/" + getarraysize(.carta_MVP);
+	mes "BOSS: " + .@cBOSS + "/" + .@tBOSS;
+	mes "MVP: " + .@cMVP + "/" + .@tMVP;
 	next;
 	return;
 }
