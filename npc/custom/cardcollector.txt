@@ -45,7 +45,7 @@
 	}
 	
 	// Auto-register cards from inventory
-	call RegisterCardsFromInventory;
+	callfunc "RegisterCardsFromInventory";
 	
 	// Main menu
 	while (1) {
@@ -55,13 +55,13 @@
 		
 		switch(select("Check Progress", "Find Missing Cards", "View My Collection", "Exit")) {
 			case 1: // Check Progress
-				call ShowProgress;
+				callfunc "ShowProgress";
 				break;
 			case 2: // Find Missing Cards
-				call FindMissingCards;
+				callfunc "FindMissingCards";
 				break;
 			case 3: // View Collection
-				call ViewCollection;
+				callfunc "ViewCollection";
 				break;
 			case 4: // Exit
 				mes .npc_name$;
@@ -102,24 +102,24 @@ function ShowProgress {
 	set .@line4$, "";
 	
 	// Line 1: A, B, C
-	set .@line1$ = "A: " + call (CountFoundCards, "A") + "/" + getarraysize(.carta_A) + "  ";
-	set .@line1$ = .@line1$ + "B: " + call (CountFoundCards, "B") + "/" + getarraysize(.carta_B) + "  ";
-	set .@line1$ = .@line1$ + "C: " + call (CountFoundCards, "C") + "/" + getarraysize(.carta_C);
+	set .@line1$ = "A: " + callfunc("CountFoundCards", "A") + "/" + getarraysize(.carta_A) + "  ";
+	set .@line1$ = .@line1$ + "B: " + callfunc("CountFoundCards", "B") + "/" + getarraysize(.carta_B) + "  ";
+	set .@line1$ = .@line1$ + "C: " + callfunc("CountFoundCards", "C") + "/" + getarraysize(.carta_C);
 	
 	// Line 2: D, F, G
-	set .@line2$ = "D: " + call (CountFoundCards, "D") + "/" + getarraysize(.carta_D) + "  ";
-	set .@line2$ = .@line2$ + "F: " + call (CountFoundCards, "F") + "/" + getarraysize(.carta_F) + "  ";
-	set .@line2$ = .@line2$ + "G: " + call (CountFoundCards, "G") + "/" + getarraysize(.carta_G);
+	set .@line2$ = "D: " + callfunc("CountFoundCards", "D") + "/" + getarraysize(.carta_D) + "  ";
+	set .@line2$ = .@line2$ + "F: " + callfunc("CountFoundCards", "F") + "/" + getarraysize(.carta_F) + "  ";
+	set .@line2$ = .@line2$ + "G: " + callfunc("CountFoundCards", "G") + "/" + getarraysize(.carta_G);
 	
 	// Line 3: H, I, J
-	set .@line3$ = "H: " + call (CountFoundCards, "H") + "/" + getarraysize(.carta_H) + "  ";
-	set .@line3$ = .@line3$ + "I: " + call (CountFoundCards, "I") + "/" + getarraysize(.carta_I) + "  ";
-	set .@line3$ = .@line3$ + "J: " + call (CountFoundCards, "J") + "/" + getarraysize(.carta_J);
+	set .@line3$ = "H: " + callfunc("CountFoundCards", "H") + "/" + getarraysize(.carta_H) + "  ";
+	set .@line3$ = .@line3$ + "I: " + callfunc("CountFoundCards", "I") + "/" + getarraysize(.carta_I) + "  ";
+	set .@line3$ = .@line3$ + "J: " + callfunc("CountFoundCards", "J") + "/" + getarraysize(.carta_J);
 	
 	// Line 4: K, L, M
-	set .@line4$ = "K: " + call (CountFoundCards, "K") + "/" + getarraysize(.carta_K) + "  ";
-	set .@line4$ = .@line4$ + "L: " + call (CountFoundCards, "L") + "/" + getarraysize(.carta_L) + "  ";
-	set .@line4$ = .@line4$ + "M: " + call (CountFoundCards, "M") + "/" + getarraysize(.carta_M);
+	set .@line4$ = "K: " + callfunc("CountFoundCards", "K") + "/" + getarraysize(.carta_K) + "  ";
+	set .@line4$ = .@line4$ + "L: " + callfunc("CountFoundCards", "L") + "/" + getarraysize(.carta_L) + "  ";
+	set .@line4$ = .@line4$ + "M: " + callfunc("CountFoundCards", "M") + "/" + getarraysize(.carta_M);
 	
 	mes .@line1$;
 	mes .@line2$;
@@ -128,24 +128,24 @@ function ShowProgress {
 	next;
 	
 	// Line 5: N, O, P
-	set .@line5$ = "N: " + call (CountFoundCards, "N") + "/" + getarraysize(.carta_N) + "  ";
-	set .@line5$ = .@line5$ + "O: " + call (CountFoundCards, "O") + "/" + getarraysize(.carta_O) + "  ";
-	set .@line5$ = .@line5$ + "P: " + call (CountFoundCards, "P") + "/" + getarraysize(.carta_P);
+	set .@line5$ = "N: " + callfunc("CountFoundCards", "N") + "/" + getarraysize(.carta_N) + "  ";
+	set .@line5$ = .@line5$ + "O: " + callfunc("CountFoundCards", "O") + "/" + getarraysize(.carta_O) + "  ";
+	set .@line5$ = .@line5$ + "P: " + callfunc("CountFoundCards", "P") + "/" + getarraysize(.carta_P);
 	
 	// Line 6: Q, R, S
-	set .@line6$ = "Q: " + call (CountFoundCards, "Q") + "/" + getarraysize(.carta_Q) + "  ";
-	set .@line6$ = .@line6$ + "R: " + call (CountFoundCards, "R") + "/" + getarraysize(.carta_R) + "  ";
-	set .@line6$ = .@line6$ + "S: " + call (CountFoundCards, "S") + "/" + getarraysize(.carta_S);
+	set .@line6$ = "Q: " + callfunc("CountFoundCards", "Q") + "/" + getarraysize(.carta_Q) + "  ";
+	set .@line6$ = .@line6$ + "R: " + callfunc("CountFoundCards", "R") + "/" + getarraysize(.carta_R) + "  ";
+	set .@line6$ = .@line6$ + "S: " + callfunc("CountFoundCards", "S") + "/" + getarraysize(.carta_S);
 	
 	// Line 7: T, U, V
-	set .@line7$ = "T: " + call (CountFoundCards, "T") + "/" + getarraysize(.carta_T) + "  ";
-	set .@line7$ = .@line7$ + "U: " + call (CountFoundCards, "U") + "/" + getarraysize(.carta_U) + "  ";
-	set .@line7$ = .@line7$ + "V: " + call (CountFoundCards, "V") + "/" + getarraysize(.carta_V);
+	set .@line7$ = "T: " + callfunc("CountFoundCards", "T") + "/" + getarraysize(.carta_T) + "  ";
+	set .@line7$ = .@line7$ + "U: " + callfunc("CountFoundCards", "U") + "/" + getarraysize(.carta_U) + "  ";
+	set .@line7$ = .@line7$ + "V: " + callfunc("CountFoundCards", "V") + "/" + getarraysize(.carta_V);
 	
 	// Line 8: W, Y, Z
-	set .@line8$ = "W: " + call (CountFoundCards, "W") + "/" + getarraysize(.carta_W) + "  ";
-	set .@line8$ = .@line8$ + "Y: " + call (CountFoundCards, "Y") + "/" + getarraysize(.carta_Y) + "  ";
-	set .@line8$ = .@line8$ + "Z: " + call (CountFoundCards, "Z") + "/" + getarraysize(.carta_Z);
+	set .@line8$ = "W: " + callfunc("CountFoundCards", "W") + "/" + getarraysize(.carta_W) + "  ";
+	set .@line8$ = .@line8$ + "Y: " + callfunc("CountFoundCards", "Y") + "/" + getarraysize(.carta_Y) + "  ";
+	set .@line8$ = .@line8$ + "Z: " + callfunc("CountFoundCards", "Z") + "/" + getarraysize(.carta_Z);
 	
 	mes .@line5$;
 	mes .@line6$;
@@ -155,8 +155,8 @@ function ShowProgress {
 	
 	// Special categories
 	mes "^FF0000=== SPECIAL CARDS ===^000000";
-	mes "BOSS: " + call (CountFoundCards, "BOSS") + "/" + getarraysize(.carta_BOSS);
-	mes "MVP: " + call (CountFoundCards, "MVP") + "/" + getarraysize(.carta_MVP);
+	mes "BOSS: " + callfunc("CountFoundCards", "BOSS") + "/" + getarraysize(.carta_BOSS);
+	mes "MVP: " + callfunc("CountFoundCards", "MVP") + "/" + getarraysize(.carta_MVP);
 	next;
 	return;
 }
@@ -188,7 +188,7 @@ function FindMissingCards {
 		    .@search$ == "Q" || .@search$ == "R" || .@search$ == "S" || 
 		    .@search$ == "T" || .@search$ == "U" || .@search$ == "V" || 
 		    .@search$ == "W" || .@search$ == "Y" || .@search$ == "Z") {
-			call (DisplayMissingByLetter, .@search$);
+			callfunc("DisplayMissingByLetter", .@search$);
 		} else {
 			mes .npc_name$;
 			mes "That's not a valid letter!";
@@ -197,9 +197,9 @@ function FindMissingCards {
 	} else {
 		// Handle BOSS/MVP search
 		if (.@search$ == "BOSS") {
-			call DisplayMissingByType("BOSS");
+			callfunc("DisplayMissingByType", "BOSS");
 		} else if (.@search$ == "MVP") {
-			call DisplayMissingByType("MVP");
+			callfunc("DisplayMissingByType", "MVP");
 		} else {
 			mes .npc_name$;
 			mes "Please enter a single letter, 'BOSS', or 'MVP'.";
@@ -319,7 +319,7 @@ function ViewCollection {
 		    .@search$ == "Q" || .@search$ == "R" || .@search$ == "S" || 
 		    .@search$ == "T" || .@search$ == "U" || .@search$ == "V" || 
 		    .@search$ == "W" || .@search$ == "Y" || .@search$ == "Z") {
-			call (DisplayCollectionByLetter, .@search$);
+			callfunc("DisplayCollectionByLetter", .@search$);
 		} else {
 			mes .npc_name$;
 			mes "That's not a valid letter!";
@@ -328,9 +328,9 @@ function ViewCollection {
 	} else {
 		// Handle BOSS/MVP search
 		if (.@search$ == "BOSS") {
-			call DisplayCollectionByType("BOSS");
+			callfunc("DisplayCollectionByType", "BOSS");
 		} else if (.@search$ == "MVP") {
-			call DisplayCollectionByType("MVP");
+			callfunc("DisplayCollectionByType", "MVP");
 		} else {
 			mes .npc_name$;
 			mes "Please enter a single letter, 'BOSS', or 'MVP'.";
