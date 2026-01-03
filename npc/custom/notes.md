@@ -97,11 +97,22 @@ Los delimitadores evitan falsos positivos (ej: buscar "1" no coincide con "10").
 ```
 
 ### 10. Arrays y Copyarray
+**Sintaxis correcta**: `copyarray(destino[0], origen[0], tamaño)`
+
+❌ **INCORRECTO**:
 ```c
-// Copiar array NPC a array temporal
+copyarray .@temp, .carta_A;
+```
+
+✅ **CORRECTO**:
+```c
 copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 ```
-Útil para manipular datos sin modificar el array original.
+
+Útil para manipular datos sin modificar el array original. Requiere:
+- Índice `[0]` en origen y destino
+- Tamaño como tercer parámetro
+- Paréntesis alrededor de todos los parámetros
 
 ### 11. Consideraciones de Performance
 - **strpos()** es O(n) - Aceptable para ~500 búsquedas
@@ -129,6 +140,7 @@ copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 | `need ';'` | Sintaxis `set var, value` | Cambiar a `var = value` |
 | `player not attached` | `consolemes()` en OnInit | Usar `debugmes()` o remover |
 | `need ';'` (con función) | Usar `strlen()` en vez de `getstrlen()` | Cambiar a `getstrlen()` |
+| `not enough arguments, expected ','` | Sintaxis incorrecta de `copyarray` | Usar `copyarray(dest[0], src[0], size)` |
 
 ---
 **Última actualización**: Enero 2026  
