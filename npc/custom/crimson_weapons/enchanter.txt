@@ -53,9 +53,9 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 	
 	mes "[Crimson Enchanter]";
 	mes "To enchant a weapon, I require:";
-	mes "^FF6B00• 1 Red Gemstone^000000";
-	mes "^0080FF• 1 Blue Gemstone^000000";
-	mes "^FF00FF• 1 Yellow Gemstone^000000";
+	mes "^FF6B00- 1 Red Gemstone^000000";
+	mes "^0080FF- 1 Blue Gemstone^000000";
+	mes "^FF00FF- 1 Yellow Gemstone^000000";
 	next;
 	
 	if(select("Enchant a Crimson weapon", "Cancel") == 2) {
@@ -80,6 +80,7 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 	
 	// Get inventory list and filter for Crimson weapons
 	getinventorylist();
+	set .@j, 0;
 	for(.@i = 0; .@i < @inventorylist_count; .@i++) {
 		for(.@w = 0; .@w < getarraysize(.crimson_id); .@w++) {
 			if (@inventorylist_id[.@i] == .crimson_id[.@w]) {
