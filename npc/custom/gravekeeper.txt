@@ -14,21 +14,20 @@ prontera,274,352,3	script	Gravekeeper Ludovico	1_M_PASTOR,{
 
     mes "^FF0000[Gravekeeper Ludovico]^000000";
     mes "This ground remembers every scream that ended here.";
-    mes "I tend these graves, and the echoes cling to my robes.";
+    mes "I tend these graves; the echoes cling to my robes.";
     next;
 
     if (.@deaths == 0) {
         mes "^FF0000[Ludovico]^000000";
-        mes "Your soul keeps slipping past the jaws of Niflheim, traveler.";
-        mes "The dead whisper your name, but the bells of Prontera refuse to toll for you.";
-        mes "Be grateful—this cemetery is not yet the place where your spirit will rest.";
+        mes "You keep slipping past Niflheim's jaws, traveler.";
+        mes "The dead whisper your name, but Prontera's bells refuse to toll.";
     } else {
         mes "^FF0000[Ludovico]^000000";
-        mes "You have fallen many times, yet this soil still rejects your soul.";
-        mes "I can feel ^FF0000" + .@deaths + " deaths^000000 clinging to your shadow like frost.";
-        mes "Remember: the Bifrost gleams for heroes, but Hel's gate waits for the weary.";
-        mes "If you return again, I will be waiting with a candle and your name.";
+        mes "You have fallen often, yet this soil still rejects your soul.";
+        mes "I feel ^FF0000" + .@deaths + " deaths^000000 clinging to you; Hel waits if you tire.";
     }
+    next;
+    mes "Go now. If you return, I will keep a candle lit for your wandering soul.";
     
     close;
 }
