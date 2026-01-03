@@ -19,7 +19,7 @@
 	function CountFound;
 	
 	mes .npc_name$;
-	mes "^FF6B00Greetings, adventurer! I'm a card researcher and collector.^000000";
+	mes "^00CED1Greetings, adventurer! I'm a card researcher and collector.^000000";
 	mes "My team and I travel across these lands documenting";
 	mes "and collecting every card we can find.";
 	next;
@@ -76,6 +76,9 @@
 
 // ===== FUNCTION: Register Cards From Inventory =====
 function RegCardsInv {
+	.@total_unique = 0;
+	.@new_cards = 0;
+	
 	getinventorylist();
 	
 	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
@@ -83,12 +86,27 @@ function RegCardsInv {
 		
 		// Check if item is a card (type 6)
 		if (getiteminfo(.@item_id, ITEMINFO_TYPE) == IT_CARD) {
+			.@total_unique++;
+			
 			// Check if card is already registered
 			if (strpos(#CARD_FOUND$, "|" + .@item_id + "|") == -1) {
 				// Add card to found list
 				#CARD_FOUND$ = #CARD_FOUND$ + .@item_id + "|";
+				.@new_cards++;
 			}
 		}
+	}
+	
+	// Show summary
+	if (.@total_unique > 0) {
+		mes .npc_name$;
+		mes "I found ^0000FF" + .@total_unique + " unique card" + (.@total_unique == 1 ? "" : "s") + "^000000 in your inventory!";
+		if (.@new_cards > 0) {
+			mes "Of those, ^00FF00" + .@new_cards + " " + (.@new_cards == 1 ? "is" : "are") + " new^000000 to our collection!";
+		} else {
+			mes "All of them were already registered.";
+		}
+		next;
 	}
 	return;
 }
@@ -96,7 +114,7 @@ function RegCardsInv {
 // ===== FUNCTION: Show Progress =====
 function ShowProgress {
 	mes .npc_name$;
-	mes "^FF6B00=== COLLECTION PROGRESS ===^000000";
+	mes "^00CED1=== COLLECTION PROGRESS ===^000000";
 	next;
 	
 	// Count found cards per letter
@@ -153,7 +171,7 @@ function ShowProgress {
 	mes .@line2$;
 	mes .@line3$;
 	mes .@line4$;
-	next;
+	//next;
 	
 	// Line 5: N, O, P
 	.@cN = CountFound("N");
@@ -541,7 +559,7 @@ function CountFound {
 
 
 OnInit:
-	.npc_name$ = "[ ^FF6B00Card Collector^000000 ]";
+	.npc_name$ = "[ ^00CED1Card Collector^000000 ]";
 
 	setarray .carta_A, 4013,4032,4043,4062,4075,4094,4114,4138,4160,4234,4240,4242,4244,4245,4246,4247,4248,4249,4252,4253,4344,4347,4371,4378,4379,4387,4400,4401,4402,4409,4443,4464,4473,4513,4515,4567,4596,4629,31022;
 	setarray .carta_B, 4074,4119,4129,4212,4213,4214,4215,4233,4320,4327,4356,4390,4438,4450,4466,4472,4518,4519,4582,4626,4627;
