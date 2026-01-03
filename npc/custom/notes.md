@@ -203,6 +203,53 @@ copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 | `need ';'` (con función) | Usar `strlen()` en vez de `getstrlen()` | Cambiar a `getstrlen()` |
 | `not enough arguments, expected ','` | Sintaxis incorrecta de `copyarray` | Usar `copyarray(dest[0], src[0], size)` |
 
+## Casos de Uso Exitosos
+
+### 12. Sistema de Tracking de MVP (Enero 2026)
+**Descripción**: Sistema global que registra kills de MVPs por jugador usando variables de personaje.
+
+**Archivos creados**:
+- `npc/custom/mvp/mvp_tracker.txt` - Script global con OnNPCKillEvent
+- `npc/custom/mvp/mvp_journal.txt` - NPC para consultar estadísticas
+
+**Técnicas aplicadas**:
+1. **Variables dinámicas con getd/setd**: Se crearon variables con nombres dinámicos basados en el ID del MVP (`MVP_KILL_1115`, etc.) para rastrear kills individuales.
+   ```c
+   .@var_name$ = "MVP_KILL_" + .@mvp_id;
+   .@current_count = getd(.@var_name$);
+   setd .@var_name$, .@current_count + 1;
+   ```
+
+2. **OnNPCKillEvent**: Se usó el evento global para capturar todas las muertes de NPCs/monstruos.
+   ```c
+   -	script	MVP_Tracker	-1,{
+   OnNPCKillEvent:
+       if (strmobinfo(1, killedrid) != 1) end;
+       // procesamiento...
+   }
+   ```
+
+3. **Evitar funciones en concatenaciones**: Todas las llamadas a funciones (strmobinfo, getd, getarraysize) se evaluaron primero en variables antes de concatenar strings.
+   ```c
+   // ❌ INCORRECTO: mes "Killed: " + strmobinfo(2, .@id);
+   // ✅ CORRECTO:
+   .@name$ = strmobinfo(2, .@id);
+   mes "Killed: " + .@name$;
+   ```
+
+4. **Loops con for en lugar de while**: Para mejor legibilidad y menos errores.
+   ```c
+   for (.@i = 0; .@i < .@array_size; .@i = .@i + 1) {
+       // código
+   }
+   ```
+
+**Notas importantes**:
+- strmobinfo(1, id) retorna 1 si el mob es MVP, 0 si no lo es
+- killedrid contiene el ID del mob asesinado en OnNPCKillEvent
+- Las variables de personaje (sin prefijo especial) persisten entre sesiones
+- bc_all en announce envía el mensaje a todos los jugadores online
+
 ---
 **Última actualización**: Enero 2026  
 **Proyecto**: Hercules rAthena Custom NPCs
