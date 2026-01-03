@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 2.0
+//= 2.1
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -11,6 +11,7 @@
 //= 1.0 Initial script - dialog only
 //= 1.1 Added card helper registration and inventory checking
 //= 2.0 Full card tracking system with progress, missing, and collection view
+//= 2.1 Fixed variable length issue by splitting storage by category
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
