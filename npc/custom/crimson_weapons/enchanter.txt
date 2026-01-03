@@ -79,6 +79,7 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 	for(.@i = 0; .@i < @inventorylist_count; .@i++) {
 		for(.@w = 0; .@w < getarraysize(.crimson_id); .@w++) {
 			if (@inventorylist_id[.@i] == .crimson_id[.@w]) {
+				mes "[DEBUG] Match at .@w=" + .@w + ": name=" + .crimson_name$[.@w];
 				if (.@j > 0)
 					set .@weapon_list$, .@weapon_list$ + ":";
 				set .@weapon_list$, .@weapon_list$ + .crimson_name$[.@w];
@@ -88,6 +89,10 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 			}
 		}
 	}
+	
+	mes "[DEBUG] Total weapons found: " + .@j;
+	mes "[DEBUG] Weapon list string: '" + .@weapon_list$ + "'";
+	next;
 	
 	if (.@j == 0) {
 		mes "[Crimson Enchanter]";
