@@ -327,8 +327,8 @@ function ShowMissingType {
 	.@type$ = getarg(0);
 	.@missing$ = "";
 	
-	if (.@type$ == "BOSS") copyarray(.@carta[0], .carta_B[0], getarraysize(.carta_B))OSS;
-	else if (.@type$ == "MVP") copyarray(.@carta[0], .carta_M[0], getarraysize(.carta_M))VP;
+	if (.@type$ == "BOSS") copyarray(.@carta[0], .carta_BOSS[0], getarraysize(.carta_BOSS));
+	else if (.@type$ == "MVP") copyarray(.@carta[0], .carta_MVP[0], getarraysize(.carta_MVP));
 	
 	// Find missing cards
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
@@ -466,8 +466,8 @@ function ShowCollectType {
 	.@type$ = getarg(0);
 	.@collection$ = "";
 	
-	if (.@type$ == "BOSS") copyarray(.@carta[0], .carta_B[0], getarraysize(.carta_B))OSS;
-	else if (.@type$ == "MVP") copyarray(.@carta[0], .carta_M[0], getarraysize(.carta_M))VP;
+	if (.@type$ == "BOSS") copyarray(.@carta[0], .carta_BOSS[0], getarraysize(.carta_BOSS));
+	else if (.@type$ == "MVP") copyarray(.@carta[0], .carta_MVP[0], getarraysize(.carta_MVP));
 	
 	// Find found cards
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
@@ -521,8 +521,8 @@ function CountFound {
 	else if (.@letter$ == "W") copyarray(.@carta[0], .carta_W[0], getarraysize(.carta_W));
 	else if (.@letter$ == "Y") copyarray(.@carta[0], .carta_Y[0], getarraysize(.carta_Y));
 	else if (.@letter$ == "Z") copyarray(.@carta[0], .carta_Z[0], getarraysize(.carta_Z));
-	else if (.@letter$ == "BOSS") copyarray(.@carta[0], .carta_B[0], getarraysize(.carta_B))OSS;
-	else if (.@letter$ == "MVP") copyarray(.@carta[0], .carta_M[0], getarraysize(.carta_M))VP;
+	else if (.@letter$ == "BOSS") copyarray(.@carta[0], .carta_BOSS[0], getarraysize(.carta_BOSS));
+	else if (.@letter$ == "MVP") copyarray(.@carta[0], .carta_MVP[0], getarraysize(.carta_MVP));
 	
 	// Count found cards
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
