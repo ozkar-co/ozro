@@ -50,8 +50,7 @@ OnNPCKillEvent:
 			}
 		}
 		
-		// Re-attach to killer for announcement
-		attachrid(.@killer_aid);
+		// Party kill announcement (using pre-captured killer name)
 		.@announce_msg$ = "[" + .@killer_name$ + "] has defeated " + .@mvp_name$ + " with the help of their party!";
 		announce .@announce_msg$, bc_all;
 	} else {

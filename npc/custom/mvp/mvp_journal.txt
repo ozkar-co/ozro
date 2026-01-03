@@ -117,10 +117,7 @@ function GetMVPStats {
 		if (.@kills > 0 || .@supps > 0) {
 			.@total_kills = .@total_kills + .@kills;
 			.@total_supps = .@total_supps + .@supps;
-			
-			if (.@kills > 0 || .@supps > 0) {
-				.@unique_mvps = .@unique_mvps + 1;
-			}
+			.@unique_mvps = .@unique_mvps + 1;
 			
 			if (.@kills > .@most_killed_count) {
 				.@most_killed_count = .@kills;
