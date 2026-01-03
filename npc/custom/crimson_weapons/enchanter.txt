@@ -84,7 +84,9 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 	for(.@i = 0; .@i < @inventorylist_count; .@i++) {
 		for(.@w = 0; .@w < getarraysize(.crimson_id); .@w++) {
 			if (@inventorylist_id[.@i] == .crimson_id[.@w]) {
-				set .@weapon_list$, .@weapon_list$ + ":" + .@crimson_name$[.@w];
+				if (.@j > 0)
+					set .@weapon_list$, .@weapon_list$ + ":";
+				set .@weapon_list$, .@weapon_list$ + .@crimson_name$[.@w];
 				set .@weapon_idx[.@j], .@i;
 				set .@j, .@j + 1;
 				break;
@@ -98,9 +100,6 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 		mes "Come back when you have one to enchant.";
 		close;
 	}
-	
-	// Remove leading colon from the weapon list
-	set .@weapon_list$, substr(.@weapon_list$, 2);
 	
 	mes "[Crimson Enchanter]";
 	mes "Which Crimson weapon would you like to enchant?";
