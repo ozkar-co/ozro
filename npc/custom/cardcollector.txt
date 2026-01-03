@@ -122,6 +122,10 @@ function ShowProgress {
 	.@line2$ = "";
 	.@line3$ = "";
 	.@line4$ = "";
+	.@line5$ = "";
+	.@line6$ = "";
+	.@line7$ = "";
+	.@line8$ = "";
 	
 	// Line 1: A, B, C
 	.@cA = CountFound("A");
@@ -167,12 +171,6 @@ function ShowProgress {
 	.@line4$ = .@line4$ + "L: " + .@cL + "/" + .@tL + "  ";
 	.@line4$ = .@line4$ + "M: " + .@cM + "/" + .@tM;
 	
-	mes .@line1$;
-	mes .@line2$;
-	mes .@line3$;
-	mes .@line4$;
-	//next;
-	
 	// Line 5: N, O, P
 	.@cN = CountFound("N");
 	.@cO = CountFound("O");
@@ -217,6 +215,10 @@ function ShowProgress {
 	.@line8$ = .@line8$ + "Y: " + .@cY + "/" + .@tY + "  ";
 	.@line8$ = .@line8$ + "Z: " + .@cZ + "/" + .@tZ;
 	
+	mes .@line1$;
+	mes .@line2$;
+	mes .@line3$;
+	mes .@line4$;
 	mes .@line5$;
 	mes .@line6$;
 	mes .@line7$;
