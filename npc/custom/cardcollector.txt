@@ -14,6 +14,10 @@
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
+	function RegCardsInv; function ShowProgress; function FindMissing; function ViewCollect;
+	function ShowMissingLtr; function ShowMissingType; function ShowCollectLtr; function ShowCollectType;
+	function CountFound;
+	
 	mes .npc_name$;
 	mes "^FF6B00Greetings, adventurer! I'm a card researcher and collector.^000000";
 	mes "My team and I travel across these lands documenting";
@@ -45,7 +49,7 @@
 	}
 	
 	// Auto-register cards from inventory
-	callfunc "RegCardsInv";
+	RegCardsInv();
 	
 	// Main menu
 	while (1) {
@@ -55,13 +59,13 @@
 		
 		switch(select("Check Progress", "Find Missing Cards", "View My Collection", "Exit")) {
 			case 1: // Check Progress
-				callfunc "ShowProgress";
+				ShowProgress();
 				break;
 			case 2: // Find Missing Cards
-				callfunc "FindMissing";
+				FindMissing();
 				break;
 			case 3: // View Collection
-				callfunc "ViewCollect";
+				ViewCollect();
 				break;
 			case 4: // Exit
 				mes .npc_name$;
@@ -102,9 +106,9 @@ function ShowProgress {
 	.@line4$ = "";
 	
 	// Line 1: A, B, C
-	.@cA = callfunc("CountFound", "A");
-	.@cB = callfunc("CountFound", "B");
-	.@cC = callfunc("CountFound", "C");
+	.@cA = CountFound("A");
+	.@cB = CountFound("B");
+	.@cC = CountFound("C");
 	.@tA = getarraysize(.carta_A);
 	.@tB = getarraysize(.carta_B);
 	.@tC = getarraysize(.carta_C);
@@ -113,9 +117,9 @@ function ShowProgress {
 	.@line1$ = .@line1$ + "C: " + .@cC + "/" + .@tC;
 	
 	// Line 2: D, F, G
-	.@cD = callfunc("CountFound", "D");
-	.@cF = callfunc("CountFound", "F");
-	.@cG = callfunc("CountFound", "G");
+	.@cD = CountFound("D");
+	.@cF = CountFound("F");
+	.@cG = CountFound("G");
 	.@tD = getarraysize(.carta_D);
 	.@tF = getarraysize(.carta_F);
 	.@tG = getarraysize(.carta_G);
@@ -124,9 +128,9 @@ function ShowProgress {
 	.@line2$ = .@line2$ + "G: " + .@cG + "/" + .@tG;
 	
 	// Line 3: H, I, J
-	.@cH = callfunc("CountFound", "H");
-	.@cI = callfunc("CountFound", "I");
-	.@cJ = callfunc("CountFound", "J");
+	.@cH = CountFound("H");
+	.@cI = CountFound("I");
+	.@cJ = CountFound("J");
 	.@tH = getarraysize(.carta_H);
 	.@tI = getarraysize(.carta_I);
 	.@tJ = getarraysize(.carta_J);
@@ -135,9 +139,9 @@ function ShowProgress {
 	.@line3$ = .@line3$ + "J: " + .@cJ + "/" + .@tJ;
 	
 	// Line 4: K, L, M
-	.@cK = callfunc("CountFound", "K");
-	.@cL = callfunc("CountFound", "L");
-	.@cM = callfunc("CountFound", "M");
+	.@cK = CountFound("K");
+	.@cL = CountFound("L");
+	.@cM = CountFound("M");
 	.@tK = getarraysize(.carta_K);
 	.@tL = getarraysize(.carta_L);
 	.@tM = getarraysize(.carta_M);
@@ -152,9 +156,9 @@ function ShowProgress {
 	next;
 	
 	// Line 5: N, O, P
-	.@cN = callfunc("CountFound", "N");
-	.@cO = callfunc("CountFound", "O");
-	.@cP = callfunc("CountFound", "P");
+	.@cN = CountFound("N");
+	.@cO = CountFound("O");
+	.@cP = CountFound("P");
 	.@tN = getarraysize(.carta_N);
 	.@tO = getarraysize(.carta_O);
 	.@tP = getarraysize(.carta_P);
@@ -163,9 +167,9 @@ function ShowProgress {
 	.@line5$ = .@line5$ + "P: " + .@cP + "/" + .@tP;
 	
 	// Line 6: Q, R, S
-	.@cQ = callfunc("CountFound", "Q");
-	.@cR = callfunc("CountFound", "R");
-	.@cS = callfunc("CountFound", "S");
+	.@cQ = CountFound("Q");
+	.@cR = CountFound("R");
+	.@cS = CountFound("S");
 	.@tQ = getarraysize(.carta_Q);
 	.@tR = getarraysize(.carta_R);
 	.@tS = getarraysize(.carta_S);
@@ -174,9 +178,9 @@ function ShowProgress {
 	.@line6$ = .@line6$ + "S: " + .@cS + "/" + .@tS;
 	
 	// Line 7: T, U, V
-	.@cT = callfunc("CountFound", "T");
-	.@cU = callfunc("CountFound", "U");
-	.@cV = callfunc("CountFound", "V");
+	.@cT = CountFound("T");
+	.@cU = CountFound("U");
+	.@cV = CountFound("V");
 	.@tT = getarraysize(.carta_T);
 	.@tU = getarraysize(.carta_U);
 	.@tV = getarraysize(.carta_V);
@@ -185,9 +189,9 @@ function ShowProgress {
 	.@line7$ = .@line7$ + "V: " + .@cV + "/" + .@tV;
 	
 	// Line 8: W, Y, Z
-	.@cW = callfunc("CountFound", "W");
-	.@cY = callfunc("CountFound", "Y");
-	.@cZ = callfunc("CountFound", "Z");
+	.@cW = CountFound("W");
+	.@cY = CountFound("Y");
+	.@cZ = CountFound("Z");
 	.@tW = getarraysize(.carta_W);
 	.@tY = getarraysize(.carta_Y);
 	.@tZ = getarraysize(.carta_Z);
@@ -202,8 +206,8 @@ function ShowProgress {
 	next;
 	
 	// Special categories
-	.@cBOSS = callfunc("CountFound", "BOSS");
-	.@cMVP = callfunc("CountFound", "MVP");
+	.@cBOSS = CountFound("BOSS");
+	.@cMVP = CountFound("MVP");
 	.@tBOSS = getarraysize(.carta_BOSS);
 	.@tMVP = getarraysize(.carta_MVP);
 	mes "^FF0000=== SPECIAL CARDS ===^000000";
@@ -248,7 +252,7 @@ function FindMissing {
 		    .@search$ == "Q" || .@search$ == "R" || .@search$ == "S" || 
 		    .@search$ == "T" || .@search$ == "U" || .@search$ == "V" || 
 		    .@search$ == "W" || .@search$ == "Y" || .@search$ == "Z") {
-			callfunc("ShowMissingLtr", .@search$);
+			ShowMissingLtr(.@search$);
 		} else {
 			mes .npc_name$;
 			mes "That's not a valid letter!";
@@ -257,9 +261,9 @@ function FindMissing {
 	} else {
 		// Handle BOSS/MVP search
 		if (.@search$ == "BOSS") {
-			callfunc("ShowMissingType", "BOSS");
+			ShowMissingType("BOSS");
 		} else if (.@search$ == "MVP") {
-			callfunc("ShowMissingType", "MVP");
+			ShowMissingType("MVP");
 		} else {
 			mes .npc_name$;
 			mes "Please enter a single letter, 'BOSS', or 'MVP'.";
@@ -387,7 +391,7 @@ function ViewCollect {
 		    .@search$ == "Q" || .@search$ == "R" || .@search$ == "S" || 
 		    .@search$ == "T" || .@search$ == "U" || .@search$ == "V" || 
 		    .@search$ == "W" || .@search$ == "Y" || .@search$ == "Z") {
-			callfunc("ShowCollectLtr", .@search$);
+			ShowCollectLtr(.@search$);
 		} else {
 			mes .npc_name$;
 			mes "That's not a valid letter!";
@@ -396,9 +400,9 @@ function ViewCollect {
 	} else {
 		// Handle BOSS/MVP search
 		if (.@search$ == "BOSS") {
-			callfunc("ShowCollectType", "BOSS");
+			ShowCollectType("BOSS");
 		} else if (.@search$ == "MVP") {
-			callfunc("ShowCollectType", "MVP");
+			ShowCollectType("MVP");
 		} else {
 			mes .npc_name$;
 			mes "Please enter a single letter, 'BOSS', or 'MVP'.";

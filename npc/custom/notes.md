@@ -35,24 +35,50 @@ function MiFuncion {
 **Importante**: 
 - Funciones dentro de NPC: `function Nombre {`
 - Funciones globales: `function<TAB>script<TAB>Nombre<TAB>{`
+- **Declarar funciones internas al inicio**: `function Func1; function Func2;`
 
-### 2. Límite de Nombres de Funciones
-- ❌ **INCORRECTO**: `call NombreFuncion`
-- ✅ **CORRECTO**: `callfunc("NombreFuncion")`
-- ❌ **INCORRECTO**: `call` se usa solo para labels, NO para funciones
+### 2. Sintaxis de Llamadas a Funciones
 
-### 2. Límite de Nombres de Funciones
+**Funciones DENTRO del mismo NPC:**
+```c
+// 1. Declarar al inicio del NPC
+function MiFuncion; function OtraFuncion;
+
+// 2. Llamar directamente (sin callfunc)
+MiFuncion();
+OtraFuncion("argumento");
+```
+
+**Funciones GLOBALES (externas):**
+```c
+callfunc("NombreGlobal");
+callfunc("NombreGlobal", arg1, arg2);
+```
+
+❌ **INCORRECTO**:
+```c
+callfunc("MiFuncion");  // ❌ Si MiFuncion está en el mismo NPC
+call MiFuncion;  // ❌ 'call' es solo para labels
+```
+
+✅ **CORRECTO**:
+```c
+MiFuncion();  // ✅ Función interna del NPC
+callfunc("F_GlobalFunc");  // ✅ Función global externa
+```
+
+### 3. Límite de Nombres de Funciones
 - **Máximo: 23 caracteres** para nombres de funciones y labels
 - ❌ `RegisterCardsFromInventory` (28 chars)
 - ✅ `RegCardsInv` (11 chars)
 - **Tip**: Usa abreviaciones claras pero cortas
 
-### 3. Asignación de Variables
+### 4. Asignación de Variables
 - ❌ **SINTAXIS ANTIGUA**: `set .@var, valor;`
 - ✅ **SINTAXIS MODERNA**: `.@var = valor;`
 - Aplica para todos los tipos de variables: `.@temp`, `#account`, `.npc`, `$global`
 
-### 4. Funciones en Concatenación de Strings
+### 5. Funciones en Concatenación de Strings
 El parser NO permite usar `callfunc()` o `getarraysize()` directamente en concatenaciones.
 
 ❌ **INCORRECTO**:
