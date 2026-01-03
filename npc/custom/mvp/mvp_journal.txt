@@ -48,12 +48,14 @@ function CheckSpecificMVP {
 	.@choice = select(.@menu$);
 	
 	// MVP IDs array matching menu order (29 popular MVPs)
+	// Note: Array has 29 elements for 29 MVPs; Cancel option doesn't need an ID
 	setarray .@mvp_ids[0], 1159, 1115, 1150, 1059, 1039, 1112, 1038, 1046,
 	                        1190, 1087, 1086, 1511, 1785, 1685,
 	                        1688, 1272, 1389, 1289, 1623, 1252,
 	                        1768, 1751, 1658, 1779, 2022, 2068,
 	                        2087, 2317, 1832;
 	
+	// Choice 30 is Cancel, close before array access
 	if (.@choice >= 30) {
 		close;
 	}
