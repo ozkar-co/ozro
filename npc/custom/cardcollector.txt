@@ -71,7 +71,7 @@
 	}
 
 // ===== FUNCTION: Register Cards From Inventory =====
-function RegCardsInv {
+function	script	RegCardsInv	{
 	getinventorylist();
 	
 	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
@@ -90,7 +90,7 @@ function RegCardsInv {
 }
 
 // ===== FUNCTION: Show Progress =====
-function ShowProgress {
+function	script	ShowProgress	{
 	mes .npc_name$;
 	mes "^FF6B00=== COLLECTION PROGRESS ===^000000";
 	next;
@@ -214,7 +214,7 @@ function ShowProgress {
 }
 
 // ===== FUNCTION: Find Missing Cards =====
-function FindMissing {
+function	script	FindMissing	{
 	mes .npc_name$;
 	mes "Which cards would you like to search for?";
 	mes "Enter a letter (A-Z) or 'BOSS' or 'MVP'.";
@@ -270,7 +270,7 @@ function FindMissing {
 }
 
 // ===== FUNCTION: Display Missing By Letter =====
-function ShowMissingLtr {
+function	script	ShowMissingLtr	{
 	.@letter$ = getarg(0);
 	.@missing$ = "";
 	
@@ -323,7 +323,7 @@ function ShowMissingLtr {
 }
 
 // ===== FUNCTION: Display Missing By Type =====
-function ShowMissingType {
+function	script	ShowMissingType	{
 	.@type$ = getarg(0);
 	.@missing$ = "";
 	
@@ -353,7 +353,7 @@ function ShowMissingType {
 }
 
 // ===== FUNCTION: View Collection =====
-function ViewCollect {
+function	script	ViewCollect	{
 	mes .npc_name$;
 	mes "Which cards would you like to review?";
 	mes "Enter a letter (A-Z) or 'BOSS' or 'MVP'.";
@@ -409,7 +409,7 @@ function ViewCollect {
 }
 
 // ===== FUNCTION: Display Collection By Letter =====
-function ShowCollectLtr {
+function	script	ShowCollectLtr	{
 	.@letter$ = getarg(0);
 	.@collection$ = "";
 	
@@ -462,7 +462,7 @@ function ShowCollectLtr {
 }
 
 // ===== FUNCTION: Display Collection By Type =====
-function ShowCollectType {
+function	script	ShowCollectType	{
 	.@type$ = getarg(0);
 	.@collection$ = "";
 	
@@ -492,7 +492,7 @@ function ShowCollectType {
 }
 
 // ===== FUNCTION: Count Found Cards =====
-function CountFound {
+function	script	CountFound	{
 	.@letter$ = getarg(0);
 	.@count = 0;
 	

@@ -2,7 +2,26 @@
 
 ## Errores Comunes y Soluciones
 
-### 1. Sintaxis de Llamadas a Funciones
+### 1. Definición de Funciones
+**Sintaxis correcta**: `function<TAB>script<TAB>NombreFuncion<TAB>{`
+
+❌ **INCORRECTO**:
+```c
+function MiFuncion {
+    // código
+}
+```
+
+✅ **CORRECTO**:
+```c
+function	script	MiFuncion	{
+    // código
+}
+```
+
+**Importante**: Los separadores deben ser TABS, no espacios.
+
+### 2. Límite de Nombres de Funciones
 - ❌ **INCORRECTO**: `call NombreFuncion`
 - ✅ **CORRECTO**: `callfunc("NombreFuncion")`
 - ❌ **INCORRECTO**: `call` se usa solo para labels, NO para funciones
@@ -133,6 +152,7 @@ copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 
 | Error | Causa | Solución |
 |-------|-------|----------|
+| `function not found` | Falta `script` en definición | Usar `function script Nombre` |
 | `expect command, missing function name` | Usar `call` en vez de `callfunc` | Cambiar a `callfunc("Nombre")` |
 | `label name longer than 23 chars` | Nombre de función muy largo | Acortar a ≤23 caracteres |
 | `not enough arguments, expected ','` | Función inline en concatenación | Pre-evaluar en variable |
