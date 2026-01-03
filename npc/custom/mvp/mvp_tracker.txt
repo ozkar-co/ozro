@@ -1,0 +1,33 @@
+//===== Hercules Script ======================================
+//= MVP Kill Tracker
+//===== By: ==================================================
+//= Ozcodex
+//===== Current Version: =====================================
+//= 1.0
+//===== Description: =========================================
+//= Global tracker that records MVP kills for each player.
+//= Stores kills in character variables for persistence.
+//===== Additional Comments: =================================
+//= 1.0 Initial version.
+//============================================================
+
+-	script	MVP_Tracker	-1,{
+OnNPCKillEvent:
+	// Check if killed monster is an MVP
+	if (strmobinfo(1, killedrid) != 1) end;
+	
+	.@mvp_id = killedrid;
+	.@mvp_name$ = strmobinfo(2, killedrid);
+	
+	// Create dynamic variable name: MVP_KILL_1115, MVP_KILL_1011, etc.
+	// getd/setd allow using strings as variable names
+	.@var_name$ = "MVP_KILL_" + .@mvp_id;
+	.@current_count = getd(.@var_name$);
+	setd .@var_name$, .@current_count + 1;
+	
+	// Announce the kill to all players
+	.@killer_name$ = strcharinfo(0);
+	.@announce_msg$ = .@killer_name$ + " has just hunted " + .@mvp_name$ + "!";
+	announce .@announce_msg$, bc_all;
+	end;
+}

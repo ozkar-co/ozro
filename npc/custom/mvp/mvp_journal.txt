@@ -1,0 +1,129 @@
+//===== Hercules Script ======================================
+//= MVP Hunting Journal
+//===== By: ==================================================
+//= Ozcodex
+//===== Current Version: =====================================
+//= 1.0
+//===== Description: =========================================
+//= NPC that displays MVP kill statistics for players.
+//= Shows total kills, unique MVPs defeated, and most killed.
+//===== Additional Comments: =================================
+//= 1.0 Initial version.
+//============================================================
+
+prontera,150,180,4	script	Hunting Journal	4_M_SAGE_C,{
+	function GetMVPStats;
+	
+	mes "^0000FF[Hunting Journal]^000000";
+	mes "Greetings, hunter. I can read the stories written in your scars.";
+	mes "What would you like to know?";
+	next;
+	
+	switch(select("View Statistics:Check Specific MVP:Cancel")) {
+		case 1:
+			GetMVPStats();
+			break;
+		case 2:
+			mes "^0000FF[Hunting Journal]^000000";
+			mes "Which beast's record shall we check?";
+			next;
+			
+			// Display menu with MVP names
+			.@menu$ = "Phreeoni:Eddga:Moonlight Flower:Mistress:Baphomet:Drake:Osiris:Doppelganger:";
+			.@menu$ = .@menu$ + "Orc Lord:Orc Hero:Golden Thief Bug:Amon Ra:Atroce:Vesper:Detale:";
+			.@menu$ = .@menu$ + "Lady Tanee:Dark Lord:Dracula:Stormy Knight:Hatii:Garm:Randgris:";
+			.@menu$ = .@menu$ + "Egnigem Cenia:Ktullanux:RSX-0806:Gloom Under Night:Dark Snake Lord:";
+			.@menu$ = .@menu$ + "Incantation Samurai:Nidhoggr's Shadow:Thanatos:Kiel D-01:Valkyrie Randgris:";
+			.@menu$ = .@menu$ + "Ifrit:Beelzebub:Fallen Bishop Hibram:Amon Ra (Nightmare):Wounded Morroc:Cancel";
+			
+			.@choice = select(.@menu$);
+			
+			// MVP IDs array matching menu order
+			setarray .@mvp_ids[0], 1159, 1115, 1150, 1059, 1039, 1112, 1038, 1046,
+			                        1190, 1087, 1086, 1511, 1785, 1685, 1719,
+			                        1688, 1272, 1389, 1289, 1623, 1252, 1768,
+			                        1751, 1658, 1779, 2022, 2068, 2087,
+			                        2317, 2022, 2236, 1623, 1768,
+			                        1832, 1873, 1874, 1511, 1708;
+			
+			if (.@choice >= 41) close;
+			
+			.@id = .@mvp_ids[.@choice - 1];
+			.@var_name$ = "MVP_KILL_" + .@id;
+			.@count = getd(.@var_name$);
+			.@name$ = strmobinfo(2, .@id);
+			
+			mes "^0000FF[Hunting Journal]^000000";
+			if (.@count == 0) {
+				.@msg$ = "You haven't faced the mighty " + .@name$ + " yet.";
+				mes .@msg$;
+			} else {
+				mes "According to your records, you have defeated";
+				.@msg1$ = "^FF0000" + .@name$ + "^000000 a total of";
+				mes .@msg1$;
+				.@msg2$ = "^0000FF" + .@count + "^000000 times.";
+				mes .@msg2$;
+			}
+			break;
+		case 3:
+			close;
+	}
+	close;
+
+// Function to calculate and display statistics
+function GetMVPStats {
+	// All MVP IDs from the requirements
+	setarray .@all_mvps[0], 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1182, 1247, 1288,
+	                         1395, 1396, 1397, 1398, 1690, 1750, 1792, 1798, 1812, 1815, 1816,
+	                         1840, 1877, 1878, 1906, 1909, 1910, 1911, 1912, 1913, 1914, 1915,
+	                         1932, 1934, 1935, 1936, 1951, 1952, 1953, 1954;
+	
+	.@total_kills = 0;
+	.@unique_mvps = 0;
+	.@most_killed_id = 0;
+	.@most_killed_count = 0;
+	.@array_size = getarraysize(.@all_mvps);
+	
+	// Loop through all MVPs to calculate stats
+	for (.@i = 0; .@i < .@array_size; .@i = .@i + 1) {
+		.@mvp_id = .@all_mvps[.@i];
+		.@var_name$ = "MVP_KILL_" + .@mvp_id;
+		.@count = getd(.@var_name$);
+		
+		if (.@count > 0) {
+			.@total_kills = .@total_kills + .@count;
+			.@unique_mvps = .@unique_mvps + 1;
+			
+			if (.@count > .@most_killed_count) {
+				.@most_killed_count = .@count;
+				.@most_killed_id = .@mvp_id;
+			}
+		}
+	}
+	
+	mes "^0000FF[Hunting Journal]^000000";
+	mes "^777777--- Your MVP Hunting Statistics ---^000000";
+	next;
+	
+	mes "^0000FF[Hunting Journal]^000000";
+	.@msg1$ = "^00FF00Total MVPs Defeated:^000000 " + .@total_kills;
+	mes .@msg1$;
+	.@msg2$ = "^00FF00Unique MVP Types:^000000 " + .@unique_mvps + " / " + .@array_size;
+	mes .@msg2$;
+	
+	if (.@most_killed_id > 0) {
+		.@most_killed_name$ = strmobinfo(2, .@most_killed_id);
+		mes "^00FF00Most Hunted MVP:^000000";
+		.@msg3$ = "^FF0000" + .@most_killed_name$ + "^000000";
+		mes .@msg3$;
+		.@msg4$ = "(" + .@most_killed_count + " kills)";
+		mes .@msg4$;
+	} else {
+		mes " ";
+		mes "You haven't defeated any MVPs yet.";
+		mes "Start your hunting journey today!";
+	}
+	
+	return;
+}
+}
