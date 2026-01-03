@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 2.0
+//= 2.1
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -11,12 +11,13 @@
 //= 1.0 Initial script - dialog only
 //= 1.1 Added card helper registration and inventory checking
 //= 2.0 Full card tracking system with progress, missing, and collection view
+//= 2.1 Fixed variable length issue by splitting storage by category
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
 	function RegCardsInv; function ShowProgress; function FindMissing; function ViewCollect;
 	function ShowMissingLtr; function ShowMissingType; function ShowCollectLtr; function ShowCollectType;
-	function CountFound;
+	function CountFound; function GetCardCategory; function IsCardFound; function AddCardToCategory;
 	
 	mes .npc_name$;
 	mes "^FF6B00Greetings, adventurer! I'm a card researcher and collector.^000000";
@@ -88,10 +89,13 @@ function RegCardsInv {
 		if (getiteminfo(.@item_id, ITEMINFO_TYPE) == IT_CARD) {
 			.@total_unique++;
 			
-			// Check if card is already registered
-			if (strpos(#CARD_FOUND$, "|" + .@item_id + "|") == -1) {
-				// Add card to found list
-				#CARD_FOUND$ = #CARD_FOUND$ + .@item_id + "|";
+			// Determine which category this card belongs to
+			.@category$ = GetCardCategory(.@item_id);
+			
+			// Check if card is already registered in its category
+			if (!IsCardFound(.@item_id, .@category$)) {
+				// Add card to found list in appropriate category
+				AddCardToCategory(.@item_id, .@category$);
 				.@new_cards++;
 			}
 		}
@@ -324,7 +328,7 @@ function ShowMissingLtr {
 	
 	// Find missing cards
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") == -1) {
+		if (!IsCardFound(.@carta[.@i], .@letter$)) {
 			if (.@missing$ == "") {
 				.@missing$ = getitemname(.@carta[.@i]);
 			} else {
@@ -354,7 +358,7 @@ function ShowMissingType {
 	
 	// Find missing cards
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") == -1) {
+		if (!IsCardFound(.@carta[.@i], .@type$)) {
 			if (.@missing$ == "") {
 				.@missing$ = getitemname(.@carta[.@i]);
 			} else {
@@ -463,7 +467,7 @@ function ShowCollectLtr {
 	
 	// Find found cards
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") != -1) {
+		if (IsCardFound(.@carta[.@i], .@letter$)) {
 			if (.@collection$ == "") {
 				.@collection$ = "^00FF00" + getitemname(.@carta[.@i]) + "^000000";
 			} else {
@@ -493,7 +497,7 @@ function ShowCollectType {
 	
 	// Find found cards
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") != -1) {
+		if (IsCardFound(.@carta[.@i], .@type$)) {
 			if (.@collection$ == "") {
 				.@collection$ = "^00FF00" + getitemname(.@carta[.@i]) + "^000000";
 			} else {
@@ -548,12 +552,147 @@ function CountFound {
 	
 	// Count found cards
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") != -1) {
+		if (IsCardFound(.@carta[.@i], .@letter$)) {
 			.@count++;
 		}
 	}
 	
 	return .@count;
+}
+
+// ===== FUNCTION: Get Card Category =====
+function GetCardCategory {
+	.@item_id = getarg(0);
+	
+	// Check each category
+	for (.@i = 0; .@i < getarraysize(.carta_A); .@i++) if (.carta_A[.@i] == .@item_id) return "A";
+	for (.@i = 0; .@i < getarraysize(.carta_B); .@i++) if (.carta_B[.@i] == .@item_id) return "B";
+	for (.@i = 0; .@i < getarraysize(.carta_C); .@i++) if (.carta_C[.@i] == .@item_id) return "C";
+	for (.@i = 0; .@i < getarraysize(.carta_D); .@i++) if (.carta_D[.@i] == .@item_id) return "D";
+	for (.@i = 0; .@i < getarraysize(.carta_F); .@i++) if (.carta_F[.@i] == .@item_id) return "F";
+	for (.@i = 0; .@i < getarraysize(.carta_G); .@i++) if (.carta_G[.@i] == .@item_id) return "G";
+	for (.@i = 0; .@i < getarraysize(.carta_H); .@i++) if (.carta_H[.@i] == .@item_id) return "H";
+	for (.@i = 0; .@i < getarraysize(.carta_I); .@i++) if (.carta_I[.@i] == .@item_id) return "I";
+	for (.@i = 0; .@i < getarraysize(.carta_J); .@i++) if (.carta_J[.@i] == .@item_id) return "J";
+	for (.@i = 0; .@i < getarraysize(.carta_K); .@i++) if (.carta_K[.@i] == .@item_id) return "K";
+	for (.@i = 0; .@i < getarraysize(.carta_L); .@i++) if (.carta_L[.@i] == .@item_id) return "L";
+	for (.@i = 0; .@i < getarraysize(.carta_M); .@i++) if (.carta_M[.@i] == .@item_id) return "M";
+	for (.@i = 0; .@i < getarraysize(.carta_N); .@i++) if (.carta_N[.@i] == .@item_id) return "N";
+	for (.@i = 0; .@i < getarraysize(.carta_O); .@i++) if (.carta_O[.@i] == .@item_id) return "O";
+	for (.@i = 0; .@i < getarraysize(.carta_P); .@i++) if (.carta_P[.@i] == .@item_id) return "P";
+	for (.@i = 0; .@i < getarraysize(.carta_Q); .@i++) if (.carta_Q[.@i] == .@item_id) return "Q";
+	for (.@i = 0; .@i < getarraysize(.carta_R); .@i++) if (.carta_R[.@i] == .@item_id) return "R";
+	for (.@i = 0; .@i < getarraysize(.carta_S); .@i++) if (.carta_S[.@i] == .@item_id) return "S";
+	for (.@i = 0; .@i < getarraysize(.carta_T); .@i++) if (.carta_T[.@i] == .@item_id) return "T";
+	for (.@i = 0; .@i < getarraysize(.carta_U); .@i++) if (.carta_U[.@i] == .@item_id) return "U";
+	for (.@i = 0; .@i < getarraysize(.carta_V); .@i++) if (.carta_V[.@i] == .@item_id) return "V";
+	for (.@i = 0; .@i < getarraysize(.carta_W); .@i++) if (.carta_W[.@i] == .@item_id) return "W";
+	for (.@i = 0; .@i < getarraysize(.carta_Y); .@i++) if (.carta_Y[.@i] == .@item_id) return "Y";
+	for (.@i = 0; .@i < getarraysize(.carta_Z); .@i++) if (.carta_Z[.@i] == .@item_id) return "Z";
+	for (.@i = 0; .@i < getarraysize(.carta_BOSS); .@i++) if (.carta_BOSS[.@i] == .@item_id) return "BOSS";
+	for (.@i = 0; .@i < getarraysize(.carta_MVP); .@i++) if (.carta_MVP[.@i] == .@item_id) return "MVP";
+	
+	return ""; // Unknown card
+}
+
+// ===== FUNCTION: Check if Card is Found =====
+function IsCardFound {
+	.@item_id = getarg(0);
+	.@category$ = getarg(1);
+	
+	// Get the correct variable based on category
+	if (.@category$ == "A") return (strpos(#CARD_A$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "B") return (strpos(#CARD_B$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "C") return (strpos(#CARD_C$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "D") return (strpos(#CARD_D$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "F") return (strpos(#CARD_F$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "G") return (strpos(#CARD_G$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "H") return (strpos(#CARD_H$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "I") return (strpos(#CARD_I$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "J") return (strpos(#CARD_J$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "K") return (strpos(#CARD_K$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "L") return (strpos(#CARD_L$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "M") return (strpos(#CARD_M$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "N") return (strpos(#CARD_N$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "O") return (strpos(#CARD_O$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "P") return (strpos(#CARD_P$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "Q") return (strpos(#CARD_Q$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "R") return (strpos(#CARD_R$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "S") return (strpos(#CARD_S$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "T") return (strpos(#CARD_T$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "U") return (strpos(#CARD_U$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "V") return (strpos(#CARD_V$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "W") return (strpos(#CARD_W$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "Y") return (strpos(#CARD_Y$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "Z") return (strpos(#CARD_Z$, "|" + .@item_id + "|") != -1);
+	else if (.@category$ == "BOSS") {
+		// BOSS split into two variables
+		if (strpos(#CARD_BOSS1$, "|" + .@item_id + "|") != -1) return 1;
+		if (strpos(#CARD_BOSS2$, "|" + .@item_id + "|") != -1) return 1;
+		return 0;
+	}
+	else if (.@category$ == "MVP") {
+		// MVP split into two variables
+		if (strpos(#CARD_MVP1$, "|" + .@item_id + "|") != -1) return 1;
+		if (strpos(#CARD_MVP2$, "|" + .@item_id + "|") != -1) return 1;
+		return 0;
+	}
+	
+	return 0;
+}
+
+// ===== FUNCTION: Add Card to Category =====
+function AddCardToCategory {
+	.@item_id = getarg(0);
+	.@category$ = getarg(1);
+	
+	// Add card to the correct variable based on category
+	if (.@category$ == "A") #CARD_A$ = #CARD_A$ + .@item_id + "|";
+	else if (.@category$ == "B") #CARD_B$ = #CARD_B$ + .@item_id + "|";
+	else if (.@category$ == "C") #CARD_C$ = #CARD_C$ + .@item_id + "|";
+	else if (.@category$ == "D") #CARD_D$ = #CARD_D$ + .@item_id + "|";
+	else if (.@category$ == "F") #CARD_F$ = #CARD_F$ + .@item_id + "|";
+	else if (.@category$ == "G") #CARD_G$ = #CARD_G$ + .@item_id + "|";
+	else if (.@category$ == "H") #CARD_H$ = #CARD_H$ + .@item_id + "|";
+	else if (.@category$ == "I") #CARD_I$ = #CARD_I$ + .@item_id + "|";
+	else if (.@category$ == "J") #CARD_J$ = #CARD_J$ + .@item_id + "|";
+	else if (.@category$ == "K") #CARD_K$ = #CARD_K$ + .@item_id + "|";
+	else if (.@category$ == "L") #CARD_L$ = #CARD_L$ + .@item_id + "|";
+	else if (.@category$ == "M") #CARD_M$ = #CARD_M$ + .@item_id + "|";
+	else if (.@category$ == "N") #CARD_N$ = #CARD_N$ + .@item_id + "|";
+	else if (.@category$ == "O") #CARD_O$ = #CARD_O$ + .@item_id + "|";
+	else if (.@category$ == "P") #CARD_P$ = #CARD_P$ + .@item_id + "|";
+	else if (.@category$ == "Q") #CARD_Q$ = #CARD_Q$ + .@item_id + "|";
+	else if (.@category$ == "R") #CARD_R$ = #CARD_R$ + .@item_id + "|";
+	else if (.@category$ == "S") #CARD_S$ = #CARD_S$ + .@item_id + "|";
+	else if (.@category$ == "T") #CARD_T$ = #CARD_T$ + .@item_id + "|";
+	else if (.@category$ == "U") #CARD_U$ = #CARD_U$ + .@item_id + "|";
+	else if (.@category$ == "V") #CARD_V$ = #CARD_V$ + .@item_id + "|";
+	else if (.@category$ == "W") #CARD_W$ = #CARD_W$ + .@item_id + "|";
+	else if (.@category$ == "Y") #CARD_Y$ = #CARD_Y$ + .@item_id + "|";
+	else if (.@category$ == "Z") #CARD_Z$ = #CARD_Z$ + .@item_id + "|";
+	else if (.@category$ == "BOSS") {
+		// BOSS split: first 40 cards go to BOSS1, rest to BOSS2
+		// Calculate estimated position
+		.@len = getstrlen(#CARD_BOSS1$);
+		if (.@len < 200) {
+			#CARD_BOSS1$ = #CARD_BOSS1$ + .@item_id + "|";
+		} else {
+			#CARD_BOSS2$ = #CARD_BOSS2$ + .@item_id + "|";
+		}
+	}
+	else if (.@category$ == "MVP") {
+		// MVP split: first 40 cards go to MVP1, rest to MVP2
+		// Calculate estimated position
+		.@len = getstrlen(#CARD_MVP1$);
+		if (.@len < 200) {
+			#CARD_MVP1$ = #CARD_MVP1$ + .@item_id + "|";
+		} else {
+			#CARD_MVP2$ = #CARD_MVP2$ + .@item_id + "|";
+		}
+	}
+	
+	return;
 }
 
 
