@@ -42,4 +42,4 @@ OnInit:
 // Duplicates
 //============================================================
 geffen,158,40,1	duplicate(Card Collector)	Card Collector#gef	1_M_SIGNALCHE
-prontera,120,90,3	duplicate(Card Collector)	Card Collector#prt	4_F_ALCHE
+prontera,123,98,3	duplicate(Card Collector)	Card Collector#prt	4_F_ALCHE
