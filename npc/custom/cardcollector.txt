@@ -3,13 +3,14 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 1.1
+//= 2.0
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
 //===== Additional Comments: =================================
 //= 1.0 Initial script - dialog only
 //= 1.1 Added card helper registration and inventory checking
+//= 2.0 Full card tracking system with progress, missing, and collection view
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
@@ -17,12 +18,6 @@
 	mes "^FF6B00Greetings, adventurer! I'm a card researcher and collector.^000000";
 	mes "My team and I travel across these lands documenting";
 	mes "and collecting every card we can find.";
-	next;
-	
-	mes .npc_name$;
-	mes "Cards are fascinating artifacts of power!";
-	mes "Each one holds the essence and strength of the creature";
-	mes "from which it came.";
 	next;
 	
 	// Check if already registered as helper
@@ -40,7 +35,6 @@
 			set #CARD_HELPER, 1;
 			mes .npc_name$;
 			mes "^00FF00Excellent! Welcome to our team, collector!^000000";
-			mes "Now, let's see what cards you already have...";
 			next;
 		} else {
 			mes .npc_name$;
@@ -50,54 +44,429 @@
 		}
 	}
 	
-	// If helper, check inventory for cards
-	mes .npc_name$;
-	mes "Let me check your inventory for cards...";
-	next;
+	// Auto-register cards from inventory
+	call RegisterCardsFromInventory;
 	
-	// Get inventory and count cards
+	// Main menu
+	while (1) {
+		mes .npc_name$;
+		mes "What would you like to do?";
+		next;
+		
+		switch(select("Check Progress", "Find Missing Cards", "View My Collection", "Exit")) {
+			case 1: // Check Progress
+				call ShowProgress;
+				break;
+			case 2: // Find Missing Cards
+				call FindMissingCards;
+				break;
+			case 3: // View Collection
+				call ViewCollection;
+				break;
+			case 4: // Exit
+				mes .npc_name$;
+				mes "Keep searching, collector! Every card counts!";
+				close;
+		}
+	}
+
+// ===== FUNCTION: Register Cards From Inventory =====
+function RegisterCardsFromInventory {
 	getinventorylist();
-	set .@card_count, 0;
-	set .@card_total, 0;
-	set .@msg_cards$, "";
 	
 	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
 		.@item_id = @inventorylist_id[.@i];
-		.@item_amount = @inventorylist_amount[.@i];
 		
 		// Check if item is a card (type 6)
 		if (getiteminfo(.@item_id, ITEMINFO_TYPE) == IT_CARD) {
-			.@card_count++;
-			.@card_total += .@item_amount;
-			
-			if (.@card_count == 1) {
-				.@msg_cards$ = "^FFD700" + getitemname(.@item_id) + "^000000 x" + .@item_amount;
+			// Check if card is already registered
+			if (strpos(#CARD_FOUND$, "|" + .@item_id + "|") == -1) {
+				// Add card to found list
+				#CARD_FOUND$ = #CARD_FOUND$ + .@item_id + "|";
+			}
+		}
+	}
+	return;
+}
+
+// ===== FUNCTION: Show Progress =====
+function ShowProgress {
+	mes .npc_name$;
+	mes "^FF6B00=== COLLECTION PROGRESS ===^000000";
+	next;
+	
+	// Count found cards per letter
+	set .@line1$, "";
+	set .@line2$, "";
+	set .@line3$, "";
+	set .@line4$, "";
+	
+	// Line 1: A, B, C
+	set .@line1$ = "A: " + call (CountFoundCards, "A") + "/" + getarraysize(.carta_A) + "  ";
+	set .@line1$ = .@line1$ + "B: " + call (CountFoundCards, "B") + "/" + getarraysize(.carta_B) + "  ";
+	set .@line1$ = .@line1$ + "C: " + call (CountFoundCards, "C") + "/" + getarraysize(.carta_C);
+	
+	// Line 2: D, F, G
+	set .@line2$ = "D: " + call (CountFoundCards, "D") + "/" + getarraysize(.carta_D) + "  ";
+	set .@line2$ = .@line2$ + "F: " + call (CountFoundCards, "F") + "/" + getarraysize(.carta_F) + "  ";
+	set .@line2$ = .@line2$ + "G: " + call (CountFoundCards, "G") + "/" + getarraysize(.carta_G);
+	
+	// Line 3: H, I, J
+	set .@line3$ = "H: " + call (CountFoundCards, "H") + "/" + getarraysize(.carta_H) + "  ";
+	set .@line3$ = .@line3$ + "I: " + call (CountFoundCards, "I") + "/" + getarraysize(.carta_I) + "  ";
+	set .@line3$ = .@line3$ + "J: " + call (CountFoundCards, "J") + "/" + getarraysize(.carta_J);
+	
+	// Line 4: K, L, M
+	set .@line4$ = "K: " + call (CountFoundCards, "K") + "/" + getarraysize(.carta_K) + "  ";
+	set .@line4$ = .@line4$ + "L: " + call (CountFoundCards, "L") + "/" + getarraysize(.carta_L) + "  ";
+	set .@line4$ = .@line4$ + "M: " + call (CountFoundCards, "M") + "/" + getarraysize(.carta_M);
+	
+	mes .@line1$;
+	mes .@line2$;
+	mes .@line3$;
+	mes .@line4$;
+	next;
+	
+	// Line 5: N, O, P
+	set .@line5$ = "N: " + call (CountFoundCards, "N") + "/" + getarraysize(.carta_N) + "  ";
+	set .@line5$ = .@line5$ + "O: " + call (CountFoundCards, "O") + "/" + getarraysize(.carta_O) + "  ";
+	set .@line5$ = .@line5$ + "P: " + call (CountFoundCards, "P") + "/" + getarraysize(.carta_P);
+	
+	// Line 6: Q, R, S
+	set .@line6$ = "Q: " + call (CountFoundCards, "Q") + "/" + getarraysize(.carta_Q) + "  ";
+	set .@line6$ = .@line6$ + "R: " + call (CountFoundCards, "R") + "/" + getarraysize(.carta_R) + "  ";
+	set .@line6$ = .@line6$ + "S: " + call (CountFoundCards, "S") + "/" + getarraysize(.carta_S);
+	
+	// Line 7: T, U, V
+	set .@line7$ = "T: " + call (CountFoundCards, "T") + "/" + getarraysize(.carta_T) + "  ";
+	set .@line7$ = .@line7$ + "U: " + call (CountFoundCards, "U") + "/" + getarraysize(.carta_U) + "  ";
+	set .@line7$ = .@line7$ + "V: " + call (CountFoundCards, "V") + "/" + getarraysize(.carta_V);
+	
+	// Line 8: W, Y, Z
+	set .@line8$ = "W: " + call (CountFoundCards, "W") + "/" + getarraysize(.carta_W) + "  ";
+	set .@line8$ = .@line8$ + "Y: " + call (CountFoundCards, "Y") + "/" + getarraysize(.carta_Y) + "  ";
+	set .@line8$ = .@line8$ + "Z: " + call (CountFoundCards, "Z") + "/" + getarraysize(.carta_Z);
+	
+	mes .@line5$;
+	mes .@line6$;
+	mes .@line7$;
+	mes .@line8$;
+	next;
+	
+	// Special categories
+	mes "^FF0000=== SPECIAL CARDS ===^000000";
+	mes "BOSS: " + call (CountFoundCards, "BOSS") + "/" + getarraysize(.carta_BOSS);
+	mes "MVP: " + call (CountFoundCards, "MVP") + "/" + getarraysize(.carta_MVP);
+	next;
+	return;
+}
+
+// ===== FUNCTION: Find Missing Cards =====
+function FindMissingCards {
+	mes .npc_name$;
+	mes "Which cards would you like to search for?";
+	mes "Enter a letter (A-Z) or 'BOSS' or 'MVP'.";
+	next;
+	
+	input .@search$;
+	.@search$ = strtoupper(.@search$);
+	
+	// Validate input
+	if (.@search$ == "" || (strlen(.@search$) > 1 && .@search$ != "BOSS" && .@search$ != "MVP")) {
+		mes .npc_name$;
+		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
+		close;
+	}
+	
+	// Handle letter search
+	if (strlen(.@search$) == 1) {
+		if (.@search$ == "A" || .@search$ == "B" || .@search$ == "C" || 
+		    .@search$ == "D" || .@search$ == "F" || .@search$ == "G" || 
+		    .@search$ == "H" || .@search$ == "I" || .@search$ == "J" || 
+		    .@search$ == "K" || .@search$ == "L" || .@search$ == "M" || 
+		    .@search$ == "N" || .@search$ == "O" || .@search$ == "P" || 
+		    .@search$ == "Q" || .@search$ == "R" || .@search$ == "S" || 
+		    .@search$ == "T" || .@search$ == "U" || .@search$ == "V" || 
+		    .@search$ == "W" || .@search$ == "Y" || .@search$ == "Z") {
+			call (DisplayMissingByLetter, .@search$);
+		} else {
+			mes .npc_name$;
+			mes "That's not a valid letter!";
+			close;
+		}
+	} else {
+		// Handle BOSS/MVP search
+		if (.@search$ == "BOSS") {
+			call DisplayMissingByType("BOSS");
+		} else if (.@search$ == "MVP") {
+			call DisplayMissingByType("MVP");
+		} else {
+			mes .npc_name$;
+			mes "Please enter a single letter, 'BOSS', or 'MVP'.";
+			close;
+		}
+	}
+	return;
+}
+
+// ===== FUNCTION: Display Missing By Letter =====
+function DisplayMissingByLetter {
+	set .@letter$, getarg(0);
+	set .@missing$, "";
+	
+	// Get the correct array
+	if (.@letter$ == "A") copyarray .@carta, .carta_A;
+	else if (.@letter$ == "B") copyarray .@carta, .carta_B;
+	else if (.@letter$ == "C") copyarray .@carta, .carta_C;
+	else if (.@letter$ == "D") copyarray .@carta, .carta_D;
+	else if (.@letter$ == "F") copyarray .@carta, .carta_F;
+	else if (.@letter$ == "G") copyarray .@carta, .carta_G;
+	else if (.@letter$ == "H") copyarray .@carta, .carta_H;
+	else if (.@letter$ == "I") copyarray .@carta, .carta_I;
+	else if (.@letter$ == "J") copyarray .@carta, .carta_J;
+	else if (.@letter$ == "K") copyarray .@carta, .carta_K;
+	else if (.@letter$ == "L") copyarray .@carta, .carta_L;
+	else if (.@letter$ == "M") copyarray .@carta, .carta_M;
+	else if (.@letter$ == "N") copyarray .@carta, .carta_N;
+	else if (.@letter$ == "O") copyarray .@carta, .carta_O;
+	else if (.@letter$ == "P") copyarray .@carta, .carta_P;
+	else if (.@letter$ == "Q") copyarray .@carta, .carta_Q;
+	else if (.@letter$ == "R") copyarray .@carta, .carta_R;
+	else if (.@letter$ == "S") copyarray .@carta, .carta_S;
+	else if (.@letter$ == "T") copyarray .@carta, .carta_T;
+	else if (.@letter$ == "U") copyarray .@carta, .carta_U;
+	else if (.@letter$ == "V") copyarray .@carta, .carta_V;
+	else if (.@letter$ == "W") copyarray .@carta, .carta_W;
+	else if (.@letter$ == "Y") copyarray .@carta, .carta_Y;
+	else if (.@letter$ == "Z") copyarray .@carta, .carta_Z;
+	
+	// Find missing cards
+	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
+		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") == -1) {
+			if (.@missing$ == "") {
+				.@missing$ = getitemname(.@carta[.@i]);
 			} else {
-				.@msg_cards$ = .@msg_cards$ + "\n^FFD700" + getitemname(.@item_id) + "^000000 x" + .@item_amount;
+				.@missing$ = .@missing$ + ", " + getitemname(.@carta[.@i]);
 			}
 		}
 	}
 	
-	if (.@card_count == 0) {
-		mes .npc_name$;
-		mes "Hmm, it seems you don't have any cards at the moment.";
-		mes "Keep searching! They're out there!";
+	mes .npc_name$;
+	if (.@missing$ == "") {
+		mes "^00FF00Congratulations! You have all cards from letter " + .@letter$ + "!^000000";
 	} else {
-		mes .npc_name$;
-		mes "Wonderful! I found " + .@card_count + " type" + ((.@card_count > 1) ? "s" : "") + " of cards in your inventory,";
-		mes "for a total of " + .@card_total + " card" + ((.@card_total > 1) ? "s" : "") + "!";
-		next;
-		
-		mes .npc_name$;
-		mes "Here's what you have:";
-		mes .@msg_cards$;
-		next;
-		
-		mes .npc_name$;
-		mes "^00FF00Excellent finds! Keep collecting!^000000";
+		mes "^FFFF00Missing cards from letter " + .@letter$ + ":^000000";
+		mes .@missing$;
+	}
+	close;
+	return;
+}
+
+// ===== FUNCTION: Display Missing By Type =====
+function DisplayMissingByType {
+	set .@type$, getarg(0);
+	set .@missing$, "";
+	
+	if (.@type$ == "BOSS") copyarray .@carta, .carta_BOSS;
+	else if (.@type$ == "MVP") copyarray .@carta, .carta_MVP;
+	
+	// Find missing cards
+	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
+		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") == -1) {
+			if (.@missing$ == "") {
+				.@missing$ = getitemname(.@carta[.@i]);
+			} else {
+				.@missing$ = .@missing$ + ", " + getitemname(.@carta[.@i]);
+			}
+		}
 	}
 	
+	mes .npc_name$;
+	if (.@missing$ == "") {
+		mes "^00FF00Congratulations! You have all " + .@type$ + " cards!^000000";
+	} else {
+		mes "^FF0000Missing " + .@type$ + " cards:^000000";
+		mes .@missing$;
+	}
 	close;
+	return;
+}
+
+// ===== FUNCTION: View Collection =====
+function ViewCollection {
+	mes .npc_name$;
+	mes "Which cards would you like to review?";
+	mes "Enter a letter (A-Z) or 'BOSS' or 'MVP'.";
+	next;
+	
+	input .@search$;
+	.@search$ = strtoupper(.@search$);
+	
+	// Validate input
+	if (.@search$ == "" || (strlen(.@search$) > 1 && .@search$ != "BOSS" && .@search$ != "MVP")) {
+		mes .npc_name$;
+		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
+		close;
+	}
+	
+	// Handle letter search
+	if (strlen(.@search$) == 1) {
+		if (.@search$ == "A" || .@search$ == "B" || .@search$ == "C" || 
+		    .@search$ == "D" || .@search$ == "F" || .@search$ == "G" || 
+		    .@search$ == "H" || .@search$ == "I" || .@search$ == "J" || 
+		    .@search$ == "K" || .@search$ == "L" || .@search$ == "M" || 
+		    .@search$ == "N" || .@search$ == "O" || .@search$ == "P" || 
+		    .@search$ == "Q" || .@search$ == "R" || .@search$ == "S" || 
+		    .@search$ == "T" || .@search$ == "U" || .@search$ == "V" || 
+		    .@search$ == "W" || .@search$ == "Y" || .@search$ == "Z") {
+			call (DisplayCollectionByLetter, .@search$);
+		} else {
+			mes .npc_name$;
+			mes "That's not a valid letter!";
+			close;
+		}
+	} else {
+		// Handle BOSS/MVP search
+		if (.@search$ == "BOSS") {
+			call DisplayCollectionByType("BOSS");
+		} else if (.@search$ == "MVP") {
+			call DisplayCollectionByType("MVP");
+		} else {
+			mes .npc_name$;
+			mes "Please enter a single letter, 'BOSS', or 'MVP'.";
+			close;
+		}
+	}
+	return;
+}
+
+// ===== FUNCTION: Display Collection By Letter =====
+function DisplayCollectionByLetter {
+	set .@letter$, getarg(0);
+	set .@collection$, "";
+	
+	// Get the correct array
+	if (.@letter$ == "A") copyarray .@carta, .carta_A;
+	else if (.@letter$ == "B") copyarray .@carta, .carta_B;
+	else if (.@letter$ == "C") copyarray .@carta, .carta_C;
+	else if (.@letter$ == "D") copyarray .@carta, .carta_D;
+	else if (.@letter$ == "F") copyarray .@carta, .carta_F;
+	else if (.@letter$ == "G") copyarray .@carta, .carta_G;
+	else if (.@letter$ == "H") copyarray .@carta, .carta_H;
+	else if (.@letter$ == "I") copyarray .@carta, .carta_I;
+	else if (.@letter$ == "J") copyarray .@carta, .carta_J;
+	else if (.@letter$ == "K") copyarray .@carta, .carta_K;
+	else if (.@letter$ == "L") copyarray .@carta, .carta_L;
+	else if (.@letter$ == "M") copyarray .@carta, .carta_M;
+	else if (.@letter$ == "N") copyarray .@carta, .carta_N;
+	else if (.@letter$ == "O") copyarray .@carta, .carta_O;
+	else if (.@letter$ == "P") copyarray .@carta, .carta_P;
+	else if (.@letter$ == "Q") copyarray .@carta, .carta_Q;
+	else if (.@letter$ == "R") copyarray .@carta, .carta_R;
+	else if (.@letter$ == "S") copyarray .@carta, .carta_S;
+	else if (.@letter$ == "T") copyarray .@carta, .carta_T;
+	else if (.@letter$ == "U") copyarray .@carta, .carta_U;
+	else if (.@letter$ == "V") copyarray .@carta, .carta_V;
+	else if (.@letter$ == "W") copyarray .@carta, .carta_W;
+	else if (.@letter$ == "Y") copyarray .@carta, .carta_Y;
+	else if (.@letter$ == "Z") copyarray .@carta, .carta_Z;
+	
+	// Find found cards
+	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
+		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") != -1) {
+			if (.@collection$ == "") {
+				.@collection$ = "^00FF00" + getitemname(.@carta[.@i]) + "^000000";
+			} else {
+				.@collection$ = .@collection$ + ", " + getitemname(.@carta[.@i]);
+			}
+		}
+	}
+	
+	mes .npc_name$;
+	if (.@collection$ == "") {
+		mes "You don't have any cards from letter " + .@letter$ + " yet.";
+	} else {
+		mes "^00FF00Cards from letter " + .@letter$ + ":^000000";
+		mes .@collection$;
+	}
+	close;
+	return;
+}
+
+// ===== FUNCTION: Display Collection By Type =====
+function DisplayCollectionByType {
+	set .@type$, getarg(0);
+	set .@collection$, "";
+	
+	if (.@type$ == "BOSS") copyarray .@carta, .carta_BOSS;
+	else if (.@type$ == "MVP") copyarray .@carta, .carta_MVP;
+	
+	// Find found cards
+	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
+		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") != -1) {
+			if (.@collection$ == "") {
+				.@collection$ = "^00FF00" + getitemname(.@carta[.@i]) + "^000000";
+			} else {
+				.@collection$ = .@collection$ + ", " + getitemname(.@carta[.@i]);
+			}
+		}
+	}
+	
+	mes .npc_name$;
+	if (.@collection$ == "") {
+		mes "You don't have any " + .@type$ + " cards yet.";
+	} else {
+		mes "^00FF00Your " + .@type$ + " cards:^000000";
+		mes .@collection$;
+	}
+	close;
+	return;
+}
+
+// ===== FUNCTION: Count Found Cards =====
+function CountFoundCards {
+	set .@letter$, getarg(0);
+	set .@count, 0;
+	
+	// Get the correct array
+	if (.@letter$ == "A") copyarray .@carta, .carta_A;
+	else if (.@letter$ == "B") copyarray .@carta, .carta_B;
+	else if (.@letter$ == "C") copyarray .@carta, .carta_C;
+	else if (.@letter$ == "D") copyarray .@carta, .carta_D;
+	else if (.@letter$ == "F") copyarray .@carta, .carta_F;
+	else if (.@letter$ == "G") copyarray .@carta, .carta_G;
+	else if (.@letter$ == "H") copyarray .@carta, .carta_H;
+	else if (.@letter$ == "I") copyarray .@carta, .carta_I;
+	else if (.@letter$ == "J") copyarray .@carta, .carta_J;
+	else if (.@letter$ == "K") copyarray .@carta, .carta_K;
+	else if (.@letter$ == "L") copyarray .@carta, .carta_L;
+	else if (.@letter$ == "M") copyarray .@carta, .carta_M;
+	else if (.@letter$ == "N") copyarray .@carta, .carta_N;
+	else if (.@letter$ == "O") copyarray .@carta, .carta_O;
+	else if (.@letter$ == "P") copyarray .@carta, .carta_P;
+	else if (.@letter$ == "Q") copyarray .@carta, .carta_Q;
+	else if (.@letter$ == "R") copyarray .@carta, .carta_R;
+	else if (.@letter$ == "S") copyarray .@carta, .carta_S;
+	else if (.@letter$ == "T") copyarray .@carta, .carta_T;
+	else if (.@letter$ == "U") copyarray .@carta, .carta_U;
+	else if (.@letter$ == "V") copyarray .@carta, .carta_V;
+	else if (.@letter$ == "W") copyarray .@carta, .carta_W;
+	else if (.@letter$ == "Y") copyarray .@carta, .carta_Y;
+	else if (.@letter$ == "Z") copyarray .@carta, .carta_Z;
+	else if (.@letter$ == "BOSS") copyarray .@carta, .carta_BOSS;
+	else if (.@letter$ == "MVP") copyarray .@carta, .carta_MVP;
+	
+	// Count found cards
+	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
+		if (strpos(#CARD_FOUND$, "|" + .@carta[.@i] + "|") != -1) {
+			.@count++;
+		}
+	}
+	
+	return .@count;
+}
+
+
 
 OnInit:
 	.npc_name$ = "[ ^FF6B00Card Collector^000000 ]";
