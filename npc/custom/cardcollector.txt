@@ -19,7 +19,7 @@
 	function CountFound;
 	
 	mes .npc_name$;
-	mes "^00CED1Greetings, adventurer! I'm a card researcher and collector.^000000";
+	mes "^FF6B00Greetings, adventurer! I'm a card researcher and collector.^000000";
 	mes "My team and I travel across these lands documenting";
 	mes "and collecting every card we can find.";
 	next;
@@ -114,7 +114,7 @@ function RegCardsInv {
 // ===== FUNCTION: Show Progress =====
 function ShowProgress {
 	mes .npc_name$;
-	mes "^00CED1=== COLLECTION PROGRESS ===^000000";
+	mes "^FF6B00=== COLLECTION PROGRESS ===^000000";
 	next;
 	
 	// Count found cards per letter
@@ -122,10 +122,6 @@ function ShowProgress {
 	.@line2$ = "";
 	.@line3$ = "";
 	.@line4$ = "";
-	.@line5$ = "";
-	.@line6$ = "";
-	.@line7$ = "";
-	.@line8$ = "";
 	
 	// Line 1: A, B, C
 	.@cA = CountFound("A");
@@ -171,6 +167,12 @@ function ShowProgress {
 	.@line4$ = .@line4$ + "L: " + .@cL + "/" + .@tL + "  ";
 	.@line4$ = .@line4$ + "M: " + .@cM + "/" + .@tM;
 	
+	mes .@line1$;
+	mes .@line2$;
+	mes .@line3$;
+	mes .@line4$;
+	next;
+	
 	// Line 5: N, O, P
 	.@cN = CountFound("N");
 	.@cO = CountFound("O");
@@ -215,10 +217,6 @@ function ShowProgress {
 	.@line8$ = .@line8$ + "Y: " + .@cY + "/" + .@tY + "  ";
 	.@line8$ = .@line8$ + "Z: " + .@cZ + "/" + .@tZ;
 	
-	mes .@line1$;
-	mes .@line2$;
-	mes .@line3$;
-	mes .@line4$;
 	mes .@line5$;
 	mes .@line6$;
 	mes .@line7$;
@@ -561,7 +559,7 @@ function CountFound {
 
 
 OnInit:
-	.npc_name$ = "[ ^00CED1Card Collector^000000 ]";
+	.npc_name$ = "[ ^FF6B00Card Collector^000000 ]";
 
 	setarray .carta_A, 4013,4032,4043,4062,4075,4094,4114,4138,4160,4234,4240,4242,4244,4245,4246,4247,4248,4249,4252,4253,4344,4347,4371,4378,4379,4387,4400,4401,4402,4409,4443,4464,4473,4513,4515,4567,4596,4629,31022;
 	setarray .carta_B, 4074,4119,4129,4212,4213,4214,4215,4233,4320,4327,4356,4390,4438,4450,4466,4472,4518,4519,4582,4626,4627;
