@@ -13,6 +13,7 @@
 
 prontera,150,180,4	script	Hunting Journal	4_M_SAGE_C,{
 	function GetMVPStats;
+	function CheckSpecificMVP;
 	
 	mes "^0000FF[Hunting Journal]^000000";
 	mes "Greetings, hunter. I can read the stories written in your scars.";
@@ -24,51 +25,58 @@ prontera,150,180,4	script	Hunting Journal	4_M_SAGE_C,{
 			GetMVPStats();
 			break;
 		case 2:
-			mes "^0000FF[Hunting Journal]^000000";
-			mes "Which beast's record shall we check?";
-			next;
-			
-			// Display menu with MVP names
-			.@menu$ = "Phreeoni:Eddga:Moonlight Flower:Mistress:Baphomet:Drake:Osiris:Doppelganger:";
-			.@menu$ = .@menu$ + "Orc Lord:Orc Hero:Golden Thief Bug:Amon Ra:Atroce:Vesper:Detale:";
-			.@menu$ = .@menu$ + "Lady Tanee:Dark Lord:Dracula:Stormy Knight:Hatii:Garm:Randgris:";
-			.@menu$ = .@menu$ + "Egnigem Cenia:Ktullanux:RSX-0806:Gloom Under Night:Dark Snake Lord:";
-			.@menu$ = .@menu$ + "Incantation Samurai:Nidhoggr's Shadow:Thanatos:Kiel D-01:Valkyrie Randgris:";
-			.@menu$ = .@menu$ + "Ifrit:Beelzebub:Fallen Bishop Hibram:Amon Ra (Nightmare):Wounded Morroc:Cancel";
-			
-			.@choice = select(.@menu$);
-			
-			// MVP IDs array matching menu order
-			setarray .@mvp_ids[0], 1159, 1115, 1150, 1059, 1039, 1112, 1038, 1046,
-			                        1190, 1087, 1086, 1511, 1785, 1685, 1719,
-			                        1688, 1272, 1389, 1289, 1623, 1252, 1768,
-			                        1751, 1658, 1779, 2022, 2068, 2087,
-			                        2317, 2022, 2236, 1623, 1768,
-			                        1832, 1873, 1874, 1511, 1708;
-			
-			if (.@choice >= 41) close;
-			
-			.@id = .@mvp_ids[.@choice - 1];
-			.@var_name$ = "MVP_KILL_" + .@id;
-			.@count = getd(.@var_name$);
-			.@name$ = strmobinfo(2, .@id);
-			
-			mes "^0000FF[Hunting Journal]^000000";
-			if (.@count == 0) {
-				.@msg$ = "You haven't faced the mighty " + .@name$ + " yet.";
-				mes .@msg$;
-			} else {
-				mes "According to your records, you have defeated";
-				.@msg1$ = "^FF0000" + .@name$ + "^000000 a total of";
-				mes .@msg1$;
-				.@msg2$ = "^0000FF" + .@count + "^000000 times.";
-				mes .@msg2$;
-			}
+			CheckSpecificMVP();
 			break;
 		case 3:
 			close;
 	}
 	close;
+
+// Function to check specific MVP
+function CheckSpecificMVP {
+	mes "^0000FF[Hunting Journal]^000000";
+	mes "Which beast's record shall we check?";
+	next;
+	
+	// Popular MVPs selection menu
+	.@menu$ = "Phreeoni:Eddga:Moonlight Flower:Mistress:Baphomet:Drake:Osiris:Doppelganger:";
+	.@menu$ = .@menu$ + "Orc Lord:Orc Hero:Golden Thief Bug:Amon Ra:Atroce:Vesper:";
+	.@menu$ = .@menu$ + "Lady Tanee:Dark Lord:Dracula:Stormy Knight:Hatii:Garm:";
+	.@menu$ = .@menu$ + "Randgris:Egnigem Cenia:Ktullanux:RSX-0806:Gloom Under Night:";
+	.@menu$ = .@menu$ + "Dark Snake Lord:Incantation Samurai:Ifrit:Beelzebub:Cancel";
+	
+	.@choice = select(.@menu$);
+	
+	// MVP IDs array matching menu order (30 popular MVPs)
+	setarray .@mvp_ids[0], 1159, 1115, 1150, 1059, 1039, 1112, 1038, 1046,
+	                        1190, 1087, 1086, 1511, 1785, 1685,
+	                        1688, 1272, 1389, 1289, 1623, 1252,
+	                        1768, 1751, 1658, 1779, 2022, 2068,
+	                        2087, 2317, 1832, 1873;
+	
+	if (.@choice >= 31) {
+		close;
+	}
+	
+	.@id = .@mvp_ids[.@choice - 1];
+	.@var_name$ = "MVP_KILL_" + .@id;
+	.@count = getd(.@var_name$);
+	.@name$ = strmobinfo(2, .@id);
+	
+	mes "^0000FF[Hunting Journal]^000000";
+	if (.@count == 0) {
+		.@msg$ = "You haven't faced the mighty " + .@name$ + " yet.";
+		mes .@msg$;
+	} else {
+		mes "According to your records, you have defeated";
+		.@msg1$ = "^FF0000" + .@name$ + "^000000 a total of";
+		mes .@msg1$;
+		.@msg2$ = "^0000FF" + .@count + "^000000 times.";
+		mes .@msg2$;
+	}
+	
+	return;
+}
 
 // Function to calculate and display statistics
 function GetMVPStats {

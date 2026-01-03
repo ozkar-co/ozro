@@ -249,6 +249,12 @@ copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 - killedrid contiene el ID del mob asesinado en OnNPCKillEvent
 - Las variables de personaje (sin prefijo especial) persisten entre sesiones
 - bc_all en announce envía el mensaje a todos los jugadores online
+- Importante: Al crear menús con arrays, asegurar que el tamaño del array coincida con las opciones del menú
+- Los arrays de IDs deben estar libres de duplicados para evitar lookups incorrectos
+
+**Correcciones aplicadas**:
+- v1.1: Corregido array de IDs en menu de MVPs específicos (eliminados duplicados, ajustado tamaño)
+- v1.1: Separada función CheckSpecificMVP para mejor organización del código
 
 ---
 **Última actualización**: Enero 2026  
