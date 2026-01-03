@@ -506,7 +506,7 @@ function ShowCollectType {
 	if (.@collection$ == "") {
 		mes "You don't have any " + .@type$ + " cards yet.";
 	} else {
-		mes "^00FF00Your " + .@type$ + " cards:^000000";
+		mes "Your " + .@type$ + " cards:";
 		mes .@collection$;
 	}
 	close;
