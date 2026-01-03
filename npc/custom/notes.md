@@ -252,7 +252,32 @@ copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 - Importante: Al crear menús con arrays, asegurar que el tamaño del array coincida con las opciones del menú
 - Los arrays de IDs deben estar libres de duplicados para evitar lookups incorrectos
 
+**Sistema Dual de Tracking (v1.1+)**:
+- `MVP_KILL_<id>`: Cuenta los golpes finales (killing blows)
+- `MVP_SUPP_<id>`: Cuenta las asistencias en party (support points)
+- Party members en el mismo mapa reciben puntos SUPP cuando un compañero mata un MVP
+- El killer recibe KILL, los demás miembros de party en el mapa reciben SUPP
+- getpartymember con flag 2 obtiene los AIDs de los miembros de party
+- attachrid() permite cambiar el contexto de jugador temporalmente
+
+**Ejemplo de tracking con party**:
+```c
+.@party_id = getcharid(1);
+.@killer_aid = getcharid(3);
+if (.@party_id != 0) {
+    getpartymember .@party_id, 2;
+    for (.@i = 0; .@i < $@partymembercount; .@i = .@i + 1) {
+        if ($@partymemberaid[.@i] == .@killer_aid) continue;
+        if (attachrid($@partymemberaid[.@i])) {
+            // dar puntos SUPP
+        }
+    }
+}
+```
+
 **Correcciones aplicadas**:
+- v1.0: Versión inicial con tracking de kills
+- v1.1: Agregado sistema dual KILL/SUPP para ranking de party
 - v1.1: Corregido array de IDs en menu de MVPs específicos (eliminados duplicados, ajustado tamaño)
 - v1.1: Separada función CheckSpecificMVP para mejor organización del código
 
