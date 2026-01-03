@@ -1,0 +1,137 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Enchanter
+//===== By: ==================================================
+//= Ozcodex
+//===== Current Version: =====================================
+//= 1.0
+//===== Description: =========================================
+//= NPC that enchants Crimson weapons with random cards
+//= in slots 3 and 4. Requires gemstones as payment.
+//===== Additional Comments: =================================
+//= Slot 3 enchantments: 4700-4752
+//= Slot 4 enchantments: 4813-4942
+//============================================================
+
+geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHEMIST,{
+	
+	// Slot 3 available card IDs
+	setarray .slot3[0], 4700, 4701, 4702, 4710, 4711, 4712, 4720, 4721, 4722, 4730, 4731, 4732, 4740, 4741, 4742, 4750, 4751, 4752;
+	
+	// Slot 4 available card IDs
+	setarray .slot4[0], 4813, 4814, 4815, 4816, 4817, 4818, 4865, 4864, 4863, 4762, 4860, 4859, 4944, 4943, 4942, 4940, 4939, 4926;
+	
+	// Crimson weapons list (ID, Name)
+	setarray .crimson_id[0], 21015, 1498, 1443, 13327, 13127, 28604, 1680, 2025, 28705, 13454, 28106, 16040, 28007, 1839, 18130, 1939, 1995;
+	setarray .crimson_name$[0], "Crimson Two-Hand Sword", "Crimson Lance", "Crimson Spear", "Crimson Shuriken", "Crimson Pistol", "Crimson Bible", "Crimson Rod", "Crimson Staff", "Crimson Dagger", "Crimson Saber", "Crimson Axe", "Crimson Mace", "Crimson Katar", "Crimson Knuckles", "Crimson Bow", "Crimson Crossbow", "Crimson Gun";
+	
+	mes "[Crimson Enchanter]";
+	mes "^FF0000Welcome, wanderer. I am the keeper of crimson essence.^000000";
+	mes "I can enchant your Crimson weapons with powerful spells.";
+	next;
+	
+	mes "[Crimson Enchanter]";
+	mes "To enchant a weapon, I require:";
+	mes "^FF6B00• 1 Red Gemstone^000000";
+	mes "^0080FF• 1 Blue Gemstone^000000";
+	mes "^FF00FF• 1 Yellow Gemstone^000000";
+	next;
+	
+	if(select("Enchant a Crimson weapon", "Cancel") == 2) {
+		mes "[Crimson Enchanter]";
+		mes "Very well. Return when you're ready.";
+		close;
+	}
+	
+	// Check for required gemstones
+	if (countitem(715) < 1 || countitem(716) < 1 || countitem(717) < 1) {
+		mes "[Crimson Enchanter]";
+		mes "^FF0000You don't have all the required gemstones.^000000";
+		mes "You need:";
+		if (countitem(715) < 1) mes "^FF6B00Red Gemstone (NO)^000000";
+		else mes "^00FF00Red Gemstone (OK)^000000";
+		if (countitem(716) < 1) mes "^0080FFBlue Gemstone (NO)^000000";
+		else mes "^00FF00Blue Gemstone (OK)^000000";
+		if (countitem(717) < 1) mes "^FF00FFYellow Gemstone (NO)^000000";
+		else mes "^00FF00Yellow Gemstone (OK)^000000";
+		close;
+	}
+	
+	// Get inventory list and filter for Crimson weapons
+	getinventorylist();
+	for(.@i = 0; .@i < @inventorylist_count; .@i++) {
+		for(.@w = 0; .@w < getarraysize(.crimson_id); .@w++) {
+			if (@inventorylist_id[.@i] == .crimson_id[.@w]) {
+				set .@weapon_list$, .@weapon_list$ + ":" + .@crimson_name$[.@w];
+				set .@weapon_idx[.@j], .@i;
+				set .@j, .@j + 1;
+				break;
+			}
+		}
+	}
+	
+	if (.@j == 0) {
+		mes "[Crimson Enchanter]";
+		mes "^FF0000You don't have any Crimson weapons in your inventory.^000000";
+		mes "Come back when you have one to enchant.";
+		close;
+	}
+	
+	mes "[Crimson Enchanter]";
+	mes "Which Crimson weapon would you like to enchant?";
+	mes "^FF6B00(Slot 3 and Slot 4 will be enchanted with random cards)^000000";
+	next;
+	
+	.@selected = select(.@weapon_list$) - 1;
+	
+	if (.@selected < 0 || .@selected >= .@j) {
+		mes "[Crimson Enchanter]";
+		mes "Invalid selection.";
+		close;
+	}
+	
+	.@inv_idx = .@weapon_idx[.@selected];
+	.@item_id = @inventorylist_id[.@inv_idx];
+	.@item_qty = @inventorylist_amount[.@inv_idx];
+	.@item_refine = @inventorylist_refine[.@inv_idx];
+	.@item_attr = @inventorylist_attribute[.@inv_idx];
+	.@item_c1 = @inventorylist_card1[.@inv_idx];
+	.@item_c2 = @inventorylist_card2[.@inv_idx];
+	.@item_c3 = @inventorylist_card3[.@inv_idx];
+	.@item_c4 = @inventorylist_card4[.@inv_idx];
+	
+	mes "[Crimson Enchanter]";
+	mes "You selected: " + .@crimson_name$[.@selected];
+	mes "^FF0000*The crimson essence begins to swirl...*^000000";
+	mes "Processing enchantment...";
+	next;
+	
+	// Get random slot 3 and slot 4 cards
+	.@slot3_idx = rand(getarraysize(.slot3));
+	.@slot4_idx = rand(getarraysize(.slot4));
+	
+	.@slot3_card = .slot3[.@slot3_idx];
+	.@slot4_card = .slot4[.@slot4_idx];
+	
+	// Consume gemstones
+	delitem 715, 1;
+	delitem 716, 1;
+	delitem 717, 1;
+	
+	// Delete original weapon
+	delitem2 .@item_id, .@item_qty, 1, .@item_refine, .@item_attr, .@item_c1, .@item_c2, .@item_c3, .@item_c4;
+	
+	// Give back the weapon with cards in slots 3 and 4
+	getitem2 .@item_id, .@item_qty, 1, .@item_refine, .@item_attr, .@item_c1, .@item_c2, .@slot3_card, .@slot4_card;
+	
+	mes "[Crimson Enchanter]";
+	mes "^FF0000The enchantment is complete!^000000";
+	mes "Your weapon has been blessed!";
+	next;
+	
+	mes "[Crimson Enchanter]";
+	mes "^FF0000May this power serve you well in battle.^000000";
+	close;
+	
+OnInit:
+	end;
+}
