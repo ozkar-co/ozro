@@ -1,0 +1,45 @@
+//===== Hercules Script ======================================
+//= Card Collector
+//===== By: ==================================================
+//= Ozcodex
+//===== Current Version: =====================================
+//= 1.0
+//===== Description: =========================================
+//= An investigator who travels the world collecting cards
+//= with their team, documenting every card's power and origin.
+//===== Additional Comments: =================================
+//= 1.0 Initial script - dialog only
+//============================================================
+
+-	script	Card Collector	FAKE_NPC,{
+	mes .npc_name$;
+	mes "^FF6B00Greetings, adventurer! I'm a card researcher and collector.^000000";
+	mes "My team and I travel across these lands documenting";
+	mes "and collecting every card we can find.";
+	next;
+	
+	mes .npc_name$;
+	mes "Cards are fascinating artifacts of power!";
+	mes "Each one holds the essence and strength of the creature";
+	mes "from which it came.";
+	next;
+	
+	mes .npc_name$;
+	mes "We're on a mission to gather and study all known cards";
+	mes "in this world. It's quite the ambitious goal, I know!";
+	next;
+	
+	mes .npc_name$;
+	mes "Should you ever come across rare or unique cards,";
+	mes "we would be most interested in seeing them.";
+	close;
+
+OnInit:
+	.npc_name$ = "[ ^FF6B00Card Collector^000000 ]";
+	end;
+}
+
+// Duplicates
+//============================================================
+geffen,158,40,1	duplicate(Card Collector)	Card Collector#gef	1_M_SIGNALCHE
+prontera,120,90,3	duplicate(Card Collector)	Card Collector#prt	4_F_ALCHE
