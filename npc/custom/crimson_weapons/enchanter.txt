@@ -36,15 +36,8 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 		close;
 	}
 	
-	// Slot 3 available card IDs
-	setarray .slot3[0], 4700, 4701, 4702, 4710, 4711, 4712, 4720, 4721, 4722, 4730, 4731, 4732, 4740, 4741, 4742, 4750, 4751, 4752;
-	
-	// Slot 4 available card IDs
-	setarray .slot4[0], 4813, 4814, 4815, 4816, 4817, 4818, 4865, 4864, 4863, 4762, 4860, 4859, 4944, 4943, 4942, 4940, 4939, 4926;
-	
 	// Crimson weapons list (ID, Name)
-	setarray .crimson_id[0], 21015, 1498, 1443, 13327, 13127, 28604, 1680, 2025, 28705, 13454, 28106, 16040, 28007, 1839, 18130, 1939, 1995;
-	setarray .crimson_name$[0], "Crimson Two-Hand Sword", "Crimson Lance", "Crimson Spear", "Crimson Shuriken", "Crimson Pistol", "Crimson Bible", "Crimson Rod", "Crimson Staff", "Crimson Dagger", "Crimson Saber", "Crimson Axe", "Crimson Mace", "Crimson Katar", "Crimson Knuckles", "Crimson Bow", "Crimson Crossbow", "Crimson Gun";
+	// (Arrays initialized in OnInit)
 	
 	mes "[Crimson Enchanter]";
 	mes "^FF0000Welcome, wanderer. I am the keeper of crimson essence.^000000";
@@ -166,5 +159,14 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 	close;
 	
 OnInit:
+	// Slot 3 available card IDs
+	setarray .slot3[0], 4700, 4701, 4702, 4710, 4711, 4712, 4720, 4721, 4722, 4730, 4731, 4732, 4740, 4741, 4742, 4750, 4751, 4752;
+	
+	// Slot 4 available card IDs
+	setarray .slot4[0], 4813, 4814, 4815, 4816, 4817, 4818, 4865, 4864, 4863, 4762, 4860, 4859, 4944, 4943, 4942, 4940, 4939, 4926;
+	
+	// Crimson weapons list (ID, Name)
+	setarray .crimson_id[0], 21015, 1498, 1443, 13327, 13127, 28604, 1680, 2025, 28705, 13454, 28106, 16040, 28007, 1839, 18130, 1939, 1995;
+	setarray .crimson_name$[0], "Crimson Two-Hand Sword", "Crimson Lance", "Crimson Spear", "Crimson Shuriken", "Crimson Pistol", "Crimson Bible", "Crimson Rod", "Crimson Staff", "Crimson Dagger", "Crimson Saber", "Crimson Axe", "Crimson Mace", "Crimson Katar", "Crimson Knuckles", "Crimson Bow", "Crimson Crossbow", "Crimson Gun";
 	end;
 }
