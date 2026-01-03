@@ -1,0 +1,235 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Mysterious Man (Morocc)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Tavern regular who reveals quest secrets
+//= Trades Crimson Weapons in Morocc
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= MOROCC_CRIMSON_POINTS - Morocc point accumulation
+//============================================================
+
+// The Tavern Regular - Morocc
+//============================================================
+morocc_in,179,60,2	script	Mysterious Man	4_M_MASKMAN,{
+	if (CRIMSON_QUEST == 7) {
+		mes "[Mysterious Man]";
+		mes "^990000*Nursing an empty glass*^000000";
+		mes "What do you want?";
+		next;
+		select("Tell me about the Katar Assassin");
+		mes "[Mysterious Man]";
+		mes "^990000*His hand trembles slightly*^000000";
+		mes "Stories are better told over a proper drink...";
+		next;
+		
+		.@drink_choice = 0;
+		if(countitem(12113) > 0 && countitem(12112) > 0) {
+			.@drink_choice = select("Offer Vermilion The Beach:Offer Tropical Sograt:Leave");
+			if(.@drink_choice == 3) close;
+		} else if(countitem(12113) > 0) {
+			if(select("Offer Vermilion The Beach:Leave") == 2) close;
+			.@drink_choice = 1;
+		} else if(countitem(12112) > 0) {
+			if(select("Offer Tropical Sograt:Leave") == 2) close;
+			.@drink_choice = 2;
+		} else {
+			mes "[Mysterious Man]";
+			mes "^990000*Looks at his empty glass meaningfully*^000000";
+			mes "Bring me something worth drinking first.";
+			mes "A Vermilion The Beach or a Tropical Sograt...";
+			mes "Then we'll talk.";
+			close;
+		}
+
+		if(.@drink_choice == 1) {
+			delitem 12113,1;
+			mes "[Mysterious Man]";
+			mes "^990000*His eyes light up at the exotic drink*^000000";
+			mes "Ah... this brings back memories of that night...";
+			next;
+			mes "[Mysterious Man]";
+			mes "The Crimson Katar... such elegance.";
+			mes "The way it moved, like liquid metal...";
+			next;
+			mes "[Mysterious Man]";
+			mes "Its wielder was a master of shadows.";
+			mes "Each strike precise, calculated...";
+			next;
+			mes "[Mysterious Man]";
+			mes "But the weapon's power... it changed him.";
+			mes "Made him obsessed with perfection.";
+			next;
+			mes "[Mysterious Man]";
+			mes "They found him in his training room...";
+			mes "Surrounded by practice dummies, all split perfectly in half.";
+			mes "Still practicing, still seeking that perfect strike...";
+		} else {
+			delitem 12112,1;
+			mes "[Mysterious Man]";
+			mes "^990000*Takes a long sip of the desert drink*^000000";
+			mes "Yes... this was his favorite...";
+			next;
+			mes "[Mysterious Man]";
+			mes "The Crimson Katar... a weapon of terrible beauty.";
+			mes "It glowed with an inner light, like desert stars...";
+			next;
+			mes "[Mysterious Man]";
+			mes "Its wielder was unmatched in combat.";
+			mes "None could stand against that crimson gleam...";
+			next;
+			mes "[Mysterious Man]";
+			mes "But power has its price. The weapon's thirst...";
+			mes "It drove him to seek stronger and stronger opponents.";
+			next;
+			mes "[Mysterious Man]";
+			mes "In the end, they found him in the arena...";
+			mes "Still challenging shadows to duels...";
+			mes "The weapon pulsing with that eerie glow...";
+		}
+		set CRIMSON_QUEST, 8;
+		close;
+	}
+	if (CRIMSON_QUEST == 14) {
+		mes "[Mysterious Man]";
+		mes "Ah, seeking power? I have some special weapons...";
+		mes "You currently have ^FF0000" + MOROCC_CRIMSON_POINTS + "^000000 Morocc Crimson Points.";
+		next;
+		switch(select("Provide Materials:View Available Weapons")) {
+			case 1:
+				mes "[Mysterious Man]";
+				mes "I need specific materials to maintain";
+				mes "these weapons. I can offer you";
+				mes "Morocc Crimson Points for these items:";
+				next;
+				mes "[Mysterious Man]";
+				mes "- Claw of Desert Wolf";
+				mes "- Brigan";
+				mes "- Hard Feeler";
+				mes "Each one is worth 1 Morocc Crimson Point.";
+				next;
+				switch(select("Trade Claw of Desert Wolf:Trade Brigan:Trade Hard Feeler:Cancel")) {
+					case 1:
+						if (countitem(7030) < 1) {
+							mes "[Mysterious Man]";
+							mes "You don't have any Claws to trade.";
+							close;
+						}
+						mes "[Mysterious Man]";
+						mes "How many Claws would you like to trade?";
+						mes "You have " + countitem(7030) + " Claws.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Mysterious Man]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7030)) {
+							mes "[Mysterious Man]";
+							mes "You don't have that many Claws.";
+							close;
+						}
+						delitem 7030, .@amount;
+						set MOROCC_CRIMSON_POINTS, MOROCC_CRIMSON_POINTS + .@amount;
+						mes "[Mysterious Man]";
+						mes "Here are your " + .@amount + " Morocc Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 2:
+						if (countitem(7054) < 1) {
+							mes "[Mysterious Man]";
+							mes "You don't have any Brigan to trade.";
+							close;
+						}
+						mes "[Mysterious Man]";
+						mes "How many Brigan would you like to trade?";
+						mes "You have " + countitem(7054) + " Brigan.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Mysterious Man]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7054)) {
+							mes "[Mysterious Man]";
+							mes "You don't have that many Brigan.";
+							close;
+						}
+						delitem 7054, .@amount;
+						set MOROCC_CRIMSON_POINTS, MOROCC_CRIMSON_POINTS + .@amount;
+						mes "[Mysterious Man]";
+						mes "Here are your " + .@amount + " Morocc Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 3:
+						if (countitem(7163) < 1) {
+							mes "[Mysterious Man]";
+							mes "You don't have any Hard Feelers to trade.";
+							close;
+						}
+						mes "[Mysterious Man]";
+						mes "How many Hard Feelers would you like to trade?";
+						mes "You have " + countitem(7163) + " Hard Feelers.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Mysterious Man]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7163)) {
+							mes "[Mysterious Man]";
+							mes "You don't have that many Hard Feelers.";
+							close;
+						}
+						delitem 7163, .@amount;
+						set MOROCC_CRIMSON_POINTS, MOROCC_CRIMSON_POINTS + .@amount;
+						mes "[Mysterious Man]";
+						mes "Here are your " + .@amount + " Morocc Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 4:
+						close;
+				}
+			case 2:
+				mes "[Mysterious Man]";
+				mes "These weapons hold great power.";
+				mes "Katars and Knuckles are available.";
+				mes "Each one costs 25 Crimson Points.";
+				next;
+				if (MOROCC_CRIMSON_POINTS < 25) {
+					mes "[Mysterious Man]";
+					mes "You need at least 25 Morocc Crimson Points to purchase any weapon.";
+					close;
+				}
+				switch(select("Crimson Katar [25 CP]:Crimson Knuckle [25 CP]:Cancel")) {
+					case 1:
+						if (MOROCC_CRIMSON_POINTS >= 25) {
+							set MOROCC_CRIMSON_POINTS, MOROCC_CRIMSON_POINTS - 25;
+							getitem 28007,1;
+							mes "[Mysterious Man]";
+							mes "This katar thirsts for battle.";
+							mes "Use its power wisely.";
+						}
+						close;
+					case 2:
+						if (MOROCC_CRIMSON_POINTS >= 25) {
+							set MOROCC_CRIMSON_POINTS, MOROCC_CRIMSON_POINTS - 25;
+							getitem 1839,1;
+							mes "[Mysterious Man]";
+							mes "These knuckles burn with crimson flame.";
+							mes "May they serve you well.";
+						}
+						close;
+					case 3:
+						close;
+				}
+		}
+	}
+	mes "[Mysterious Man]";
+	mes "^990000*Stares into his empty cup*^000000";
+	close;
+}

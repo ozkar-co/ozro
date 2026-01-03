@@ -1,0 +1,175 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Shadow Rogue (Prontera)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Rogue who uses Crimson weapons
+//= Provides weapon trading and quest information
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= PRONTERA_CRIMSON_POINTS - Prontera point accumulation
+//============================================================
+
+// The Crimson Rogue - Prontera
+//============================================================
+prontera,96,69,6	script	Shadow Rogue	4_F_ROGUE,{
+	if (CRIMSON_QUEST == 4) {
+		mes "[Shadow Rogue]";
+		mes "^990000*A crimson gleam catches your eye*^000000";
+		mes "Why are you staring? Never seen a";
+		mes "fine blade before?";
+		next;
+		select("That dagger... it glows like fire");
+		mes "[Shadow Rogue]";
+		mes "Heh... Sharp eyes you have.";
+		mes "Got it from a merchant in Alberta.";
+		mes "Paid a fortune, but worth every zeny.";
+		next;
+		mes "[Shadow Rogue]";
+		mes "^990000*Sheathes the dagger quickly*^000000";
+		mes "He's still there, if you're interested.";
+		mes "Just look for the greedy one...";
+		set CRIMSON_QUEST, 5;
+		close;
+	} else if (CRIMSON_QUEST == 14) {
+		mes "[Shadow Rogue]";
+		mes "Marcus has entrusted me with these blades.";
+		mes "You currently have ^FF0000" + PRONTERA_CRIMSON_POINTS + "^000000 Prontera Crimson Points.";
+		next;
+		switch(select("Provide Materials:View Available Weapons")) {
+			case 1:
+				mes "[Shadow Rogue]";
+				mes "I need specific materials to maintain";
+				mes "these blades. I can offer you";
+				mes "Crimson Points for these items:";
+				next;
+				mes "[Shadow Rogue]";
+				mes "- Broken Sword";
+				mes "- Sand Clump";
+				mes "- Jubilee";
+				mes "Each one is worth 1 Prontera Crimson Point.";
+				next;
+				switch(select("Trade Broken Sword:Trade Sand Clump:Trade Jubilee:Cancel")) {
+					case 1:
+						if (countitem(7110) < 1) {
+							mes "[Shadow Rogue]";
+							mes "You don't have any Broken Swords to trade.";
+							close;
+						}
+						mes "[Shadow Rogue]";
+						mes "How many Broken Swords would you like to trade?";
+						mes "You have " + countitem(7110) + " Broken Swords.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Shadow Rogue]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7110)) {
+							mes "[Shadow Rogue]";
+							mes "You don't have that many Broken Swords.";
+							close;
+						}
+						delitem 7110, .@amount;
+						set PRONTERA_CRIMSON_POINTS, PRONTERA_CRIMSON_POINTS + .@amount;
+						mes "[Shadow Rogue]";
+						mes "Here are your " + .@amount + " Prontera Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 2:
+						if (countitem(7124) < 1) {
+							mes "[Shadow Rogue]";
+							mes "You don't have any Sand Clumps to trade.";
+							close;
+						}
+						mes "[Shadow Rogue]";
+						mes "How many Sand Clumps would you like to trade?";
+						mes "You have " + countitem(7124) + " Sand Clumps.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Shadow Rogue]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7124)) {
+							mes "[Shadow Rogue]";
+							mes "You don't have that many Sand Clumps.";
+							close;
+						}
+						delitem 7124, .@amount;
+						set PRONTERA_CRIMSON_POINTS, PRONTERA_CRIMSON_POINTS + .@amount;
+						mes "[Shadow Rogue]";
+						mes "Here are your " + .@amount + " Prontera Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 3:
+						if (countitem(7312) < 1) {
+							mes "[Shadow Rogue]";
+							mes "You don't have any Jubilee to trade.";
+							close;
+						}
+						mes "[Shadow Rogue]";
+						mes "How many Jubilee would you like to trade?";
+						mes "You have " + countitem(7312) + " Jubilee.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Shadow Rogue]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7312)) {
+							mes "[Shadow Rogue]";
+							mes "You don't have that many Jubilee.";
+							close;
+						}
+						delitem 7312, .@amount;
+						set PRONTERA_CRIMSON_POINTS, PRONTERA_CRIMSON_POINTS + .@amount;
+						mes "[Shadow Rogue]";
+						mes "Here are your " + .@amount + " Prontera Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 4:
+						close;
+				}
+			case 2:
+				mes "[Shadow Rogue]";
+				mes "These blades hold deadly power.";
+				mes "Daggers and One Handed Swords are my specialty.";
+				mes "Each one costs 25 Prontera Crimson Points.";
+				next;
+				if (PRONTERA_CRIMSON_POINTS < 25) {
+					mes "[Shadow Rogue]";
+					mes "You need at least 25 Prontera Crimson Points to purchase any weapon.";
+					close;
+				}
+				switch(select("Crimson Dagger [25 CP]:Crimson Saber [25 CP]:Cancel")) {
+					case 1:
+						if (PRONTERA_CRIMSON_POINTS >= 25) {
+							set PRONTERA_CRIMSON_POINTS, PRONTERA_CRIMSON_POINTS - 25;
+							getitem 28705,1;
+							mes "[Shadow Rogue]";
+							mes "This dagger burns with inner fire.";
+							mes "Strike from the shadows.";
+						}
+						close;
+					case 2:
+						if (PRONTERA_CRIMSON_POINTS >= 25) {
+							set PRONTERA_CRIMSON_POINTS, PRONTERA_CRIMSON_POINTS - 25;
+							getitem 13454,1;
+							mes "[Shadow Rogue]";
+							mes "This saber dances with crimson flames.";
+							mes "Let it guide your blade.";
+						}
+						close;
+					case 3:
+						close;
+				}
+		}
+	}
+	mes "[Shadow Rogue]";
+	mes "^990000*The rogue ignores you completely*^000000";
+	close;
+}

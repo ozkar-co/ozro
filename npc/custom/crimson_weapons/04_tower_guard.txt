@@ -1,0 +1,125 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Tower Guard (Geffen)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Guard who witnessed the Crimson Weapons
+//= Provides crucial quest information
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//============================================================
+
+// The Observant Guard - Geffen
+//============================================================
+gef_tower,58,174,4	script	Tower Guard	8W_SOLDIER,{
+	if (CRIMSON_QUEST == 3) {
+		mes "[Tower Guard]";
+		mes "^990000*The guard approaches eagerly*^000000";
+		mes "Hey you! I heard you talking with the wizard.";
+		mes "These tower walls hold many secrets...";
+		next;
+		if(select("What did you hear?:I don't know what you mean:Shh, not so loud!") == 1) {
+				mes "[Tower Guard]";
+				mes "^990000*Lowers his voice, glancing at the stone walls*^000000";
+				mes "Something about Thor's power and ancient flames...";
+				mes "Even the shadows here seem to whisper of it.";
+		} else if(select("What did you hear?:I don't know what you mean:Shh, not so loud!") == 2) {
+				mes "[Tower Guard]";
+				mes "^990000*Frowns skeptically*^000000";
+				mes "Come now, these tower walls echo every word.";
+				mes "No point in denying what I heard clearly.";
+		} else {
+				mes "[Tower Guard]";
+				mes "^990000*Looks around at the tower interior*^000000";
+				mes "Right, right... even the stones have ears here.";
+		}
+		next;
+		mes "[Tower Guard]";
+		mes "Listen, I... I need to tell someone.";
+		mes "Last week, I saw something incredible.";
+		next;
+		if(select("Tell me more:We shouldn't discuss this:Report it to your superiors") == 1) {
+			mes "[Tower Guard]";
+			mes "^990000*His eyes light up with excitement*^000000";
+			mes "It was in Prontera, during my patrol rotation.";
+			mes "A figure in the shadows, wielding fire itself!";
+		} else if(select("Tell me more:We shouldn't discuss this:Report it to your superiors") == 2) {
+			mes "[Tower Guard]";
+			mes "^990000*Grabs your arm desperately*^000000";
+			mes "Please! I've been keeping this secret for days.";
+			mes "I must tell someone or I'll go mad!";
+		} else {
+			mes "[Tower Guard]";
+			mes "^990000*Shakes head vigorously*^000000";
+			mes "No, no... they wouldn't understand.";
+			mes "They'd think I was seeing things.";
+		}
+		next;
+		mes "[Tower Guard]";
+		mes "^990000*Leans in closer*^000000";
+		mes "The Rogue... she's always there.";
+		next;
+		select("I could investigate this for you");
+		mes "[Tower Guard]";
+		mes "^990000*Looks relieved*^000000";
+		mes "Would you? I can't leave my post, but";
+		mes "this mystery keeps me awake at night.";
+		next;
+		mes "[Tower Guard]";
+		mes "The figure appears most often near";
+		mes "the Prontera marketplace. If you find anything,";
+		mes "please let me know.";
+		next;
+		mes "[Tower Guard]";
+		mes "Always in the Prontera market, in the shadows...";
+		mes "As if waiting for something... or someone.";
+		set CRIMSON_QUEST, 4;
+		close;
+	}
+	if (CRIMSON_QUEST == 13) {
+		mes "[Tower Guard]";
+		mes "^990000*The guard's eyes light up as you approach*^000000";
+		mes "Ah, it's you! I heard whispers about";
+		mes "what happened with the Crimson Weapons.";
+		next;
+		if(select("What did you hear?:Best not to discuss it") == 2) {
+			mes "[Tower Guard]";
+			mes "^990000*Nods understandingly*^000000";
+			mes "Of course, of course. Some secrets";
+			mes "are better kept quiet.";
+			close;
+		}
+		mes "[Tower Guard]";
+		mes "They say the weapons were forged with";
+		mes "Thor's own power! To think, what I saw";
+		mes "that day was truly divine power...";
+		next;
+		mes "[Tower Guard]";
+		mes "^990000*Looks dreamily at his standard-issue sword*^000000";
+		mes "Sometimes I wonder... could I ever be";
+		mes "worthy of wielding such a weapon?";
+		close;
+	}
+	if (CRIMSON_QUEST > 3 && CRIMSON_QUEST < 13) {
+		mes "[Tower Guard]";
+		mes "^990000*The guard looks at you expectantly*^000000";
+		mes "Have you discovered anything about";
+		mes "that mysterious weapon?";
+		close;
+	}
+	if (CRIMSON_QUEST == 15) {
+		mes "[Tower Guard]";
+		mes "^990000*The guard stares at his blade wistfully*^000000";
+		mes "Sometimes I wonder if what I saw";
+		mes "was just a dream... that crimson glow...";
+		next;
+		mes "[Tower Guard]";
+		mes "Such beauty we'll never know again.";
+		mes "All because of greed and fear...";
+		close;
+	}
+	mes "[Tower Guard]";
+	mes "^990000*The guard watches the tower walls with burning curiosity*^000000";
+	mes "What other secrets does this city hold...?";
+	close;
+}

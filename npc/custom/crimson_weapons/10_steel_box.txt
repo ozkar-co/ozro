@@ -1,0 +1,31 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Steel Box (Aldebaran)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Hidden steel box containing ancient weapon designs
+//= Located in Aldebaran inn
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= Item 7329 - Steel Box Key (required to open)
+//= Item 7431 - Weapon Designs (obtained from box)
+//============================================================
+
+// The Hidden Crate - Aldebaran
+//============================================================
+aldeba_in,99,117,3	script	Steel Box	4_STEELBOX,{
+	if (CRIMSON_QUEST == 10) {
+		if (countitem(7329) > 0) {
+			mes "^990000*The key fits perfectly*^000000";
+			next;
+			mes "^990000*Inside you find ancient books with designs*^000000";
+			getitem 7431,1; //Weapon Designs
+			set CRIMSON_QUEST, 11;
+			close;
+		}
+		mes "^990000*A sturdy steel box with a keyhole*^000000";
+		close;
+	}
+	mes "^990000*A plain steel box*^000000";
+	close;
+}

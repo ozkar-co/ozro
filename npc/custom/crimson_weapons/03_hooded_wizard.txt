@@ -1,0 +1,241 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Hooded Wizard (Geffen Tower)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Guardian of Thor's Fire Essence
+//= Provides key information and sells mystical weapons
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= GEFFEN_CRIMSON_POINTS - Geffen point accumulation
+//============================================================
+
+// The Mysterious Wizard - Geffen
+//============================================================
+gef_tower,69,171,4	script	Hooded Wizard	4_M_DEBON,{
+	if (CRIMSON_QUEST == 2) {
+		mes "[Hooded Wizard]";
+		mes "^990000*The wizard tenses at your approach*^000000";
+		mes "Leave me be. I have nothing to discuss.";
+		next;
+		select("I need to know about the Crimson Weapons");
+		mes "[Hooded Wizard]";
+		mes "^990000*His eyes dart around nervously*^000000";
+		mes "Silence! Such matters are not for public discussion.";
+		next;
+		select("But I really need to know");
+		mes "[Hooded Wizard]";
+		mes "If you wish to speak of this...";
+		mes "First, swear to keep what you learn secret.";
+		next;
+		if(select("I swear to keep the secret:I cannot make such a promise") == 2) {
+			mes "[Hooded Wizard]";
+			mes "Then you are wiser than most...";
+			mes "But you already know too much...";
+		}
+		next;
+		mes "[Hooded Wizard]";
+		mes "The Crimson Weapons... forged with";
+		mes "the essence of primordial fire itself.";
+		mes "Such power was never meant for mortals.";
+		next;
+		mes "[Hooded Wizard]";
+		mes "^990000*Suddenly stops, looking at the guard*^000000";
+		mes "The guard... he watches too closely.";
+		mes "I don't want more people to know.";
+		mes "Maybe, he already knows something...";
+		set CRIMSON_QUEST, 3;
+		close;
+	} else if (CRIMSON_QUEST == 12) {
+		mes "[Hooded Wizard]";
+		mes "^990000*The wizard seems different somehow*^000000";
+		mes "So, you return... and with purpose in your steps.";
+		next;
+		select("Marcus sent me...");
+		mes "[Hooded Wizard]";
+		mes "^990000*Slowly removes his hood, revealing familiar crackling eyes*^000000";
+		mes "Ah... so he's finally ready.";
+		next;
+		mes "[Hooded Wizard]";
+		mes "Yes, I am the same wizard you met before.";
+		mes "Guardian of Thor's Fire Essence,";
+		mes "keeper of the flame blessed by thunder.";
+		next;
+		mes "[Hooded Wizard]";
+		mes "I've watched you both, testing your hearts.";
+		mes "Perhaps now is the time for the power to return.";
+		next;
+		mes "[Hooded Wizard]";
+		mes "Take this to Marcus. The Essence of Fire.";
+		mes "Thor's own power, meant to fight the darkness.";
+		getitem 6001,1; //Fire Essence
+		set CRIMSON_QUEST, 13;
+		next;
+		mes "[Hooded Wizard]";
+		mes "Remember: This essence carries Thor's will...";
+		mes "It can only be wielded by those with pure hearts.";
+		mes "Use it to fight the darkness that plagues our land.";
+		close;
+    } else if (CRIMSON_QUEST == 14) {
+		mes "[Hooded Wizard]";
+		mes "Marcus has entrusted me with these mystical weapons.";
+		mes "You currently have ^FF0000" + GEFFEN_CRIMSON_POINTS + "^000000 Geffen Crimson Points.";
+		next;
+		switch(select("Provide Materials:View Available Weapons")) {
+			case 1:
+				mes "[Hooded Wizard]";
+				mes "I require specific materials to maintain";
+				mes "the magical essence. I can offer you";
+				mes "Geffen Crimson Points for these items:";
+				next;
+				mes "[Hooded Wizard]";
+				mes "- Research Chart";
+				mes "- Star Dust";
+				mes "- Soft Feather";
+				mes "Each one is worth 1 Geffen Crimson Point.";
+				next;
+				switch(select("Trade Research Chart:Trade Star Dust:Trade Soft Feather:Cancel")) {
+					case 1:
+						if (countitem(7347) < 1) {
+							mes "[Hooded Wizard]";
+							mes "You don't have any Research Charts to trade.";
+							close;
+						}
+						mes "[Hooded Wizard]";
+						mes "How many Research Charts would you like to trade?";
+						mes "You have " + countitem(7347) + " Research Charts.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Hooded Wizard]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7347)) {
+							mes "[Hooded Wizard]";
+							mes "You don't have that many Research Charts.";
+							close;
+						}
+						delitem 7347, .@amount;
+						set GEFFEN_CRIMSON_POINTS, GEFFEN_CRIMSON_POINTS + .@amount;
+						mes "[Hooded Wizard]";
+						mes "Here are your " + .@amount + " Geffen Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 2:
+						if (countitem(1001) < 1) {
+							mes "[Hooded Wizard]";
+							mes "You don't have any Star Dust to trade.";
+							close;
+						}
+						mes "[Hooded Wizard]";
+						mes "How many Star Dust would you like to trade?";
+						mes "You have " + countitem(1001) + " Star Dust.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Hooded Wizard]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(1001)) {
+							mes "[Hooded Wizard]";
+							mes "You don't have that many Star Dust.";
+							close;
+						}
+						delitem 1001, .@amount;
+						set GEFFEN_CRIMSON_POINTS, GEFFEN_CRIMSON_POINTS + .@amount;
+						mes "[Hooded Wizard]";
+						mes "Here are your " + .@amount + " Geffen Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 3:
+						if (countitem(7063) < 1) {
+							mes "[Hooded Wizard]";
+							mes "You don't have any Soft Feathers to trade.";
+							close;
+						}
+						mes "[Hooded Wizard]";
+						mes "How many Soft Feathers would you like to trade?";
+						mes "You have " + countitem(7063) + " Soft Feathers.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Hooded Wizard]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7063)) {
+							mes "[Hooded Wizard]";
+							mes "You don't have that many Soft Feathers.";
+							close;
+						}
+						delitem 7063, .@amount;
+						set GEFFEN_CRIMSON_POINTS, GEFFEN_CRIMSON_POINTS + .@amount;
+						mes "[Hooded Wizard]";
+						mes "Here are your " + .@amount + " Geffen Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 4:
+						close;
+				}
+			case 2:
+				mes "[Hooded Wizard]";
+				mes "These weapons channel divine power.";
+				mes "I have Books, One Hand Rods and Two Hand Staffs available.";
+				mes "Each one costs 25 Geffen Crimson Points.";
+				next;
+				if (GEFFEN_CRIMSON_POINTS < 25) {
+					mes "[Hooded Wizard]";
+					mes "You need at least 25 Geffen Crimson Points to purchase any weapon.";
+					close;
+				}
+				switch(select("Crimson Bible [25 CP]:Crimson Rod [25 CP]:Crimson Staff [25 CP]:Cancel")) {
+					case 1:
+						if (GEFFEN_CRIMSON_POINTS >= 25) {
+							set GEFFEN_CRIMSON_POINTS, GEFFEN_CRIMSON_POINTS - 25;
+							getitem 28604,1;
+							mes "[Hooded Wizard]";
+							mes "This holy tome contains divine wisdom.";
+							mes "Use its power to guide others.";
+						}
+						close;
+					case 2:
+						if (GEFFEN_CRIMSON_POINTS >= 25) {
+							set GEFFEN_CRIMSON_POINTS, GEFFEN_CRIMSON_POINTS - 25;
+							getitem 1680,1;
+							mes "[Hooded Wizard]";
+							mes "This rod channels Thor's lightning.";
+							mes "Wield its power with wisdom.";
+						}
+						close;
+					case 3:
+						if (GEFFEN_CRIMSON_POINTS >= 25) {
+							set GEFFEN_CRIMSON_POINTS, GEFFEN_CRIMSON_POINTS - 25;
+							getitem 2025,1;
+							mes "[Hooded Wizard]";
+							mes "This staff resonates with primordial fire.";
+							mes "Let it guide your magical studies.";
+						}
+						close;
+					case 4:
+						close;
+				}
+		}
+    } else if (CRIMSON_QUEST == 15) {
+		mes "[Hooded Wizard]";
+		mes "^990000*The wizard's eyes have lost their glow*^000000";
+		mes "Thor's power... lost forever.";
+		mes "Such is the price of mortal folly.";
+		next;
+		mes "[Hooded Wizard]";
+		mes "I grow weary of watching history";
+		mes "repeat itself. Perhaps it's better";
+		mes "this way... though my heart aches.";
+		close;
+	}
+	mes "[Hooded Wizard]";
+	mes "Knowledge is power...";
+	mes "But divine power requires a pure heart...";
+	close;
+}

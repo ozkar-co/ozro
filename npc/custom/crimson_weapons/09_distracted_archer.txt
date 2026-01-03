@@ -1,0 +1,238 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Distracted Archer (Payon)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Quest NPC who holds a crucial key
+//= Provides ranged weapons and tests player integrity
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= CRIMSON_KEY - If player returned archer's key
+//= PAYON_CRIMSON_POINTS - Payon point accumulation
+//============================================================
+
+// The Distracted Archer - Payon
+//============================================================
+payon,237,95,4	script	Distracted Archer	4_M_ARCHER,{
+	if (CRIMSON_QUEST == 9) {
+		mes "[Distracted Archer]";
+		mes "^990000*Playing with a strange key*^000000";
+		mes "Oh! Hello there. Admiring my lucky charm?";
+		next;
+		mes "[Distracted Archer]";
+		mes "Found it in the forest. Brings me";
+		mes "good fortune in my hunts!";
+		next;
+		select("That key... I need it");
+		mes "[Distracted Archer]";
+		mes "This? But it's my lucky charm!";
+		mes "Although... I could lend it to you";
+		mes "if you promise to return it.";
+		next;
+		select("I promise to return it:I'll think about returning it:Of course I will!");
+		mes "[Distracted Archer]";
+		mes "^990000*Considers for a moment, then smiles trustingly*^000000";
+		mes "Well... you seem honest enough.";
+		next;
+		mes "[Distracted Archer]";
+		mes "^990000*Hands over the key reluctantly*^000000";
+		mes "Take good care of it!";
+		getitem 7329,1; //Steel Box Key
+		set CRIMSON_QUEST, 10;
+		close;
+	} else if (CRIMSON_QUEST > 9 && CRIMSON_QUEST < 13) {
+		if (CRIMSON_KEY == 1) {
+			mes "[Distracted Archer]";
+			mes "^990000*Smiles while admiring his lucky charm*^000000";
+			mes "Thank you again for returning my charm!";
+			mes "My hunts have been especially lucky since then.";
+			close;
+		}
+		if (countitem(7329) > 0) {
+			mes "[Distracted Archer]";
+			mes "Have you finished with my lucky charm?";
+			next;
+			if(select("Return the key:Keep it longer") == 1) {
+				delitem 7329,1;
+				mes "[Distracted Archer]";
+				mes "^990000*Beams happily*^000000";
+				mes "Thank you for keeping your word!";
+				set CRIMSON_KEY, 1;
+				close;
+			}
+			mes "[Distracted Archer]";
+			mes "Oh... okay. But please don't";
+			mes "forget about our promise!";
+			close;
+		}
+		mes "[Distracted Archer]";
+		mes "I hope you haven't lost my lucky charm...";
+		close;
+	}
+	if (CRIMSON_QUEST == 14) {
+		if (CRIMSON_KEY == 0) {
+			mes "[Distracted Archer]";
+			mes "^990000*Looks at you with contempt*^000000";
+			mes "You... the one who never returned my charm...";
+			next;
+			mes "[Distracted Archer]";
+			mes "I shouldn't sell you a single weapon.";
+			mes "But I gave my word to Marcus...";
+			next;
+			mes "[Distracted Archer]";
+			mes "^990000*Sighs with resignation*^000000";
+			mes "And unlike some people, I DO keep";
+			mes "my promises.";
+			next;
+		}
+		mes "[Distracted Archer]";
+		mes "I have some special weapons for you...";
+		mes "You currently have ^FF0000" + PAYON_CRIMSON_POINTS + "^000000 Payon Crimson Points.";
+		next;
+		switch(select("Provide Materials:View Available Weapons")) {
+			case 1:
+				mes "[Distracted Archer]";
+				mes "I need specific materials to maintain";
+				mes "these weapons. I can offer you";
+				mes "Payon Crimson Points for these items:";
+				next;
+				mes "[Distracted Archer]";
+				mes "- Blue Hair";
+				mes "- Golden Hair"; 
+				mes "- Plush Doll";
+				mes "Each one is worth 1 Payon Crimson Point.";
+				next;
+				switch(select("Trade Blue Hair:Trade Golden Hair:Trade Plush Doll:Cancel")) {
+					case 1:
+						if (countitem(1034) < 1) {
+							mes "[Distracted Archer]";
+							mes "You don't have any Blue Hair to trade.";
+							close;
+						}
+						mes "[Distracted Archer]";
+						mes "How many Blue Hair would you like to trade?";
+						mes "You have " + countitem(1034) + " Blue Hair.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Distracted Archer]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(1034)) {
+							mes "[Distracted Archer]";
+							mes "You don't have that many Blue Hair.";
+							close;
+						}
+						delitem 1034, .@amount;
+						set PAYON_CRIMSON_POINTS, PAYON_CRIMSON_POINTS + .@amount;
+						mes "[Distracted Archer]";
+						mes "Here are your " + .@amount + " Payon Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 2:
+						if (countitem(1060) < 1) {
+							mes "[Distracted Archer]";
+							mes "You don't have any Golden Hair to trade.";
+							close;
+						}
+						mes "[Distracted Archer]";
+						mes "How many Golden Hair would you like to trade?";
+						mes "You have " + countitem(1060) + " Golden Hair.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Distracted Archer]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(1060)) {
+							mes "[Distracted Archer]";
+							mes "You don't have that many Golden Hair.";
+							close;
+						}
+						delitem 1060, .@amount;
+						set PAYON_CRIMSON_POINTS, PAYON_CRIMSON_POINTS + .@amount;
+						mes "[Distracted Archer]";
+						mes "Here are your " + .@amount + " Payon Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 3:
+						if (countitem(740) < 1) {
+							mes "[Distracted Archer]";
+							mes "You don't have any Plush Dolls to trade.";
+							close;
+						}
+						mes "[Distracted Archer]";
+						mes "How many Plush Dolls would you like to trade?";
+						mes "You have " + countitem(740) + " Plush Dolls.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Distracted Archer]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(740)) {
+							mes "[Distracted Archer]";
+							mes "You don't have that many Plush Dolls.";
+							close;
+						}
+						delitem 740, .@amount;
+						set PAYON_CRIMSON_POINTS, PAYON_CRIMSON_POINTS + .@amount;
+						mes "[Distracted Archer]";
+						mes "Here are your " + .@amount + " Payon Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 4:
+						close;
+				}
+			case 2:
+				mes "[Distracted Archer]";
+				mes "These weapons hold special power.";
+				mes "Bows, Instruments, and Whips are available.";
+				mes "Each one costs 25 Crimson Points.";
+				next;
+				if (PAYON_CRIMSON_POINTS < 25) {
+					mes "[Distracted Archer]";
+					mes "You need at least 25 Payon Crimson Points to purchase any weapon.";
+					close;
+				}
+				switch(select("Crimson Bow [25 CP]:Crimson Instrument [25 CP]:Crimson Whip [25 CP]:Cancel")) {
+					case 1:
+						if (PAYON_CRIMSON_POINTS >= 25) {
+							set PAYON_CRIMSON_POINTS, PAYON_CRIMSON_POINTS - 25;
+							getitem 18130,1;
+							mes "[Distracted Archer]";
+							mes "This bow pulses with crimson energy.";
+							mes "May your arrows fly true.";
+						}
+						close;
+					case 2:
+						if (PAYON_CRIMSON_POINTS >= 25) {
+							set PAYON_CRIMSON_POINTS, PAYON_CRIMSON_POINTS - 25;
+							getitem 1939,1;
+							mes "[Distracted Archer]";
+							mes "This instrument resonates with power.";
+							mes "Let its melody guide you.";
+						}
+						close;
+					case 3:
+						if (PAYON_CRIMSON_POINTS >= 25) {
+							set PAYON_CRIMSON_POINTS, PAYON_CRIMSON_POINTS - 25;
+							getitem 1995,1;
+							mes "[Distracted Archer]";
+							mes "This whip crackles with crimson lightning.";
+							mes "Use its power wisely.";
+						}
+						close;
+					case 4:
+						close;
+				}
+		}
+	}
+	mes "[Distracted Archer]";
+	mes "The forest holds many secrets...";
+	mes "And many treasures too!";
+	close;
+}

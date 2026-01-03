@@ -1,0 +1,246 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Greedy Merchant (Alberta)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Merchant who trades Crimson Weapons
+//= Provides information and weapon distribution
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= CRIMSON_MERC - If player revealed merchant identity
+//= ALBERTA_CRIMSON_POINTS - Alberta point accumulation
+//============================================================
+
+// The Greedy Merchant - Alberta
+//============================================================
+alberta,46,194,3	script	Greedy Merchant	1_M_SIGNMCNT,{
+	if (CRIMSON_QUEST == 5) {
+		mes "[Greedy Merchant]";
+		mes "^990000*Counting coins obsessively*^000000";
+		mes "Buying? Selling? Don't waste my time";
+		mes "if your pockets aren't deep enough.";
+		next;
+		select("I heard about a special crimson dagger...");
+		mes "[Greedy Merchant]";
+		mes "^990000*His eyes narrow sharply*^000000";
+		mes "Did Marcus send you? No... he wouldn't.";
+		mes "Not after what happened.";
+		next;
+		mes "[Greedy Merchant]";
+		mes "^990000*Smirks greedily*^000000";
+		mes "Want to know where to find him?";
+		mes "Regular zeny won't do for this kind of information...";
+		next;
+		mes "[Greedy Merchant]";
+		mes "Bring me Special Gold. Just one piece";
+		mes "and I might loosen my tongue.";
+		next;
+		switch(select("Give Special Gold:Offer 100,000 Zeny:Leave")) {
+			case 1:
+				if (countitem(7863) < 1) {
+					mes "[Greedy Merchant]";
+					mes "No Special Gold, no information.";
+					mes "Simple as that.";
+					close;
+				}
+				delitem 7863,1;
+				mes "[Greedy Merchant]";
+				mes "^990000*Pockets the Special Gold with a grin*^000000";
+				mes "He's hiding in the Coal Mines.";
+				mes "Thinks he's so righteous...";
+				next;
+				mes "[Greedy Merchant]";
+				mes "^990000*Suddenly looks nervous*^000000";
+				mes "But listen... don't tell Marcus I told you.";
+				mes "He... he might never trust anyone again.";
+				next;
+				mes "[Greedy Merchant]";
+				mes "^990000*Whispers anxiously*^000000";
+				mes "Our past is... complicated. Just say you";
+				mes "found him by chance, will you?";
+				set CRIMSON_QUEST, 6;
+				close;
+			case 2:
+				if (Zeny < 100000) {
+					mes "[Greedy Merchant]";
+					mes "^990000*Laughs mockingly*^000000";
+					mes "You can't even afford that?";
+					mes "Don't waste my time, fool.";
+					close;
+				}
+				Zeny -= 100000;
+				mes "[Greedy Merchant]";
+				mes "^990000*Counts the zeny carefully*^000000";
+				mes "Heh... Marcus and I were partners once.";
+				mes "Until he got all... 'moral' about it.";
+				next;
+				mes "[Greedy Merchant]";
+				mes "Said the weapons were 'too dangerous'.";
+				mes "That they 'corrupted' people.";
+				mes "Nonsense! Power is power.";
+				next;
+				mes "[Greedy Merchant]";
+				mes "^990000*His expression hardens*^000000";
+				mes "But if you want to know where he is...";
+				mes "That'll cost you Special Gold.";
+				mes "No regular currency for that secret.";
+				close;
+			case 3:
+				mes "[Greedy Merchant]";
+				mes "Then stop wasting my time!";
+				close;
+		}
+	} else if (CRIMSON_QUEST == 14) {
+		mes "[Greedy Merchant]";
+		mes "Finally! A chance to profit legally!";
+		mes "You currently have ^FF0000" + ALBERTA_CRIMSON_POINTS + "^000000 Alberta Crimson Points.";
+		next;
+		switch(select("Provide Materials:View Available Weapons")) {
+			case 1:
+				mes "[Greedy Merchant]";
+				mes "I need specific materials to maintain";
+				mes "these weapons. I can offer you";
+				mes "Alberta Crimson Points for these items:";
+				next;
+				mes "[Greedy Merchant]";
+				mes "- Handcuffs";
+				mes "- Nose Ring";
+				mes "- Turtle Shell";
+				mes "Each one is worth 1 Alberta Crimson Point.";
+				next;
+				switch(select("Trade Handcuffs:Trade Nose Ring:Trade Turtle Shell:Cancel")) {
+					case 1:
+						if (countitem(7345) < 1) {
+							mes "[Greedy Merchant]";
+							mes "You don't have any Handcuffs to trade.";
+							close;
+						}
+						mes "[Greedy Merchant]";
+						mes "How many Handcuffs would you like to trade?";
+						mes "You have " + countitem(7345) + " Handcuffs.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Greedy Merchant]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7345)) {
+							mes "[Greedy Merchant]";
+							mes "You don't have that many Handcuffs.";
+							close;
+						}
+						delitem 7345, .@amount;
+						set ALBERTA_CRIMSON_POINTS, ALBERTA_CRIMSON_POINTS + .@amount;
+						mes "[Greedy Merchant]";
+						mes "Here are your " + .@amount + " Alberta Crimson Points.";
+						mes "Use them wisely... or not, I don't care!";
+						close;
+					case 2:
+						if (countitem(941) < 1) {
+							mes "[Greedy Merchant]";
+							mes "You don't have any Nose Rings to trade.";
+							close;
+						}
+						mes "[Greedy Merchant]";
+						mes "How many Nose Rings would you like to trade?";
+						mes "You have " + countitem(941) + " Nose Rings.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Greedy Merchant]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(941)) {
+							mes "[Greedy Merchant]";
+							mes "You don't have that many Nose Rings.";
+							close;
+						}
+						delitem 941, .@amount;
+						set ALBERTA_CRIMSON_POINTS, ALBERTA_CRIMSON_POINTS + .@amount;
+						mes "[Greedy Merchant]";
+						mes "Here are your " + .@amount + " Alberta Crimson Points.";
+						mes "Use them wisely... or not, I don't care!";
+						close;
+					case 3:
+						if (countitem(967) < 1) {
+							mes "[Greedy Merchant]";
+							mes "You don't have any Turtle Shells to trade.";
+							close;
+						}
+						mes "[Greedy Merchant]";
+						mes "How many Turtle Shells would you like to trade?";
+						mes "You have " + countitem(967) + " Turtle Shells.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Greedy Merchant]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(967)) {
+							mes "[Greedy Merchant]";
+							mes "You don't have that many Turtle Shells.";
+							close;
+						}
+						delitem 967, .@amount;
+						set ALBERTA_CRIMSON_POINTS, ALBERTA_CRIMSON_POINTS + .@amount;
+						mes "[Greedy Merchant]";
+						mes "Here are your " + .@amount + " Alberta Crimson Points.";
+						mes "Use them wisely... or not, I don't care!";
+						close;
+					case 4:
+						close;
+				}
+			case 2:
+				mes "[Greedy Merchant]";
+				mes "Ah, interested in my wares?";
+				mes "Axes and Maces are my specialty.";
+				mes "Each weapon costs 25 Crimson Points.";
+				next;
+				if (ALBERTA_CRIMSON_POINTS < 25) {
+					mes "[Greedy Merchant]";
+					mes "You need at least 25 Alberta Crimson Points to purchase any weapon.";
+					mes "Come back when you're not so... poor.";
+					close;
+				}
+				switch(select("Crimson Two-Hand Axe [25 CP]:Crimson Mace [25 CP]:Cancel")) {
+					case 1:
+						if (ALBERTA_CRIMSON_POINTS >= 25) {
+							set ALBERTA_CRIMSON_POINTS, ALBERTA_CRIMSON_POINTS - 25;
+							getitem 28106,1;
+							mes "[Greedy Merchant]";
+							mes "This axe holds tremendous power.";
+							mes "Try not to break it... or do, then buy another!";
+						}
+						close;
+					case 2:
+						if (ALBERTA_CRIMSON_POINTS >= 25) {
+							set ALBERTA_CRIMSON_POINTS, ALBERTA_CRIMSON_POINTS - 25;
+							getitem 16040,1;
+							mes "[Greedy Merchant]";
+							mes "This mace radiates with crimson energy.";
+							mes "A fine choice... and profitable for me!";
+						}
+						close;
+					case 3:
+						close;
+				}
+		}
+	} else if (CRIMSON_QUEST == 15) {
+		mes "[Greedy Merchant]";
+		mes "^990000*His eyes gleam with greed*^000000";
+		mes "Ah! You're back! And with news from Marcus...";
+		next;
+		mes "[Greedy Merchant]";
+		mes "So he's entrusted me with distribution?";
+		mes "Ha! I knew he'd see reason.";
+		next;
+		close;
+	}
+	mes "[Greedy Merchant]";
+	mes "Time is money, and you're";
+	mes "wasting both of mine!";
+	close;
+}

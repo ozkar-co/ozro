@@ -1,0 +1,189 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Old Merchant (Comodo)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Quest NPC who provides information about Crimson Weapons
+//= Sells weapons and accepts materials
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= COMODO_CRIMSON_POINTS - Comodo point accumulation
+//============================================================
+
+// The Old Merchant - Comodo
+//============================================================
+cmd_in02,184,105,5	script	Old Merchant	4_M_HUMERCHANT,{
+	if (CRIMSON_QUEST == 1) {
+		mes "[Old Merchant]";
+		mes "^990000*The old man eyes you suspiciously*^000000";
+		mes "Asking about the Crimson Weapons, are you?";
+		next;
+		mes "[Old Merchant]";
+		mes "Heh... I've seen them. Beautiful and terrible.";
+		mes "Forged in fires that should never have been tamed.";
+		next;
+		mes "[Old Merchant]";
+		mes "^990000*Spits on the ground in disgust*^000000";
+		mes "That rat in Alberta... he claims to sell one.";
+		mes "Greedy fool doesn't know what he's meddling with.";
+		next;
+		mes "[Old Merchant]";
+		mes "^990000*Shakes his head disapprovingly*^000000";
+		mes "He'd sell his own mother for a few zeny...";
+		mes "Some things aren't meant to be traded.";
+		next;
+		mes "[Old Merchant]";
+		mes "If you truly seek answers, go to Geffen Tower.";
+		mes "Look for a hooded wizard. But be warned...";
+		mes "Some secrets burn those who learn them.";
+		set CRIMSON_QUEST, 2;
+		close;
+	} else if (CRIMSON_QUEST == 2) {
+		mes "[Old Merchant]";
+		mes "The wizard in Geffen Tower... he knows more";
+		mes "than he lets on. Be careful with your questions.";
+		close;
+	} else if (CRIMSON_QUEST == 14) {
+		mes "[Old Merchant]";
+		mes "Marcus has entrusted me with these special weapons.";
+		
+		mes "You currently have ^FF0000" + COMODO_CRIMSON_POINTS + "^000000 Comodo Crimson Points.";
+		next;
+		switch(select("Provide Materials:View Available Weapons")) {
+			case 1:
+				mes "[Old Merchant]";
+				mes "I need specific materials to maintain";
+				mes "these weapons. I can offer you";
+				mes "Crimson Points for these items:";
+				next;
+				mes "[Old Merchant]";
+				mes "- Large Jellopy";
+				mes "- Rusty Screw";
+				mes "- Broken Liquor Jar";
+				mes "Each one is worth 1 Comodo Crimson Point.";
+				next;
+				switch(select("Trade Large Jellopy:Trade Rusty Screw:Trade Broken Liquor Jar:Cancel")) {
+					case 1:
+						if (countitem(7126) < 1) {
+							mes "[Old Merchant]";
+							mes "You don't have any Large Jellopy to trade.";
+							close;
+						}
+						mes "[Old Merchant]";
+						mes "How many Large Jellopy would you like to trade?";
+						mes "You have " + countitem(7126) + " Large Jellopy.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Old Merchant]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7126)) {
+							mes "[Old Merchant]";
+							mes "You don't have that many Large Jellopy.";
+							close;
+						}
+						delitem 7126, .@amount;
+						set COMODO_CRIMSON_POINTS, COMODO_CRIMSON_POINTS + .@amount;
+						mes "[Old Merchant]";
+						mes "Here are your " + .@amount + " Comodo Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 2:
+						if (countitem(7317) < 1) {
+							mes "[Old Merchant]";
+							mes "You don't have any Screws to trade.";
+							close;
+						}
+						mes "[Old Merchant]";
+						mes "How many Rusty Screws would you like to trade?";
+						mes "You have " + countitem(7317) + " Screws.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Old Merchant]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7317)) {
+							mes "[Old Merchant]";
+							mes "You don't have that many Screws.";
+							close;
+						}
+						delitem 7317, .@amount;
+						set COMODO_CRIMSON_POINTS, COMODO_CRIMSON_POINTS + .@amount;
+						mes "[Old Merchant]";
+						mes "Here are your " + .@amount + " Comodo Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 3:
+						if (countitem(7158) < 1) {
+							mes "[Old Merchant]";
+							mes "You don't have any Broken Liquor Jars to trade.";
+							close;
+						}
+						mes "[Old Merchant]";
+						mes "How many Broken Liquor Jars would you like to trade?";
+						mes "You have " + countitem(7158) + " Broken Liquor Jars.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Old Merchant]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7158)) {
+							mes "[Old Merchant]";
+							mes "You don't have that many Broken Liquor Jars.";
+							close;
+						}
+						delitem 7158, .@amount;
+						set COMODO_CRIMSON_POINTS, COMODO_CRIMSON_POINTS + .@amount;
+						mes "[Old Merchant]";
+						mes "Here are your " + .@amount + " Comodo Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 4:
+						close;
+				}
+			case 2:
+				mes "[Old Merchant]";
+				mes "These weapons hold ancient power.";
+				mes "I have Shurikens, and Pistols.";
+				mes "Each one costs 25 Comodo Crimson Points.";
+				next;
+				if (COMODO_CRIMSON_POINTS < 25) {
+					mes "[Old Merchant]";
+					mes "You need at least 25 Comodo Crimson Points to purchase any weapon.";
+					close;
+				}
+				switch(select("Crimson Shuriken [25 CP]:Crimson Pistol [25 CP]:Cancel")) {
+					case 1:
+						if (COMODO_CRIMSON_POINTS >= 25) {
+							set COMODO_CRIMSON_POINTS, COMODO_CRIMSON_POINTS - 25;
+							getitem 13327,1;
+							mes "[Old Merchant]";
+							mes "These shuriken were tempered in divine flames.";
+							mes "Use them with precision.";
+						}
+						close;
+					case 2:
+						if (COMODO_CRIMSON_POINTS >= 25) {
+							set COMODO_CRIMSON_POINTS, COMODO_CRIMSON_POINTS - 25;
+							getitem 13127,1;
+							mes "[Old Merchant]";
+							mes "This pistol contains the essence of Thor's lightning.";
+							mes "Wield it with wisdom.";
+						}
+						close;
+					case 3:
+						close;
+				}
+		}
+	}
+	mes "[Old Merchant]";
+	mes "So many stories to tell...";
+	mes "So few willing to listen...";
+	close;
+}

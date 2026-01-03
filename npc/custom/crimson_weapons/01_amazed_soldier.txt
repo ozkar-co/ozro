@@ -1,0 +1,195 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Amazed Soldier (Izlude)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Starting NPC for Crimson Weapons Quest
+//= Provides Crimson weapons trading and distribution
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= IZLUDE_CRIMSON_POINTS - Izlude point accumulation
+//============================================================
+
+// Starting Point - Izlude Soldier
+//============================================================
+izlude,149,195,4	script	Amazed Soldier	8W_SOLDIER,{
+	if (CRIMSON_QUEST == 0) {
+		mes "[Amazed Soldier]";
+		mes "^990000*The soldier's eyes shine with wonder*^000000";
+		mes "That glow... that crimson glow...";
+		next;
+		mes "[Amazed Soldier]";
+		mes "I've never seen anything like it in all my years of service.";
+		mes "The blade moved like living fire itself!";
+		next;
+		if(select("Tell me more about this weapon:I should let you be") == 2) {
+			mes "[Amazed Soldier]";
+			mes "Yes... I need time to process what I saw...";
+			close;
+		}
+		mes "[Amazed Soldier]";
+		mes "They say a merchant in Comodo knows";
+		mes "about these weapons. An old man who's";
+		mes "seen many wonders in his time...";
+		set CRIMSON_QUEST, 1;
+		next;
+		mes "[Amazed Soldier]";
+		mes "^990000*Lowers his voice*^000000";
+		mes "I hear he spends most of his time";
+		mes "at the casino in Comodo. Gambling";
+		mes "seems to be his weakness.";
+		close;
+	} else if (CRIMSON_QUEST == 14) {
+		mes "[Amazed Soldier]";
+		mes "I've been working with Marcus, gathering materials";
+		mes "and distributing these magnificent weapons.";
+		mes "You currently have ^FF0000" + IZLUDE_CRIMSON_POINTS + "^000000 Izlude Crimson Points.";
+		next;
+		switch(select("Provide Materials:View Available Weapons")) {
+			case 1:
+				mes "[Amazed Soldier]";
+				mes "We need specific materials to maintain";
+				mes "the crimson weapons. I can offer you";
+				mes "Crimson Points for these items:";
+				next;
+				mes "[Amazed Soldier]";
+				mes "- Destroyed Armor";
+				mes "- Burnt Tree";
+				mes "- Soft Feather";
+				mes "Each one is worth 1 Crimson Point.";
+				next;
+				switch(select("Trade Destroyed Armor:Trade Burnt Tree:Trade Soft Feather:Cancel")) {
+					case 1:
+						if (countitem(7069) < 1) {
+							mes "[Amazed Soldier]";
+							mes "You don't have any Destroyed Armor to trade.";
+							close;
+						}
+						mes "[Amazed Soldier]";
+						mes "How many Destroyed Armor would you like to trade?";
+						mes "You have " + countitem(7069) + " Destroyed Armor.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Amazed Soldier]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7069)) {
+							mes "[Amazed Soldier]";
+							mes "You don't have that many Destroyed Armor.";
+							close;
+						}
+						delitem 7069, .@amount;
+						set IZLUDE_CRIMSON_POINTS, IZLUDE_CRIMSON_POINTS + .@amount;
+						mes "[Amazed Soldier]";
+						mes "Here are your " + .@amount + " Izlude Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 2:
+						if (countitem(7068) < 1) {
+							mes "[Amazed Soldier]";
+							mes "You don't have any Burnt Tree to trade.";
+							close;
+						}
+						mes "[Amazed Soldier]";
+						mes "How many Burnt Tree would you like to trade?";
+						mes "You have " + countitem(7068) + " Burnt Tree.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Amazed Soldier]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7068)) {
+							mes "[Amazed Soldier]";
+							mes "You don't have that many Burnt Tree.";
+							close;
+						}
+						delitem 7068, .@amount;
+						set IZLUDE_CRIMSON_POINTS, IZLUDE_CRIMSON_POINTS + .@amount;
+						mes "[Amazed Soldier]";
+						mes "Here are your " + .@amount + " IzludeCrimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 3:
+						if (countitem(7063) < 1) {
+							mes "[Amazed Soldier]";
+							mes "You don't have any Soft Feather to trade.";
+							close;
+						}
+						mes "[Amazed Soldier]";
+						mes "How many Soft Feather would you like to trade?";
+						mes "You have " + countitem(7063) + " Soft Feather.";
+						next;
+						input .@amount;
+						if (.@amount <= 0) {
+							mes "[Amazed Soldier]";
+							mes "That's not a valid amount.";
+							close;
+						}
+						if (.@amount > countitem(7063)) {
+							mes "[Amazed Soldier]";
+							mes "You don't have that many Soft Feather.";
+							close;
+						}
+						delitem 7063, .@amount;
+						set IZLUDE_CRIMSON_POINTS, IZLUDE_CRIMSON_POINTS + .@amount;
+						mes "[Amazed Soldier]";
+						mes "Here are your " + .@amount + " Izlude Crimson Points.";
+						mes "Use them wisely.";
+						close;
+					case 4:
+						close;
+				}
+			case 2:
+				mes "[Amazed Soldier]";
+				mes "These weapons require great strength to wield.";
+				mes "Don't forget: Two Handed Swords, Two Handed Lances,";
+				mes "and One Handed Spears are my specialty.";
+				mes "Each one costs 25 Izlude Crimson Points.";
+				next;
+				if (IZLUDE_CRIMSON_POINTS < 25) {
+					mes "[Amazed Soldier]";
+					mes "You need at least 25 Izlude Crimson Points to purchase any weapon.";
+					close;
+				}
+				switch(select("Crimson Two-Hand Sword [25 CP]:Crimson Lance [25 CP]:Crimson Spear [25 CP]:Cancel")) {
+					case 1:
+						if (IZLUDE_CRIMSON_POINTS >= 25) {
+							set IZLUDE_CRIMSON_POINTS, IZLUDE_CRIMSON_POINTS - 25;
+							getitem 21015,1;
+							mes "[Amazed Soldier]";
+							mes "This sword carries Thor's blessing.";
+							mes "Use it with honor.";
+						}
+						close;
+					case 2:
+						if (IZLUDE_CRIMSON_POINTS >= 25) {
+							set IZLUDE_CRIMSON_POINTS, IZLUDE_CRIMSON_POINTS - 25;
+							getitem 1498,1;
+							mes "[Amazed Soldier]";
+							mes "This lance was forged in primordial fire.";
+							mes "May it serve you well.";
+						}
+						close;
+					case 3:
+						if (IZLUDE_CRIMSON_POINTS >= 25) {
+							set IZLUDE_CRIMSON_POINTS, IZLUDE_CRIMSON_POINTS - 25;
+							getitem 1443,1;
+							mes "[Amazed Soldier]";
+							mes "This spear glows with divine power.";
+							mes "Wield it with courage.";
+						}
+						close;
+					case 4:
+						close;
+				}
+		}
+	}
+	mes "[Amazed Soldier]";
+	mes "Such power... such beauty...";
+	mes "But why do I feel a hint of dread?";
+	close;
+}

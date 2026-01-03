@@ -1,0 +1,266 @@
+//===== Hercules Script ======================================
+//= Crimson Weapons Quest - Marcus the Smith (Coal Mine)
+//===== By: ==================================================
+//= Ozcodex
+//===== Description: =========================================
+//= Main quest character - Smith who forged Crimson Weapons
+//= Central to the entire quest storyline
+//===== Quest Variables: =====================================
+//= CRIMSON_QUEST - Main quest progress
+//= CRIMSON_KEY - If player returned archer's key
+//= CRIMSON_MERC - If player revealed merchant identity
+//= CRIMSON_POINTS - Crimson Points earned
+//============================================================
+
+// Marcus the Smith - Coal Mine
+//============================================================
+mjolnir_02,88,359,4	script	Marcus	4_M_DWARF,{
+	if (CRIMSON_QUEST == 6) {
+		mes "[Marcus]";
+		mes "^990000*A dwarf miner works tirelessly, ignoring your presence*^000000";
+		next;
+		switch(select("Hey you!:Are you Marcus?:Just watch him work")) {
+			case 1:
+				mes "[Marcus]";
+				mes "^990000*Continues mining without looking up*^000000";
+				mes "Move along. I'm busy here.";
+				close;
+			case 2:
+				mes "[Marcus]";
+				mes "^990000*The dwarf stops his mining abruptly*^000000";
+				mes "So... you found me. How?";
+				next;
+				if(select("The merchant in Alberta told me:I'd rather not say") == 1) {
+					set CRIMSON_MERC, 1;
+					mes "[Marcus]";
+					mes "^990000*His face darkens with anger*^000000";
+					mes "That greedy snake... still profiting";
+					mes "from others' misfortunes, I see.";
+					next;
+					mes "[Marcus]";
+					mes "^990000*Grips his pickaxe tightly*^000000";
+					mes "He was there... he saw what the weapons did.";
+					mes "Yet he only saw the gold they could bring.";
+					next;
+                }
+				mes "[Marcus]";
+				mes "The Crimson Weapons... my greatest";
+				mes "work. And my greatest mistake.";
+				next;
+				mes "[Marcus]";
+				mes "^990000*His voice drops to almost a whisper*^000000";
+				mes "In Morocc... they still talk about a crimson katar.";
+				mes "The drunkards speak of a night of fire and madness.";
+				next;
+				mes "[Marcus]";
+				mes "^990000*Stares into the distance*^000000";
+				mes "Drunken tales often grow with each telling...";
+				mes "But sometimes, the truth is darker than any story.";
+				set CRIMSON_QUEST, 7;
+				close;
+			case 3:
+				mes "^990000*The dwarf seems completely absorbed in his work*^000000";
+				close;
+		}
+	} else if (CRIMSON_QUEST == 7) {
+		mes "[Marcus]";
+		mes "^990000*Takes a long drink from his water flask*^000000";
+		mes "Go to Morocc. Listen to the tavern tales.";
+		mes "Judge for yourself if such power should exist.";
+		next;
+		mes "[Marcus]";
+		mes "^990000*Wipes his mouth with the back of his hand*^000000";
+		mes "The drunkards there... they remember that night.";
+		mes "When crimson steel met burning madness.";
+		next;
+		mes "[Marcus]";
+		mes "^990000*His voice becomes grave*^000000";
+		mes "Learn the truth, then decide...";
+		mes "Should these weapons walk our realm again?";
+		close;
+	} else if (CRIMSON_QUEST == 8) {
+		mes "[Marcus]";
+		mes "Now you know. The power I created...";
+		mes "It corrupts. It burns. It destroys.";
+		next;
+		if(select("The world needs this power:The weapons must be controlled") == 1) {
+			mes "[Marcus]";
+			mes "^990000*Shakes head sadly*^000000";
+			mes "You sound just like him...";
+            next;
+		}
+		mes "[Marcus]";
+		mes "Perhaps... perhaps you're right.";
+		mes "Better to control it than hide it.";
+		next;
+		mes "[Marcus]";
+		mes "I hid the designs in Aldebaran's Inn.";
+		mes "In a steel box, where travelers rest.";
+		mes "The key... I threw it in the forest of Payon.";
+		set CRIMSON_QUEST, 9;
+		next;
+		mes "[Marcus]";
+		mes "The forest of Payon...";
+		mes "The east of the forest...";
+		mes "I think should be there.";
+		close;
+	} else if (CRIMSON_QUEST == 9) {
+		mes "[Marcus]";
+		mes "The box... I hid it well.";
+		mes "In Aldebaran's inn, where travelers rest,";
+		mes "secrets often go unnoticed.";
+		next;
+		mes "[Marcus]";
+		mes "^990000*His voice drops to a whisper*^000000";
+		mes "Look for it inside... among the shadows";
+		mes "where weary adventurers seek their rest.";
+		close;
+	} else if (CRIMSON_QUEST == 11) {
+		mes "[Marcus]";
+		mes "^990000*Looks up from his mining*^000000";
+		mes "You're back? Did you find anything?";
+		next;
+		if(countitem(7431) < 1) {
+			mes "[Marcus]";
+			mes "Where are the designs? Did you lose them?";
+			close;
+		}
+		select("Show him the ancient designs");
+		mes "[Marcus]";
+		mes "^990000*His hands tremble as he examines the books*^000000";
+		mes "These designs... I never thought I'd";
+		mes "see them again. The memories they hold...";
+		delitem 7431,1; //Delete Weapon Designs
+		next;
+		if (countitem(7329) > 0) {
+			mes "[Marcus]";
+			mes "^990000*Looks at you thoughtfully*^000000";
+			mes "I see you still have the archer's key.";
+			mes "Remember your promise... trust is a rare";
+			mes "commodity in these dark times.";
+			next;
+		}
+		mes "[Marcus]";
+		mes "But something's missing. The essence...";
+		mes "Without Thor's Fire Essence, these are";
+		
+		mes "just drawings on paper.";
+		next;
+		mes "[Marcus]";
+		mes "^990000*Thinks deeply*^000000";
+		mes "There was a wizard in Geffen who knew";
+		mes "about the essence. Perhaps he still...";
+		next;
+		mes "[Marcus]";
+		mes "Find him. Tell him I'm ready to forge";
+		mes "again, but wisely this time. He'll";
+		mes "understand.";
+		set CRIMSON_QUEST, 12;
+		close;
+	} else if (CRIMSON_QUEST == 12) {
+		mes "[Marcus]";
+		mes "The wizard in Geffen... he's the key";
+		mes "to completing what we've started.";
+		close;
+	} else if (CRIMSON_QUEST == 13) {
+		mes "[Marcus]";
+		mes "^990000*Looks up expectantly*^000000";
+		mes "You've returned. Did you find the wizard?";
+		next;
+		if(countitem(6001) < 1) {
+			mes "[Marcus]";
+			mes "Where is the Fire Essence? Did you lose it?";
+			close;
+		}
+		select("Give him the Fire Essence");
+		mes "[Marcus]";
+		mes "^990000*His eyes widen at the sight of the essence*^000000";
+		mes "Thor's Fire Essence... after all these years...";
+		delitem 6001,1; //Delete Fire Essence
+		if(countitem(7329) > 0) { //Delete Steel Box Key if player still has it
+			delitem 7329,1;
+		}
+		next;
+		mes "[Marcus]";
+		mes "With the designs and this essence...";
+		mes "The Crimson Weapons could live again.";
+		next;
+		if (CRIMSON_KEY == 1 && CRIMSON_MERC == 0) {
+			mes "[Marcus]";
+			mes "^990000*Smiles warmly*^000000";
+			mes "You kept your word to the archer...";
+			mes "And you kept the secret of who told you";
+			mes "about me.";
+			next;
+			mes "[Marcus]";
+            mes "For your integrity, I grant you";
+            mes "these rare materials. Use them well.";
+            getitem 6292,3; // Give 3 Enriched Oridecon
+			set CRIMSON_QUEST, 14;
+			close;
+		} else if (CRIMSON_KEY == 0 && CRIMSON_MERC == 0) {
+			mes "[Marcus]";
+			mes "^990000*Frowns deeply*^000000";
+			mes "The archer's trust meant nothing to you...";
+			mes "But you keep the secret of who told you";
+			mes "about me... That is strange.";
+			next;
+			mes "[Marcus]";
+			mes "I will still forge the weapons...";
+			mes "But you'll need these to strengthen them.";
+			next;
+			mes "[Marcus]";
+			mes "^990000*Hands you some Oridecon*^000000";
+			mes "Here, take these 5 Oridecon.";
+			mes "Use them to reinforce the weapons.";
+			getitem 984,5;
+			set CRIMSON_QUEST, 14;
+			close;
+		} else if (CRIMSON_KEY == 1 && CRIMSON_MERC == 1) {
+			mes "[Marcus]";
+			mes "^990000*Nods thoughtfully*^000000";
+			mes "You're honest, even when it might hurt...";
+			mes "The wizard was right about you.";
+			next;
+			mes "[Marcus]";
+			mes "For your integrity, I grant you";
+			mes "10 Crimson Points.";
+			set CRIMSON_POINTS, 10;
+			set CRIMSON_QUEST, 14;
+			close;
+		} else {
+			mes "[Marcus]";
+			mes "^990000*Shakes his head sadly*^000000";
+			mes "No honor to the archer...";
+			mes "No loyalty to keep secrets...";
+			next;
+			mes "[Marcus]";
+			mes "These weapons... they should remain";
+			mes "lost to time. As should I.";
+			next;
+			mes "[Marcus]";
+			mes "^990000*Throws the designs into his forge*^000000";
+			mes "Goodbye, adventurer. May we never meet again.";
+			set CRIMSON_QUEST, 15;
+			close;
+		}
+	} else if (CRIMSON_QUEST == 14) {
+		mes "[Marcus]";
+		mes "The weapons have been forged.";
+		mes "Seek out our trusted merchants:";
+		next;
+		mes "[Marcus]";
+		mes "The Rogue in Prontera - Daggers and Sabers";
+		mes "The Guard in Izlude - Heavy Weapons";
+		mes "The Greedy Merchant in Alberta - Axes and Maces";
+		
+		mes "The Distracted Archer in Payon - Ranged Weapons";
+		mes "The Wizard in Geffen - Magic Weapons";
+		mes "The Masked Man in Morocc- Katars and Knuckles";
+		mes "The Old Merchant of Comodo - Special Weapons";
+		close;
+	}
+	mes "[Marcus]";
+	mes "^990000*The dwarf continues his mining*^000000";
+	close;
+}
