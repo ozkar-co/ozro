@@ -27,6 +27,7 @@ prontera,274,352,3	script	Gravekeeper Ludovico	1_M_PASTOR,{
         mes "I feel ^FF0000" + .@deaths + " deaths^000000 clinging to you; Hel waits if you tire.";
     }
     next;
+    mes "^FF0000[Gravekeeper Ludovico]^000000";
     mes "Go now. If you return, I will keep a candle lit for your wandering soul.";
     
     close;
