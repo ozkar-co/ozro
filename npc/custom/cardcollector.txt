@@ -3,12 +3,13 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 1.0
+//= 1.1
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
 //===== Additional Comments: =================================
 //= 1.0 Initial script - dialog only
+//= 1.1 Added card helper registration and inventory checking
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
@@ -24,14 +25,78 @@
 	mes "from which it came.";
 	next;
 	
+	// Check if already registered as helper
+	if (#CARD_HELPER != 1) {
+		mes .npc_name$;
+		mes "We're on a mission to gather and study all known cards";
+		mes "in this world. It's quite the ambitious goal, I know!";
+		next;
+		
+		mes .npc_name$;
+		mes "Would you be interested in helping us with our search?";
+		next;
+		
+		if (select("Yes, I'll help!", "Maybe later") == 1) {
+			set #CARD_HELPER, 1;
+			mes .npc_name$;
+			mes "^00FF00Excellent! Welcome to our team, collector!^000000";
+			mes "Now, let's see what cards you already have...";
+			next;
+		} else {
+			mes .npc_name$;
+			mes "Should you ever come across rare or unique cards,";
+			mes "we would be most interested in seeing them.";
+			close;
+		}
+	}
+	
+	// If helper, check inventory for cards
 	mes .npc_name$;
-	mes "We're on a mission to gather and study all known cards";
-	mes "in this world. It's quite the ambitious goal, I know!";
+	mes "Let me check your inventory for cards...";
 	next;
 	
-	mes .npc_name$;
-	mes "Should you ever come across rare or unique cards,";
-	mes "we would be most interested in seeing them.";
+	// Get inventory and count cards
+	getinventorylist();
+	set .@card_count, 0;
+	set .@card_total, 0;
+	set .@msg_cards$, "";
+	
+	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
+		.@item_id = @inventorylist_id[.@i];
+		.@item_amount = @inventorylist_amount[.@i];
+		
+		// Check if item is a card (type 6)
+		if (getiteminfo(.@item_id, ITEMINFO_TYPE) == IT_CARD) {
+			.@card_count++;
+			.@card_total += .@item_amount;
+			
+			if (.@card_count == 1) {
+				.@msg_cards$ = "^FFD700" + getitemname(.@item_id) + "^000000 x" + .@item_amount;
+			} else {
+				.@msg_cards$ = .@msg_cards$ + "\n^FFD700" + getitemname(.@item_id) + "^000000 x" + .@item_amount;
+			}
+		}
+	}
+	
+	if (.@card_count == 0) {
+		mes .npc_name$;
+		mes "Hmm, it seems you don't have any cards at the moment.";
+		mes "Keep searching! They're out there!";
+	} else {
+		mes .npc_name$;
+		mes "Wonderful! I found " + .@card_count + " type" + ((.@card_count > 1) ? "s" : "") + " of cards in your inventory,";
+		mes "for a total of " + .@card_total + " card" + ((.@card_total > 1) ? "s" : "") + "!";
+		next;
+		
+		mes .npc_name$;
+		mes "Here's what you have:";
+		mes .@msg_cards$;
+		next;
+		
+		mes .npc_name$;
+		mes "^00FF00Excellent finds! Keep collecting!^000000";
+	}
+	
 	close;
 
 OnInit:
