@@ -203,6 +203,84 @@ copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 | `need ';'` (con función) | Usar `strlen()` en vez de `getstrlen()` | Cambiar a `getstrlen()` |
 | `not enough arguments, expected ','` | Sintaxis incorrecta de `copyarray` | Usar `copyarray(dest[0], src[0], size)` |
 
+## Casos de Uso Exitosos
+
+### 12. Sistema de Tracking de MVP (Enero 2026)
+**Descripción**: Sistema global que registra kills de MVPs por jugador usando variables de personaje.
+
+**Archivos creados**:
+- `npc/custom/mvp/mvp_tracker.txt` - Script global con OnNPCKillEvent
+- `npc/custom/mvp/mvp_journal.txt` - NPC para consultar estadísticas
+
+**Técnicas aplicadas**:
+1. **Variables dinámicas con getd/setd**: Se crearon variables con nombres dinámicos basados en el ID del MVP (`MVP_KILL_1115`, etc.) para rastrear kills individuales.
+   ```c
+   .@var_name$ = "MVP_KILL_" + .@mvp_id;
+   .@current_count = getd(.@var_name$);
+   setd .@var_name$, .@current_count + 1;
+   ```
+
+2. **OnNPCKillEvent**: Se usó el evento global para capturar todas las muertes de NPCs/monstruos.
+   ```c
+   -	script	MVP_Tracker	-1,{
+   OnNPCKillEvent:
+       if (strmobinfo(1, killedrid) != 1) end;
+       // procesamiento...
+   }
+   ```
+
+3. **Evitar funciones en concatenaciones**: Todas las llamadas a funciones (strmobinfo, getd, getarraysize) se evaluaron primero en variables antes de concatenar strings.
+   ```c
+   // ❌ INCORRECTO: mes "Killed: " + strmobinfo(2, .@id);
+   // ✅ CORRECTO:
+   .@name$ = strmobinfo(2, .@id);
+   mes "Killed: " + .@name$;
+   ```
+
+4. **Loops con for en lugar de while**: Para mejor legibilidad y menos errores.
+   ```c
+   for (.@i = 0; .@i < .@array_size; .@i = .@i + 1) {
+       // código
+   }
+   ```
+
+**Notas importantes**:
+- strmobinfo(1, id) retorna 1 si el mob es MVP, 0 si no lo es
+- killedrid contiene el ID del mob asesinado en OnNPCKillEvent
+- Las variables de personaje (sin prefijo especial) persisten entre sesiones
+- bc_all en announce envía el mensaje a todos los jugadores online
+- Importante: Al crear menús con arrays, asegurar que el tamaño del array coincida con las opciones del menú
+- Los arrays de IDs deben estar libres de duplicados para evitar lookups incorrectos
+
+**Sistema Dual de Tracking (v1.1+)**:
+- `MVP_KILL_<id>`: Cuenta los golpes finales (killing blows)
+- `MVP_SUPP_<id>`: Cuenta las asistencias en party (support points)
+- Party members en el mismo mapa reciben puntos SUPP cuando un compañero mata un MVP
+- El killer recibe KILL, los demás miembros de party en el mapa reciben SUPP
+- getpartymember con flag 2 obtiene los AIDs de los miembros de party
+- attachrid() permite cambiar el contexto de jugador temporalmente
+
+**Ejemplo de tracking con party**:
+```c
+.@party_id = getcharid(1);
+.@killer_aid = getcharid(3);
+if (.@party_id != 0) {
+    getpartymember .@party_id, 2;
+    for (.@i = 0; .@i < $@partymembercount; .@i = .@i + 1) {
+        if ($@partymemberaid[.@i] == .@killer_aid) continue;
+        if (attachrid($@partymemberaid[.@i])) {
+            // dar puntos SUPP
+        }
+    }
+}
+```
+
+**Correcciones aplicadas**:
+- v1.0: Versión inicial con tracking de kills
+- v1.1: Agregado sistema dual KILL/SUPP para ranking de party
+- v1.1: Corregido array de IDs en menu de MVPs específicos (eliminados duplicados, ajustado tamaño)
+- v1.1: Separada función CheckSpecificMVP para mejor organización del código
+
 ---
 **Última actualización**: Enero 2026  
 **Proyecto**: Hercules rAthena Custom NPCs

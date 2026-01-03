@@ -1,0 +1,62 @@
+//===== Hercules Script ======================================
+//= MVP Kill Tracker
+//===== By: ==================================================
+//= Ozcodex
+//===== Current Version: =====================================
+//= 1.1
+//===== Description: =========================================
+//= Global tracker that records MVP kills for each player.
+//= Stores kills in character variables for persistence.
+//= Tracks both killing blows (KILL) and party assists (SUPP).
+//===== Additional Comments: =================================
+//= 1.0 Initial version.
+//= 1.1 Added party support tracking (MVP_SUPP_<id> variables).
+//============================================================
+
+-	script	MVP_Tracker	-1,{
+OnNPCKillEvent:
+	// Check if killed monster is an MVP
+	if (strmobinfo(1, killedrid) != 1) end;
+	
+	.@mvp_id = killedrid;
+	.@mvp_name$ = strmobinfo(2, killedrid);
+	.@map$ = strcharinfo(3);
+	.@party_id = getcharid(1);
+	.@killer_aid = getcharid(3);
+	.@killer_name$ = strcharinfo(0);
+	
+	// Give KILL point to the player who dealt the final blow
+	.@kill_var$ = "MVP_KILL_" + .@mvp_id;
+	.@kill_count = getd(.@kill_var$);
+	setd .@kill_var$, .@kill_count + 1;
+	
+	// If player is in a party, give SUPP points to party members
+	if (.@party_id != 0) {
+		getpartymember .@party_id, 2;
+		
+		for (.@i = 0; .@i < $@partymembercount; .@i = .@i + 1) {
+			// Skip the killer (they already have their KILL point)
+			if ($@partymemberaid[.@i] == .@killer_aid) continue;
+			
+			if (attachrid($@partymemberaid[.@i])) {
+				// Only give SUPP if party member is on the same map
+				if (strcharinfo(3) == .@map$) {
+					.@supp_var$ = "MVP_SUPP_" + .@mvp_id;
+					.@supp_count = getd(.@supp_var$);
+					setd .@supp_var$, .@supp_count + 1;
+					.@msg$ = "You assisted in defeating " + .@mvp_name$ + "! Support record updated.";
+					dispbottom .@msg$;
+				}
+			}
+		}
+		
+		// Party kill announcement (using pre-captured killer name)
+		.@announce_msg$ = "[" + .@killer_name$ + "] has defeated " + .@mvp_name$ + " with the help of their party!";
+		announce .@announce_msg$, bc_all;
+	} else {
+		// Solo kill announcement
+		.@announce_msg$ = .@killer_name$ + " has just hunted " + .@mvp_name$ + "!";
+		announce .@announce_msg$, bc_all;
+	}
+	end;
+}
