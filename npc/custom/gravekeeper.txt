@@ -8,23 +8,26 @@
 //= Tracks and narrates a player's death count.
 //============================================================
 
-prontera,274,352,3	script	Gravekeeper Ludovico	457,{
+prontera,274,352,3	script	Gravekeeper Ludovico	1_M_PASTOR,{
 
     .@deaths = PC_DIE_COUNTER;
 
     mes "^FF0000[Gravekeeper Ludovico]^000000";
-    mes "Every time a soul departs from its vessel, it leaves a cold echo in this world.";
-    mes "I am the one who listens to those echoes.";
+    mes "This ground remembers every scream that ended here.";
+    mes "I tend these graves, and the echoes cling to my robes.";
     next;
 
     if (.@deaths == 0) {
         mes "^FF0000[Ludovico]^000000";
-        mes "Your thread of life is remarkably strong, traveler. Not a single knot, not a single break.";
-        mes "May the gods keep it that way.";
+        mes "Your soul keeps slipping past the jaws of Niflheim, traveler.";
+        mes "The dead whisper your name, but the bells of Prontera refuse to toll for you.";
+        mes "Be grateful—this cemetery is not yet the place where your spirit will rest.";
     } else {
         mes "^FF0000[Ludovico]^000000";
-        mes "I see the weight of ^FF0000" + .@deaths + " deaths^000000 upon your shoulders.";
-        mes "Do not be ashamed. Each return from the abyss is a victory over Hel herself.";
+        mes "You have fallen many times, yet this soil still rejects your soul.";
+        mes "I can feel ^FF0000" + .@deaths + " deaths^000000 clinging to your shadow like frost.";
+        mes "Remember: the Bifrost gleams for heroes, but Hel's gate waits for the weary.";
+        mes "If you return again, I will be waiting with a candle and your name.";
     }
     
     close;
