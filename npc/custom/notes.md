@@ -3,23 +3,38 @@
 ## Errores Comunes y Soluciones
 
 ### 1. Definición de Funciones
-**Sintaxis correcta**: `function<TAB>script<TAB>NombreFuncion<TAB>{`
 
-❌ **INCORRECTO**:
+**Funciones DENTRO de un NPC:**
 ```c
-function MiFuncion {
+function NombreFuncion {
     // código
 }
+```
+
+**Funciones GLOBALES (fuera de NPCs):**
+```c
+function	script	NombreFuncion	{
+    // código
+}
+```
+
+❌ **INCORRECTO** (mezclar sintaxis):
+```c
+// Dentro de un NPC:
+function script MiFuncion {  // ❌ NO usar 'script' aquí
 ```
 
 ✅ **CORRECTO**:
 ```c
-function	script	MiFuncion	{
-    // código
+// Dentro de un NPC:
+function MiFuncion {
+    callfunc("OtraFuncion");
 }
 ```
 
-**Importante**: Los separadores deben ser TABS, no espacios.
+**Importante**: 
+- Funciones dentro de NPC: `function Nombre {`
+- Funciones globales: `function<TAB>script<TAB>Nombre<TAB>{`
 
 ### 2. Límite de Nombres de Funciones
 - ❌ **INCORRECTO**: `call NombreFuncion`

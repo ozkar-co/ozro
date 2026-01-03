@@ -71,7 +71,7 @@
 	}
 
 // ===== FUNCTION: Register Cards From Inventory =====
-function	script	RegCardsInv	{
+function RegCardsInv {
 	getinventorylist();
 	
 	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
@@ -90,7 +90,7 @@ function	script	RegCardsInv	{
 }
 
 // ===== FUNCTION: Show Progress =====
-function	script	ShowProgress	{
+function ShowProgress {
 	mes .npc_name$;
 	mes "^FF6B00=== COLLECTION PROGRESS ===^000000";
 	next;
@@ -214,7 +214,7 @@ function	script	ShowProgress	{
 }
 
 // ===== FUNCTION: Find Missing Cards =====
-function	script	FindMissing	{
+function FindMissing {
 	mes .npc_name$;
 	mes "Which cards would you like to search for?";
 	mes "Enter a letter (A-Z) or 'BOSS' or 'MVP'.";
@@ -270,7 +270,7 @@ function	script	FindMissing	{
 }
 
 // ===== FUNCTION: Display Missing By Letter =====
-function	script	ShowMissingLtr	{
+function ShowMissingLtr {
 	.@letter$ = getarg(0);
 	.@missing$ = "";
 	
@@ -323,7 +323,7 @@ function	script	ShowMissingLtr	{
 }
 
 // ===== FUNCTION: Display Missing By Type =====
-function	script	ShowMissingType	{
+function ShowMissingType {
 	.@type$ = getarg(0);
 	.@missing$ = "";
 	
@@ -353,7 +353,7 @@ function	script	ShowMissingType	{
 }
 
 // ===== FUNCTION: View Collection =====
-function	script	ViewCollect	{
+function ViewCollect {
 	mes .npc_name$;
 	mes "Which cards would you like to review?";
 	mes "Enter a letter (A-Z) or 'BOSS' or 'MVP'.";
@@ -409,7 +409,7 @@ function	script	ViewCollect	{
 }
 
 // ===== FUNCTION: Display Collection By Letter =====
-function	script	ShowCollectLtr	{
+function ShowCollectLtr {
 	.@letter$ = getarg(0);
 	.@collection$ = "";
 	
@@ -462,7 +462,7 @@ function	script	ShowCollectLtr	{
 }
 
 // ===== FUNCTION: Display Collection By Type =====
-function	script	ShowCollectType	{
+function ShowCollectType {
 	.@type$ = getarg(0);
 	.@collection$ = "";
 	
@@ -492,7 +492,7 @@ function	script	ShowCollectType	{
 }
 
 // ===== FUNCTION: Count Found Cards =====
-function	script	CountFound	{
+function CountFound {
 	.@letter$ = getarg(0);
 	.@count = 0;
 	
