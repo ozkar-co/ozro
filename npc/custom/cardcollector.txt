@@ -47,6 +47,9 @@
 			mes "we would be most interested in seeing them.";
 			close;
 		}
+	} else {
+		// Clear the greeting dialog before processing inventory for returning helpers
+		next;
 	}
 	
 	// Auto-register cards from inventory
