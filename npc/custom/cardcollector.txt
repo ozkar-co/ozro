@@ -224,7 +224,7 @@ function FindMissing {
 	.@search$ = strtoupper(.@search$);
 	
 	// Validate input
-	.@len = strlen(.@search$);
+	.@len = getstrlen(.@search$);
 	if (.@search$ == "") {
 		mes .npc_name$;
 		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
@@ -239,7 +239,7 @@ function FindMissing {
 	}
 	
 	// Handle letter search
-	if (strlen(.@search$) == 1) {
+	if (getstrlen(.@search$) == 1) {
 		if (.@search$ == "A" || .@search$ == "B" || .@search$ == "C" || 
 		    .@search$ == "D" || .@search$ == "F" || .@search$ == "G" || 
 		    .@search$ == "H" || .@search$ == "I" || .@search$ == "J" || 
@@ -363,7 +363,7 @@ function ViewCollect {
 	.@search$ = strtoupper(.@search$);
 	
 	// Validate input
-	.@len = strlen(.@search$);
+	.@len = getstrlen(.@search$);
 	if (.@search$ == "") {
 		mes .npc_name$;
 		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
@@ -378,7 +378,7 @@ function ViewCollect {
 	}
 	
 	// Handle letter search
-	if (strlen(.@search$) == 1) {
+	if (getstrlen(.@search$) == 1) {
 		if (.@search$ == "A" || .@search$ == "B" || .@search$ == "C" || 
 		    .@search$ == "D" || .@search$ == "F" || .@search$ == "G" || 
 		    .@search$ == "H" || .@search$ == "I" || .@search$ == "J" || 
