@@ -3,16 +3,38 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 1.0
+//= 1.1
 //===== Description: =========================================
 //= NPC that enchants Crimson weapons with random cards
 //= in slots 3 and 4. Requires gemstones as payment.
+//= Only accessible after completing the Crimson Weapons quest.
 //===== Additional Comments: =================================
 //= Slot 3 enchantments: 4700-4752
 //= Slot 4 enchantments: 4813-4942
+//= Quest Variables: CRIMSON_QUEST (must be 14 or higher)
+//===== Changelog: ===========================================
+//= 1.0 - Initial release, basic enchantment functionality
+//= 1.1 - Added quest validation, improved UI (no IDs shown)
 //============================================================
 
-geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHEMIST,{
+geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
+	
+	// Check if quest is not complete
+	if (CRIMSON_QUEST < 14) {
+		mes "[Crimson Enchanter]";
+		mes "^FF0000*A mysterious alchemist tends to arcane ingredients*^000000";
+		mes "Hm? You want enchantments?";
+		next;
+		mes "[Crimson Enchanter]";
+		mes "I only work with those blessed by the Crimson order...";
+		mes "Seek out the one called Marcus. He knows about such things.";
+		next;
+		mes "[Crimson Enchanter]";
+		mes "^990000*Whispers mysteriously*^000000";
+		mes "I hear he hides in the Coal Mines, working tirelessly";
+		mes "on something... extraordinary.";
+		close;
+	}
 	
 	// Slot 3 available card IDs
 	setarray .slot3[0], 4700, 4701, 4702, 4710, 4711, 4712, 4720, 4721, 4722, 4730, 4731, 4732, 4740, 4741, 4742, 4750, 4751, 4752;
