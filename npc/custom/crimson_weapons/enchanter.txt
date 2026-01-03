@@ -99,6 +99,9 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 		close;
 	}
 	
+	// Remove leading colon from the weapon list
+	set .@weapon_list$, substr(.@weapon_list$, 2);
+	
 	mes "[Crimson Enchanter]";
 	mes "Which Crimson weapon would you like to enchant?";
 	mes "^FF6B00(Slot 3 and Slot 4 will be enchanted with random cards)^000000";
