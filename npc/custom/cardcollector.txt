@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 3.0
+//= 3.1
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -15,6 +15,7 @@
 //= 2.2 Fixed infinite loop for returning players - added dialogue clear
 //= 3.0 Complete refactor - removed infinite loops, simplified menu flow
 //=     Removed all color codes and decorators, menu executes once then exits
+//= 3.1 Fixed infinite loop in Register Cards option - added missing close statement
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
