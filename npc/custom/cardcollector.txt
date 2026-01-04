@@ -113,7 +113,6 @@ function RegCardsInv {
 		} else {
 			mes "All of them were already registered.";
 		}
-		next;
 	}
 	return;
 }
@@ -238,7 +237,6 @@ function ShowProgress {
 	mes "=== SPECIAL CARDS ===";
 	mes "BOSS: " + .@cBOSS + "/" + .@tBOSS;
 	mes "MVP: " + .@cMVP + "/" + .@tMVP;
-	next;
 	return;
 }
 
