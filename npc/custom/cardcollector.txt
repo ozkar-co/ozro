@@ -75,6 +75,7 @@
 			mes "Keep searching, collector! Every card counts!";
 			close;
 	}
+	close;
 
 // ===== FUNCTION: Register Cards From Inventory =====
 function RegCardsInv {
