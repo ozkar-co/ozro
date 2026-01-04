@@ -15,7 +15,9 @@
 //= 2.2 Fixed infinite loop for returning players - added dialogue clear
 //= 3.0 Complete refactor - removed infinite loops, simplified menu flow
 //=     Removed all color codes and decorators, menu executes once then exits
-//= 3.1 Fixed infinite loop in Register Cards option - added missing close statement
+//= 3.1 Fixed infinite loop in Register Cards and Check Progress options
+//=     - Added missing close statement after switch block
+//=     - Removed trailing next statements that blocked dialogue flow
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
