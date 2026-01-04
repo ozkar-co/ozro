@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 2.2
+//= 3.0
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -13,6 +13,8 @@
 //= 2.0 Full card tracking system with progress, missing, and collection view
 //= 2.1 Fixed variable length issue by splitting storage by category
 //= 2.2 Fixed infinite loop for returning players - added dialogue clear
+//= 3.0 Complete refactor - removed infinite loops, simplified menu flow
+//=     Removed all color codes and decorators, menu executes once then exits
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
@@ -21,7 +23,7 @@
 	function CountFound; function GetCardCategory; function IsCardFound; function AddCardToCategory;
 	
 	mes .npc_name$;
-	mes "^FF6B00Greetings, adventurer! I'm a card researcher and collector.^000000";
+	mes "Greetings, adventurer! I'm a card researcher and collector.";
 	mes "My team and I travel across these lands documenting";
 	mes "and collecting every card we can find.";
 	next;
@@ -40,7 +42,7 @@
 		if (select("Yes, I'll help!", "Maybe later") == 1) {
 			#CARD_HELPER = 1;
 			mes .npc_name$;
-			mes "^00FF00Excellent! Welcome to our team, collector!^000000";
+			mes "Excellent! Welcome to our team, collector!";
 			next;
 		} else {
 			mes .npc_name$;
@@ -48,35 +50,30 @@
 			mes "we would be most interested in seeing them.";
 			close;
 		}
-	} else {
-		// Clear the greeting dialog before processing inventory for returning helpers
-		next;
 	}
 	
-	// Auto-register cards from inventory
-	RegCardsInv();
+	// Main menu - no loop, exits after one action
+	mes .npc_name$;
+	mes "What would you like to do?";
+	next;
 	
-	// Main menu
-	while (1) {
-		mes .npc_name$;
-		mes "What would you like to do?";
-		next;
-		
-		switch(select("Check Progress", "Find Missing Cards", "View My Collection", "Exit")) {
-			case 1: // Check Progress
-				ShowProgress();
-				break;
-			case 2: // Find Missing Cards
-				FindMissing();
-				break;
-			case 3: // View Collection
-				ViewCollect();
-				break;
-			case 4: // Exit
-				mes .npc_name$;
-				mes "Keep searching, collector! Every card counts!";
-				close;
-		}
+	switch(select("Register Cards in Inventory", "Check Progress", "View My Collection", "Find Missing Cards", "Exit")) {
+		case 1: // Register Cards
+			RegCardsInv();
+			break;
+		case 2: // Check Progress
+			ShowProgress();
+			break;
+		case 3: // View Collection
+			ViewCollect();
+			break;
+		case 4: // Find Missing Cards
+			FindMissing();
+			break;
+		case 5: // Exit
+			mes .npc_name$;
+			mes "Keep searching, collector! Every card counts!";
+			close;
 	}
 
 // ===== FUNCTION: Register Cards From Inventory =====
@@ -108,9 +105,9 @@ function RegCardsInv {
 	// Show summary
 	if (.@total_unique > 0) {
 		mes .npc_name$;
-		mes "I found ^0000FF" + .@total_unique + " unique card" + (.@total_unique == 1 ? "" : "s") + "^000000 in your inventory!";
+		mes "I found " + .@total_unique + " unique card" + (.@total_unique == 1 ? "" : "s") + " in your inventory!";
 		if (.@new_cards > 0) {
-			mes "Of those, ^00FF00" + .@new_cards + " " + (.@new_cards == 1 ? "is" : "are") + " new^000000 to our collection!";
+			mes "Of those, " + .@new_cards + " " + (.@new_cards == 1 ? "is" : "are") + " new to our collection!";
 		} else {
 			mes "All of them were already registered.";
 		}
@@ -122,7 +119,7 @@ function RegCardsInv {
 // ===== FUNCTION: Show Progress =====
 function ShowProgress {
 	mes .npc_name$;
-	mes "^FF6B00=== COLLECTION PROGRESS ===^000000";
+	mes "=== COLLECTION PROGRESS ===";
 	next;
 	
 	// Count found cards per letter
@@ -236,7 +233,7 @@ function ShowProgress {
 	.@cMVP = CountFound("MVP");
 	.@tBOSS = getarraysize(.carta_BOSS);
 	.@tMVP = getarraysize(.carta_MVP);
-	mes "^FF0000=== SPECIAL CARDS ===^000000";
+	mes "=== SPECIAL CARDS ===";
 	mes "BOSS: " + .@cBOSS + "/" + .@tBOSS;
 	mes "MVP: " + .@cMVP + "/" + .@tMVP;
 	next;
@@ -343,9 +340,9 @@ function ShowMissingLtr {
 	
 	mes .npc_name$;
 	if (.@missing$ == "") {
-		mes "^00FF00Congratulations! You have all cards from letter " + .@letter$ + "!^000000";
+		mes "Congratulations! You have all cards from letter " + .@letter$ + "!";
 	} else {
-		mes "^FFFF00Missing cards from letter " + .@letter$ + ":^000000";
+		mes "Missing cards from letter " + .@letter$ + ":";
 		mes .@missing$;
 	}
 	close;
@@ -373,9 +370,9 @@ function ShowMissingType {
 	
 	mes .npc_name$;
 	if (.@missing$ == "") {
-		mes "^00FF00Congratulations! You have all " + .@type$ + " cards!^000000";
+		mes "Congratulations! You have all " + .@type$ + " cards!";
 	} else {
-		mes "^FF0000Missing " + .@type$ + " cards:^000000";
+		mes "Missing " + .@type$ + " cards:";
 		mes .@missing$;
 	}
 	close;
@@ -473,7 +470,7 @@ function ShowCollectLtr {
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
 		if (IsCardFound(.@carta[.@i], .@letter$)) {
 			if (.@collection$ == "") {
-				.@collection$ = "^00FF00" + getitemname(.@carta[.@i]) + "^000000";
+				.@collection$ = getitemname(.@carta[.@i]);
 			} else {
 				.@collection$ = .@collection$ + ", " + getitemname(.@carta[.@i]);
 			}
@@ -484,7 +481,7 @@ function ShowCollectLtr {
 	if (.@collection$ == "") {
 		mes "You don't have any cards from letter " + .@letter$ + " yet.";
 	} else {
-		mes "^00FF00Cards from letter " + .@letter$ + ":^000000";
+		mes "Cards from letter " + .@letter$ + ":";
 		mes .@collection$;
 	}
 	close;
@@ -503,7 +500,7 @@ function ShowCollectType {
 	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
 		if (IsCardFound(.@carta[.@i], .@type$)) {
 			if (.@collection$ == "") {
-				.@collection$ = "^00FF00" + getitemname(.@carta[.@i]) + "^000000";
+				.@collection$ = getitemname(.@carta[.@i]);
 			} else {
 				.@collection$ = .@collection$ + ", " + getitemname(.@carta[.@i]);
 			}
@@ -702,7 +699,7 @@ function AddCardToCategory {
 
 
 OnInit:
-	.npc_name$ = "[ ^FF6B00Card Collector^000000 ]";
+	.npc_name$ = "[ Card Collector ]";
 
 	setarray .carta_A, 4013,4032,4043,4062,4075,4094,4114,4138,4160,4234,4240,4242,4244,4245,4246,4247,4248,4249,4252,4253,4344,4347,4371,4378,4379,4387,4400,4401,4402,4409,4443,4464,4473,4513,4515,4567,4596,4629,31022;
 	setarray .carta_B, 4074,4119,4129,4212,4213,4214,4215,4233,4320,4327,4356,4390,4438,4450,4466,4472,4518,4519,4582,4626,4627;

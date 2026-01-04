@@ -130,6 +130,40 @@ if (.@len > 200) {
 4. **Logging preventivo** para detectar problemas antes de que ocurran
 5. **Comentar decisiones técnicas** en el código para el futuro
 
+## Estilo y Preferencias de Código
+
+### Preferencias para NPCs
+
+1. **No usar decoradores ni colores en texto de NPCs**
+   - Evitar códigos de color como `^FF6B00`, `^00FF00`, etc.
+   - Mantener texto simple y legible sin formato especial
+   - El texto debe ser claro por sí mismo sin depender de colores
+
+2. **Mantener NPCs simples**
+   - Evitar loops infinitos (`while(1)`) en menús
+   - Diseñar flujos lineales: mostrar menú → ejecutar acción → salir
+   - Si el jugador quiere hacer otra acción, que vuelva a hablar con el NPC
+   - Esto previene bugs de interacción y simplifica el código
+
+3. **Ejemplo de flujo correcto:**
+   ```javascript
+   // ✓ CORRECTO - Sin loop infinito
+   mes "What would you like to do?";
+   next;
+   switch(select("Option 1", "Option 2", "Exit")) {
+       case 1: DoAction1(); break;
+       case 2: DoAction2(); break;
+       case 3: close;
+   }
+   // El NPC cierra después de una acción
+   
+   // ✗ INCORRECTO - Loop infinito
+   while(1) {
+       mes "What would you like to do?";
+       switch(select(...)) { ... }
+   }
+   ```
+
 ---
 
 **Última actualización:** 03 Enero 2026
