@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 1.1
+//= 1.2
 //===== Description: =========================================
 //= Global tracker that records MVP kills for each player.
 //= Stores kills in character variables for persistence.
@@ -11,12 +11,13 @@
 //===== Additional Comments: =================================
 //= 1.0 Initial version.
 //= 1.1 Added party support tracking (MVP_SUPP_<id> variables).
+//= 1.2 Fixed MVP detection using getmonsterinfo instead of strmobinfo.
 //============================================================
 
 -	script	MVP_Tracker	-1,{
 OnNPCKillEvent:
-	// Check if killed monster is an MVP
-	if (strmobinfo(1, killedrid) != 1) end;
+	// Check if killed monster is an MVP (MOB_MVPEXP = 22)
+	if (getmonsterinfo(killedrid, 22) <= 0) end;
 	
 	.@mvp_id = killedrid;
 	.@mvp_name$ = strmobinfo(2, killedrid);

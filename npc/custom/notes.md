@@ -1,5 +1,24 @@
 # Notas de Scripting - Hercules Emulator
 
+## Debugging y Logs
+
+### Importancia de los Logs de Debug
+Cuando trabajamos con Hercules, especialmente sin documentación completa, los logs de debug 
+en el código fuente son invaluables para entender qué está sucediendo internamente.
+
+**Ejemplo de logs útiles en `src/map/script.c`**:
+- `ShowDebug("Data: string value=\"%s\"\n", data->u.str);` - Muestra valores de tipo string
+- `ShowDebug("Data: number value=%d\n", data->u.num);` - Muestra valores numéricos
+- `ShowError("script:op_2: invalid data for operator %s\n", ...)` - Muestra errores de operadores
+
+Estos logs nos ayudan a:
+1. Identificar errores de tipo de datos (ej: comparar string con número)
+2. Entender qué retornan las funciones cuando la documentación no es clara
+3. Detectar problemas tempranamente antes de que causen crashes
+
+**Recomendación**: Al desarrollar NPCs complejos, considera añadir logs de debug inicialmente 
+para facilitar el troubleshooting, especialmente cuando uses funciones poco documentadas.
+
 ## Errores Comunes y Soluciones
 
 ### 1. Definición de Funciones
@@ -202,6 +221,7 @@ copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 | `player not attached` | `consolemes()` en OnInit | Usar `debugmes()` o remover |
 | `need ';'` (con función) | Usar `strlen()` en vez de `getstrlen()` | Cambiar a `getstrlen()` |
 | `not enough arguments, expected ','` | Sintaxis incorrecta de `copyarray` | Usar `copyarray(dest[0], src[0], size)` |
+| `invalid data for operator C_NE` | Comparar string con número | Verificar tipo de retorno de funciones (ej: `strmobinfo(1, id)` retorna string, no número) |
 
 ## Casos de Uso Exitosos
 
@@ -280,6 +300,18 @@ if (.@party_id != 0) {
 - v1.1: Agregado sistema dual KILL/SUPP para ranking de party
 - v1.1: Corregido array de IDs en menu de MVPs específicos (eliminados duplicados, ajustado tamaño)
 - v1.1: Separada función CheckSpecificMVP para mejor organización del código
+- v1.2: Corregido detección de MVP usando `getmonsterinfo(killedrid, 22)` en vez de `strmobinfo(1, killedrid)`
+  - Error previo: `strmobinfo(1, ...)` retorna string (nombre del mob), no un número
+  - Solución: Usar `getmonsterinfo(killedrid, MOB_MVPEXP)` que retorna exp de MVP (>0 si es MVP)
+
+**Lección aprendida sobre debugging**:
+Los logs de debug en el código fuente de Hercules (`ShowDebug` en `src/map/script.c`) fueron 
+fundamentales para detectar este error. Mostraron que se estaba comparando un string ("Thief Bug") 
+con un número (1), lo cual causaba el error "invalid data for operator C_NE". 
+
+Al trabajar con Hercules, donde la documentación es limitada, es muy útil agregar logs de debug 
+inicialmente para entender qué tipo de datos retornan las funciones y detectar errores de tipos 
+tempranamente.
 
 ---
 **Última actualización**: Enero 2026  
