@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 3.1
+//= 3.2
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -18,12 +18,24 @@
 //= 3.1 Fixed infinite loop in Register Cards and Check Progress options
 //=     - Added missing close statement after switch block
 //=     - Removed trailing next statements that blocked dialogue flow
+//= 3.2 Fixed card registration and detection issues
+//=     - AddCardToCategory now initializes variables with "|" prefix
+//=     - This ensures strpos() correctly finds cards in format "|ID1|ID2|"
+//=     - RegCardsInv now shows message even when no cards found
+//=     - Added MigrateOldFormat to fix existing data from old format
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
 	function RegCardsInv; function ShowProgress; function FindMissing; function ViewCollect;
 	function ShowMissingLtr; function ShowMissingType; function ShowCollectLtr; function ShowCollectType;
 	function CountFound; function GetCardCategory; function IsCardFound; function AddCardToCategory;
+	function MigrateOldFormat;
+	
+	// Migrate old format data on first interaction
+	if (#CARD_HELPER == 1 && #CARD_MIGRATED != 1) {
+		MigrateOldFormat();
+		#CARD_MIGRATED = 1;
+	}
 	
 	mes .npc_name$;
 	mes "Greetings, adventurer! I'm a card researcher and collector.";
@@ -107,14 +119,16 @@ function RegCardsInv {
 	}
 	
 	// Show summary
+	mes .npc_name$;
 	if (.@total_unique > 0) {
-		mes .npc_name$;
 		mes "I found " + .@total_unique + " unique card" + (.@total_unique == 1 ? "" : "s") + " in your inventory!";
 		if (.@new_cards > 0) {
 			mes "Of those, " + .@new_cards + " " + (.@new_cards == 1 ? "is" : "are") + " new to our collection!";
 		} else {
 			mes "All of them were already registered.";
 		}
+	} else {
+		mes "You don't have any cards in your inventory.";
 	}
 	return;
 }
@@ -650,32 +664,108 @@ function AddCardToCategory {
 	.@category$ = getarg(1);
 	
 	// Add card to the correct variable based on category
-	if (.@category$ == "A") #CARD_A$ = #CARD_A$ + .@item_id + "|";
-	else if (.@category$ == "B") #CARD_B$ = #CARD_B$ + .@item_id + "|";
-	else if (.@category$ == "C") #CARD_C$ = #CARD_C$ + .@item_id + "|";
-	else if (.@category$ == "D") #CARD_D$ = #CARD_D$ + .@item_id + "|";
-	else if (.@category$ == "F") #CARD_F$ = #CARD_F$ + .@item_id + "|";
-	else if (.@category$ == "G") #CARD_G$ = #CARD_G$ + .@item_id + "|";
-	else if (.@category$ == "H") #CARD_H$ = #CARD_H$ + .@item_id + "|";
-	else if (.@category$ == "I") #CARD_I$ = #CARD_I$ + .@item_id + "|";
-	else if (.@category$ == "J") #CARD_J$ = #CARD_J$ + .@item_id + "|";
-	else if (.@category$ == "K") #CARD_K$ = #CARD_K$ + .@item_id + "|";
-	else if (.@category$ == "L") #CARD_L$ = #CARD_L$ + .@item_id + "|";
-	else if (.@category$ == "M") #CARD_M$ = #CARD_M$ + .@item_id + "|";
-	else if (.@category$ == "N") #CARD_N$ = #CARD_N$ + .@item_id + "|";
-	else if (.@category$ == "O") #CARD_O$ = #CARD_O$ + .@item_id + "|";
-	else if (.@category$ == "P") #CARD_P$ = #CARD_P$ + .@item_id + "|";
-	else if (.@category$ == "Q") #CARD_Q$ = #CARD_Q$ + .@item_id + "|";
-	else if (.@category$ == "R") #CARD_R$ = #CARD_R$ + .@item_id + "|";
-	else if (.@category$ == "S") #CARD_S$ = #CARD_S$ + .@item_id + "|";
-	else if (.@category$ == "T") #CARD_T$ = #CARD_T$ + .@item_id + "|";
-	else if (.@category$ == "U") #CARD_U$ = #CARD_U$ + .@item_id + "|";
-	else if (.@category$ == "V") #CARD_V$ = #CARD_V$ + .@item_id + "|";
-	else if (.@category$ == "W") #CARD_W$ = #CARD_W$ + .@item_id + "|";
-	else if (.@category$ == "Y") #CARD_Y$ = #CARD_Y$ + .@item_id + "|";
-	else if (.@category$ == "Z") #CARD_Z$ = #CARD_Z$ + .@item_id + "|";
+	// If variable is empty, start with "|" to match strpos search pattern
+	if (.@category$ == "A") {
+		if (#CARD_A$ == "") #CARD_A$ = "|";
+		#CARD_A$ = #CARD_A$ + .@item_id + "|";
+	}
+	else if (.@category$ == "B") {
+		if (#CARD_B$ == "") #CARD_B$ = "|";
+		#CARD_B$ = #CARD_B$ + .@item_id + "|";
+	}
+	else if (.@category$ == "C") {
+		if (#CARD_C$ == "") #CARD_C$ = "|";
+		#CARD_C$ = #CARD_C$ + .@item_id + "|";
+	}
+	else if (.@category$ == "D") {
+		if (#CARD_D$ == "") #CARD_D$ = "|";
+		#CARD_D$ = #CARD_D$ + .@item_id + "|";
+	}
+	else if (.@category$ == "F") {
+		if (#CARD_F$ == "") #CARD_F$ = "|";
+		#CARD_F$ = #CARD_F$ + .@item_id + "|";
+	}
+	else if (.@category$ == "G") {
+		if (#CARD_G$ == "") #CARD_G$ = "|";
+		#CARD_G$ = #CARD_G$ + .@item_id + "|";
+	}
+	else if (.@category$ == "H") {
+		if (#CARD_H$ == "") #CARD_H$ = "|";
+		#CARD_H$ = #CARD_H$ + .@item_id + "|";
+	}
+	else if (.@category$ == "I") {
+		if (#CARD_I$ == "") #CARD_I$ = "|";
+		#CARD_I$ = #CARD_I$ + .@item_id + "|";
+	}
+	else if (.@category$ == "J") {
+		if (#CARD_J$ == "") #CARD_J$ = "|";
+		#CARD_J$ = #CARD_J$ + .@item_id + "|";
+	}
+	else if (.@category$ == "K") {
+		if (#CARD_K$ == "") #CARD_K$ = "|";
+		#CARD_K$ = #CARD_K$ + .@item_id + "|";
+	}
+	else if (.@category$ == "L") {
+		if (#CARD_L$ == "") #CARD_L$ = "|";
+		#CARD_L$ = #CARD_L$ + .@item_id + "|";
+	}
+	else if (.@category$ == "M") {
+		if (#CARD_M$ == "") #CARD_M$ = "|";
+		#CARD_M$ = #CARD_M$ + .@item_id + "|";
+	}
+	else if (.@category$ == "N") {
+		if (#CARD_N$ == "") #CARD_N$ = "|";
+		#CARD_N$ = #CARD_N$ + .@item_id + "|";
+	}
+	else if (.@category$ == "O") {
+		if (#CARD_O$ == "") #CARD_O$ = "|";
+		#CARD_O$ = #CARD_O$ + .@item_id + "|";
+	}
+	else if (.@category$ == "P") {
+		if (#CARD_P$ == "") #CARD_P$ = "|";
+		#CARD_P$ = #CARD_P$ + .@item_id + "|";
+	}
+	else if (.@category$ == "Q") {
+		if (#CARD_Q$ == "") #CARD_Q$ = "|";
+		#CARD_Q$ = #CARD_Q$ + .@item_id + "|";
+	}
+	else if (.@category$ == "R") {
+		if (#CARD_R$ == "") #CARD_R$ = "|";
+		#CARD_R$ = #CARD_R$ + .@item_id + "|";
+	}
+	else if (.@category$ == "S") {
+		if (#CARD_S$ == "") #CARD_S$ = "|";
+		#CARD_S$ = #CARD_S$ + .@item_id + "|";
+	}
+	else if (.@category$ == "T") {
+		if (#CARD_T$ == "") #CARD_T$ = "|";
+		#CARD_T$ = #CARD_T$ + .@item_id + "|";
+	}
+	else if (.@category$ == "U") {
+		if (#CARD_U$ == "") #CARD_U$ = "|";
+		#CARD_U$ = #CARD_U$ + .@item_id + "|";
+	}
+	else if (.@category$ == "V") {
+		if (#CARD_V$ == "") #CARD_V$ = "|";
+		#CARD_V$ = #CARD_V$ + .@item_id + "|";
+	}
+	else if (.@category$ == "W") {
+		if (#CARD_W$ == "") #CARD_W$ = "|";
+		#CARD_W$ = #CARD_W$ + .@item_id + "|";
+	}
+	else if (.@category$ == "Y") {
+		if (#CARD_Y$ == "") #CARD_Y$ = "|";
+		#CARD_Y$ = #CARD_Y$ + .@item_id + "|";
+	}
+	else if (.@category$ == "Z") {
+		if (#CARD_Z$ == "") #CARD_Z$ = "|";
+		#CARD_Z$ = #CARD_Z$ + .@item_id + "|";
+	}
 	else if (.@category$ == "BOSS") {
 		// BOSS split: first 40 cards go to BOSS1, rest to BOSS2
+		// Initialize if empty
+		if (#CARD_BOSS1$ == "") #CARD_BOSS1$ = "|";
+		if (#CARD_BOSS2$ == "") #CARD_BOSS2$ = "|";
 		// Calculate estimated position
 		.@len = getstrlen(#CARD_BOSS1$);
 		if (.@len < 200) {
@@ -686,6 +776,9 @@ function AddCardToCategory {
 	}
 	else if (.@category$ == "MVP") {
 		// MVP split: first 40 cards go to MVP1, rest to MVP2
+		// Initialize if empty
+		if (#CARD_MVP1$ == "") #CARD_MVP1$ = "|";
+		if (#CARD_MVP2$ == "") #CARD_MVP2$ = "|";
 		// Calculate estimated position
 		.@len = getstrlen(#CARD_MVP1$);
 		if (.@len < 200) {
@@ -695,6 +788,42 @@ function AddCardToCategory {
 		}
 	}
 	
+	return;
+}
+
+// ===== FUNCTION: Migrate Old Format Data =====
+function MigrateOldFormat {
+	// Fix old format data that doesn't start with "|"
+	// Old: "4013|4032|" -> New: "|4013|4032|"
+	// Check if first character is not "|" by seeing if "|" is at position 0
+	if (#CARD_A$ != "" && strpos(#CARD_A$, "|") != 0) #CARD_A$ = "|" + #CARD_A$;
+	if (#CARD_B$ != "" && strpos(#CARD_B$, "|") != 0) #CARD_B$ = "|" + #CARD_B$;
+	if (#CARD_C$ != "" && strpos(#CARD_C$, "|") != 0) #CARD_C$ = "|" + #CARD_C$;
+	if (#CARD_D$ != "" && strpos(#CARD_D$, "|") != 0) #CARD_D$ = "|" + #CARD_D$;
+	if (#CARD_F$ != "" && strpos(#CARD_F$, "|") != 0) #CARD_F$ = "|" + #CARD_F$;
+	if (#CARD_G$ != "" && strpos(#CARD_G$, "|") != 0) #CARD_G$ = "|" + #CARD_G$;
+	if (#CARD_H$ != "" && strpos(#CARD_H$, "|") != 0) #CARD_H$ = "|" + #CARD_H$;
+	if (#CARD_I$ != "" && strpos(#CARD_I$, "|") != 0) #CARD_I$ = "|" + #CARD_I$;
+	if (#CARD_J$ != "" && strpos(#CARD_J$, "|") != 0) #CARD_J$ = "|" + #CARD_J$;
+	if (#CARD_K$ != "" && strpos(#CARD_K$, "|") != 0) #CARD_K$ = "|" + #CARD_K$;
+	if (#CARD_L$ != "" && strpos(#CARD_L$, "|") != 0) #CARD_L$ = "|" + #CARD_L$;
+	if (#CARD_M$ != "" && strpos(#CARD_M$, "|") != 0) #CARD_M$ = "|" + #CARD_M$;
+	if (#CARD_N$ != "" && strpos(#CARD_N$, "|") != 0) #CARD_N$ = "|" + #CARD_N$;
+	if (#CARD_O$ != "" && strpos(#CARD_O$, "|") != 0) #CARD_O$ = "|" + #CARD_O$;
+	if (#CARD_P$ != "" && strpos(#CARD_P$, "|") != 0) #CARD_P$ = "|" + #CARD_P$;
+	if (#CARD_Q$ != "" && strpos(#CARD_Q$, "|") != 0) #CARD_Q$ = "|" + #CARD_Q$;
+	if (#CARD_R$ != "" && strpos(#CARD_R$, "|") != 0) #CARD_R$ = "|" + #CARD_R$;
+	if (#CARD_S$ != "" && strpos(#CARD_S$, "|") != 0) #CARD_S$ = "|" + #CARD_S$;
+	if (#CARD_T$ != "" && strpos(#CARD_T$, "|") != 0) #CARD_T$ = "|" + #CARD_T$;
+	if (#CARD_U$ != "" && strpos(#CARD_U$, "|") != 0) #CARD_U$ = "|" + #CARD_U$;
+	if (#CARD_V$ != "" && strpos(#CARD_V$, "|") != 0) #CARD_V$ = "|" + #CARD_V$;
+	if (#CARD_W$ != "" && strpos(#CARD_W$, "|") != 0) #CARD_W$ = "|" + #CARD_W$;
+	if (#CARD_Y$ != "" && strpos(#CARD_Y$, "|") != 0) #CARD_Y$ = "|" + #CARD_Y$;
+	if (#CARD_Z$ != "" && strpos(#CARD_Z$, "|") != 0) #CARD_Z$ = "|" + #CARD_Z$;
+	if (#CARD_BOSS1$ != "" && strpos(#CARD_BOSS1$, "|") != 0) #CARD_BOSS1$ = "|" + #CARD_BOSS1$;
+	if (#CARD_BOSS2$ != "" && strpos(#CARD_BOSS2$, "|") != 0) #CARD_BOSS2$ = "|" + #CARD_BOSS2$;
+	if (#CARD_MVP1$ != "" && strpos(#CARD_MVP1$, "|") != 0) #CARD_MVP1$ = "|" + #CARD_MVP1$;
+	if (#CARD_MVP2$ != "" && strpos(#CARD_MVP2$, "|") != 0) #CARD_MVP2$ = "|" + #CARD_MVP2$;
 	return;
 }
 
