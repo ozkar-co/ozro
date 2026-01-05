@@ -193,7 +193,30 @@ copyarray(.@temp[0], .carta_A[0], getarraysize(.carta_A));
 - Tamaño como tercer parámetro
 - Paréntesis alrededor de todos los parámetros
 
-### 11. Consideraciones de Performance
+### 11. Diferencia entre strmobinfo y getmonsterinfo
+
+**strmobinfo(type, mob_id)**: Retorna información básica, mayormente strings
+- Tipo 1: Nombre en inglés (STRING)
+- Tipo 2: Nombre japonés (STRING)
+- Tipo 3-7: Stats básicos (números)
+
+**getmonsterinfo(mob_id, type)**: Retorna información detallada, usando constantes MOB_*
+- MOB_NAME (0): Nombre
+- MOB_LV (1): Level
+- MOB_MVPEXP (22): Experiencia de MVP (0 si no es MVP, >0 si es MVP)
+- Y muchas más (ver doc/constants.md)
+
+❌ **INCORRECTO** (comparar string con número):
+```c
+if (strmobinfo(1, killedrid) != 1) // strmobinfo(1, ...) retorna STRING (nombre)
+```
+
+✅ **CORRECTO** (verificar si es MVP):
+```c
+if (getmonsterinfo(killedrid, 22) > 0) // MOB_MVPEXP > 0 significa que es MVP
+```
+
+### 12. Consideraciones de Performance
 - **strpos()** es O(n) - Aceptable para ~500 búsquedas
 - Si necesitas más de 1000 elementos, considera:
   - Múltiples variables por categoría
