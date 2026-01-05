@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 3.2
+//= 3.3
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -23,6 +23,10 @@
 //=     - This ensures strpos() correctly finds cards in format "|ID1|ID2|"
 //=     - RegCardsInv now shows message even when no cards found
 //=     - Added MigrateOldFormat to fix existing data from old format
+//= 3.3 Fixed dialogue blocking issues
+//=     - RegCardsInv now ends with close instead of return
+//=     - ShowProgress now ends with close instead of return
+//=     - Removed unreachable return statements from all display functions
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
@@ -130,7 +134,7 @@ function RegCardsInv {
 	} else {
 		mes "You don't have any cards in your inventory.";
 	}
-	return;
+	close;
 }
 
 // ===== FUNCTION: Show Progress =====
@@ -253,7 +257,7 @@ function ShowProgress {
 	mes "=== SPECIAL CARDS ===";
 	mes "BOSS: " + .@cBOSS + "/" + .@tBOSS;
 	mes "MVP: " + .@cMVP + "/" + .@tMVP;
-	return;
+	close;
 }
 
 // ===== FUNCTION: Find Missing Cards =====
@@ -309,7 +313,6 @@ function FindMissing {
 			close;
 		}
 	}
-	return;
 }
 
 // ===== FUNCTION: Display Missing By Letter =====
@@ -362,7 +365,6 @@ function ShowMissingLtr {
 		mes .@missing$;
 	}
 	close;
-	return;
 }
 
 // ===== FUNCTION: Display Missing By Type =====
@@ -392,7 +394,6 @@ function ShowMissingType {
 		mes .@missing$;
 	}
 	close;
-	return;
 }
 
 // ===== FUNCTION: View Collection =====
@@ -448,7 +449,6 @@ function ViewCollect {
 			close;
 		}
 	}
-	return;
 }
 
 // ===== FUNCTION: Display Collection By Letter =====
@@ -501,7 +501,6 @@ function ShowCollectLtr {
 		mes .@collection$;
 	}
 	close;
-	return;
 }
 
 // ===== FUNCTION: Display Collection By Type =====
@@ -531,7 +530,6 @@ function ShowCollectType {
 		mes .@collection$;
 	}
 	close;
-	return;
 }
 
 // ===== FUNCTION: Count Found Cards =====
