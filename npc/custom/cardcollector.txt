@@ -22,12 +22,20 @@
 //=     - AddCardToCategory now initializes variables with "|" prefix
 //=     - This ensures strpos() correctly finds cards in format "|ID1|ID2|"
 //=     - RegCardsInv now shows message even when no cards found
+//=     - Added MigrateOldFormat to fix existing data from old format
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
 	function RegCardsInv; function ShowProgress; function FindMissing; function ViewCollect;
 	function ShowMissingLtr; function ShowMissingType; function ShowCollectLtr; function ShowCollectType;
 	function CountFound; function GetCardCategory; function IsCardFound; function AddCardToCategory;
+	function MigrateOldFormat;
+	
+	// Migrate old format data on first interaction
+	if (#CARD_HELPER == 1 && #CARD_MIGRATED != 1) {
+		MigrateOldFormat();
+		#CARD_MIGRATED = 1;
+	}
 	
 	mes .npc_name$;
 	mes "Greetings, adventurer! I'm a card researcher and collector.";
@@ -780,6 +788,42 @@ function AddCardToCategory {
 		}
 	}
 	
+	return;
+}
+
+// ===== FUNCTION: Migrate Old Format Data =====
+function MigrateOldFormat {
+	// Fix old format data that doesn't start with "|"
+	// Old: "4013|4032|" -> New: "|4013|4032|"
+	// Check if first character is not "|" by seeing if "|" is at position 0
+	if (#CARD_A$ != "" && strpos(#CARD_A$, "|") != 0) #CARD_A$ = "|" + #CARD_A$;
+	if (#CARD_B$ != "" && strpos(#CARD_B$, "|") != 0) #CARD_B$ = "|" + #CARD_B$;
+	if (#CARD_C$ != "" && strpos(#CARD_C$, "|") != 0) #CARD_C$ = "|" + #CARD_C$;
+	if (#CARD_D$ != "" && strpos(#CARD_D$, "|") != 0) #CARD_D$ = "|" + #CARD_D$;
+	if (#CARD_F$ != "" && strpos(#CARD_F$, "|") != 0) #CARD_F$ = "|" + #CARD_F$;
+	if (#CARD_G$ != "" && strpos(#CARD_G$, "|") != 0) #CARD_G$ = "|" + #CARD_G$;
+	if (#CARD_H$ != "" && strpos(#CARD_H$, "|") != 0) #CARD_H$ = "|" + #CARD_H$;
+	if (#CARD_I$ != "" && strpos(#CARD_I$, "|") != 0) #CARD_I$ = "|" + #CARD_I$;
+	if (#CARD_J$ != "" && strpos(#CARD_J$, "|") != 0) #CARD_J$ = "|" + #CARD_J$;
+	if (#CARD_K$ != "" && strpos(#CARD_K$, "|") != 0) #CARD_K$ = "|" + #CARD_K$;
+	if (#CARD_L$ != "" && strpos(#CARD_L$, "|") != 0) #CARD_L$ = "|" + #CARD_L$;
+	if (#CARD_M$ != "" && strpos(#CARD_M$, "|") != 0) #CARD_M$ = "|" + #CARD_M$;
+	if (#CARD_N$ != "" && strpos(#CARD_N$, "|") != 0) #CARD_N$ = "|" + #CARD_N$;
+	if (#CARD_O$ != "" && strpos(#CARD_O$, "|") != 0) #CARD_O$ = "|" + #CARD_O$;
+	if (#CARD_P$ != "" && strpos(#CARD_P$, "|") != 0) #CARD_P$ = "|" + #CARD_P$;
+	if (#CARD_Q$ != "" && strpos(#CARD_Q$, "|") != 0) #CARD_Q$ = "|" + #CARD_Q$;
+	if (#CARD_R$ != "" && strpos(#CARD_R$, "|") != 0) #CARD_R$ = "|" + #CARD_R$;
+	if (#CARD_S$ != "" && strpos(#CARD_S$, "|") != 0) #CARD_S$ = "|" + #CARD_S$;
+	if (#CARD_T$ != "" && strpos(#CARD_T$, "|") != 0) #CARD_T$ = "|" + #CARD_T$;
+	if (#CARD_U$ != "" && strpos(#CARD_U$, "|") != 0) #CARD_U$ = "|" + #CARD_U$;
+	if (#CARD_V$ != "" && strpos(#CARD_V$, "|") != 0) #CARD_V$ = "|" + #CARD_V$;
+	if (#CARD_W$ != "" && strpos(#CARD_W$, "|") != 0) #CARD_W$ = "|" + #CARD_W$;
+	if (#CARD_Y$ != "" && strpos(#CARD_Y$, "|") != 0) #CARD_Y$ = "|" + #CARD_Y$;
+	if (#CARD_Z$ != "" && strpos(#CARD_Z$, "|") != 0) #CARD_Z$ = "|" + #CARD_Z$;
+	if (#CARD_BOSS1$ != "" && strpos(#CARD_BOSS1$, "|") != 0) #CARD_BOSS1$ = "|" + #CARD_BOSS1$;
+	if (#CARD_BOSS2$ != "" && strpos(#CARD_BOSS2$, "|") != 0) #CARD_BOSS2$ = "|" + #CARD_BOSS2$;
+	if (#CARD_MVP1$ != "" && strpos(#CARD_MVP1$, "|") != 0) #CARD_MVP1$ = "|" + #CARD_MVP1$;
+	if (#CARD_MVP2$ != "" && strpos(#CARD_MVP2$, "|") != 0) #CARD_MVP2$ = "|" + #CARD_MVP2$;
 	return;
 }
 
