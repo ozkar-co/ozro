@@ -213,7 +213,11 @@ if (strmobinfo(1, killedrid) != 1) // strmobinfo(1, ...) retorna STRING (nombre)
 
 ✅ **CORRECTO** (verificar si es MVP):
 ```c
-if (getmonsterinfo(killedrid, 22) > 0) // MOB_MVPEXP > 0 significa que es MVP
+if (getmonsterinfo(killedrid, 22) <= 0) end; // MOB_MVPEXP = 22, si es <= 0 NO es MVP
+// o de forma alternativa:
+if (getmonsterinfo(killedrid, 22) > 0) {
+    // es MVP, procesar...
+}
 ```
 
 ### 12. Consideraciones de Performance
@@ -325,7 +329,8 @@ if (.@party_id != 0) {
 - v1.1: Separada función CheckSpecificMVP para mejor organización del código
 - v1.2: Corregido detección de MVP usando `getmonsterinfo(killedrid, 22)` en vez de `strmobinfo(1, killedrid)`
   - Error previo: `strmobinfo(1, ...)` retorna string (nombre del mob), no un número
-  - Solución: Usar `getmonsterinfo(killedrid, MOB_MVPEXP)` que retorna exp de MVP (>0 si es MVP)
+  - Solución: Usar `getmonsterinfo(killedrid, 22)` donde 22 = MOB_MVPEXP (retorna exp de MVP: >0 si es MVP, 0 si no lo es)
+  - Nota: Se usa el valor numérico `22` directamente en lugar de la constante `MOB_MVPEXP` porque las constantes de documentación pueden no estar disponibles en el contexto del script
 
 **Lección aprendida sobre debugging**:
 Los logs de debug en el código fuente de Hercules (`ShowDebug` en `src/map/script.c`) fueron 
