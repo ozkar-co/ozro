@@ -145,27 +145,56 @@ if (.@len > 200) {
    - Si el jugador quiere hacer otra acción, que vuelva a hablar con el NPC
    - Esto previene bugs de interacción y simplifica el código
 
-3. **Ejemplo de flujo correcto:**
-   ```javascript
-   // ✓ CORRECTO - Sin loop infinito
-   mes "What would you like to do?";
-   next;
-   switch(select("Option 1", "Option 2", "Exit")) {
-       case 1: DoAction1(); break;
-       case 2: DoAction2(); break;
-       case 3: close;
-   }
-   // El NPC cierra después de una acción
-   
-   // ✗ INCORRECTO - Loop infinito
-   while(1) {
-       mes "What would you like to do?";
-       switch(select(...)) { ... }
-   }
-   ```
+3. **Uso correcto de `next;` y `close;`**
+   - `next;` espera que el jugador haga clic para ver MÁS diálogo
+   - `close;` termina la conversación con el NPC
+   - **NUNCA** usar `next;` seguido de `return;` - esto bloquea al jugador
+   - Toda función que muestra diálogo debe terminar con `close;` o retornar a un `close;`
+
+### ⚠️ Problema Resuelto: Bloqueo de Diálogo en Card Collector (Enero 2026)
+
+#### Síntomas
+El NPC se bloqueaba al seleccionar "Register Cards" o "Check Progress", dejando al jugador esperando indefinidamente.
+
+#### Causa Raíz
+Funciones terminaban con `next;` seguido de `return;`, dejando el diálogo esperando más contenido que nunca llegaba.
+
+**Código problemático:**
+```javascript
+function ShowProgress {
+    mes "Progress data...";
+    next;  // ❌ Espera más diálogo
+    return; // ❌ Termina la función sin mostrar nada más
+}
+```
+
+#### Solución
+1. **Remover `next;` innecesarios** antes de `return;` en funciones
+2. **Agregar `close;` terminal** después del switch para cerrar el diálogo
+
+**Código correcto:**
+```javascript
+// En funciones
+function ShowProgress {
+    mes "Progress data...";
+    return; // ✓ Retorna al menú principal
+}
+
+// En el menú principal
+switch(select(...)) {
+    case 1: ShowProgress(); break;
+    case 2: ViewCards(); break;
+}
+close; // ✓ CRÍTICO: Cierra el diálogo después del switch
+```
+
+#### Regla General
+- **Switch con funciones**: Siempre agregar `close;` después del switch
+- **Funciones de diálogo**: Solo usar `next;` si hay más contenido que mostrar
+- **Multi-página**: Usar `next;` entre páginas, NO antes del `return;` final
 
 ---
 
-**Última actualización:** 03 Enero 2026
+**Última actualización:** 05 Enero 2026
 **Actualizado por:** @copilot
 **Revisión necesaria:** Anual o al añadir nuevas categorías de cartas

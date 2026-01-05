@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 3.0
+//= 3.1
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -15,6 +15,9 @@
 //= 2.2 Fixed infinite loop for returning players - added dialogue clear
 //= 3.0 Complete refactor - removed infinite loops, simplified menu flow
 //=     Removed all color codes and decorators, menu executes once then exits
+//= 3.1 Fixed infinite loop in Register Cards and Check Progress options
+//=     - Added missing close statement after switch block
+//=     - Removed trailing next statements that blocked dialogue flow
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
@@ -75,6 +78,7 @@
 			mes "Keep searching, collector! Every card counts!";
 			close;
 	}
+	close;
 
 // ===== FUNCTION: Register Cards From Inventory =====
 function RegCardsInv {
@@ -111,7 +115,6 @@ function RegCardsInv {
 		} else {
 			mes "All of them were already registered.";
 		}
-		next;
 	}
 	return;
 }
@@ -236,7 +239,6 @@ function ShowProgress {
 	mes "=== SPECIAL CARDS ===";
 	mes "BOSS: " + .@cBOSS + "/" + .@tBOSS;
 	mes "MVP: " + .@cMVP + "/" + .@tMVP;
-	next;
 	return;
 }
 
