@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 3.3
+//= 4.0
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -30,934 +30,95 @@
 //=     - All dialog display happens in main menu after switch
 //=     - Added debugmes statements for troubleshooting
 //=     - Changed Cecil Damond Card (4368) from S to C
+//= 4.0 Prepared data via direct lookup table and debug-only scan
+//=     - Replaced setarray category lists with precomputed setd mapping .card_cat_<ID>$
+//=     - Added interaction that scans inventory and logs card -> category via debugmes
+//=     - No runtime loops for category resolution; lookups are O(1) via getd()
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
-	function RegCardsInv; function ShowProgress; function FindMissing; function ViewCollect;
-	function ShowMissingLtr; function ShowMissingType; function ShowCollectLtr; function ShowCollectType;
-	function CountFound; function GetCardCat_Orig; function IsCardFound; function AddCardToCategory;
-	function MigrateOldFormat;
 	
-	debugmes "[CardCollector] NPC interaction started";
+	debugmes "[CardCollector] Scanning inventory for cards...";
 	
-	// Migrate old format data on first interaction
-	if (#CARD_HELPER == 1 && #CARD_MIGRATED != 1) {
-		debugmes "[CardCollector] Migrating old format data";
-		MigrateOldFormat();
-		#CARD_MIGRATED = 1;
-	}
-	
-	mes .npc_name$;
-	mes "Greetings, adventurer! I'm a card researcher and collector.";
-	mes "My team and I travel across these lands documenting";
-	mes "and collecting every card we can find.";
-	next;
-	
-	// Check if already registered as helper
-	if (#CARD_HELPER != 1) {
-		debugmes "[CardCollector] New user - offering helper registration";
-		mes .npc_name$;
-		mes "We're on a mission to gather and study all known cards";
-		mes "in this world. It's quite the ambitious goal, I know!";
-		next;
-		
-		mes .npc_name$;
-		mes "Would you be interested in helping us with our search?";
-		next;
-		
-		if (select("Yes, I'll help!", "Maybe later") == 1) {
-			#CARD_HELPER = 1;
-			debugmes "[CardCollector] User accepted - registered as helper";
-			mes .npc_name$;
-			mes "Excellent! Welcome to our team, collector!";
-			next;
-		} else {
-			debugmes "[CardCollector] User declined helper registration";
-			mes .npc_name$;
-			mes "Should you ever come across rare or unique cards,";
-			mes "we would be most interested in seeing them.";
-			close;
-		}
-	} else {
-		debugmes "[CardCollector] Returning helper";
-	}
-	
-	// Main menu - no loop, exits after one action
-	mes .npc_name$;
-	mes "What would you like to do?";
-	next;
-	
-	switch(select("Register Cards in Inventory", "Check Progress", "View My Collection", "Find Missing Cards", "Exit")) {
-		case 1: // Register Cards
-			debugmes "[CardCollector] Main: User selected 'Register Cards'";
-			RegCardsInv();
-			// Display results
-			mes .npc_name$;
-			if (@reg_total > 0) {
-				mes "I found " + @reg_total + " unique card" + (@reg_total == 1 ? "" : "s") + " in your inventory!";
-				if (@reg_new > 0) {
-					mes "Of those, " + @reg_new + " " + (@reg_new == 1 ? "is" : "are") + " new to our collection!";
-				} else {
-					mes "All of them were already registered.";
-				}
-			} else {
-				mes "You don't have any cards in your inventory.";
-			}
-			break;
-		case 2: // Check Progress
-			debugmes "[CardCollector] Main: User selected 'Check Progress'";
-			ShowProgress();
-			// Display progress data
-			mes .npc_name$;
-			mes "=== COLLECTION PROGRESS ===";
-			next;
-			mes @progress_line1$;
-			mes @progress_line2$;
-			mes @progress_line3$;
-			mes @progress_line4$;
-			next;
-			mes @progress_line5$;
-			mes @progress_line6$;
-			mes @progress_line7$;
-			mes @progress_line8$;
-			next;
-			mes "=== SPECIAL CARDS ===";
-			mes @progress_line9$;
-			mes @progress_line10$;
-			break;
-		case 3: // View Collection
-			debugmes "[CardCollector] Main: User selected 'View Collection'";
-			ViewCollect();
-			break;
-		case 4: // Find Missing Cards
-			debugmes "[CardCollector] Main: User selected 'Find Missing'";
-			FindMissing();
-			break;
-		case 5: // Exit
-			debugmes "[CardCollector] Main: User selected 'Exit'";
-			mes .npc_name$;
-			mes "Keep searching, collector! Every card counts!";
-			close;
-	}
-	close;
-
-// ===== FUNCTION: Register Cards From Inventory =====
-// Returns: array with [total_unique, new_cards]
-function RegCardsInv {
-	debugmes "[CardCollector] RegCardsInv: Starting card registration";
-	.@total_unique = 0;
-	.@new_cards = 0;
-	
-	getinventorylist();
-	debugmes "[CardCollector] RegCardsInv: Found " + @inventorylist_count + " items in inventory";
-	
-	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
-		.@item_id = @inventorylist_id[.@i];
-		
-		// Check if item is a card (type 6)
-		if (getiteminfo(.@item_id, ITEMINFO_TYPE) == IT_CARD) {
-			.@total_unique++;
-			debugmes "[CardCollector] RegCardsInv: Found card ID " + .@item_id + " (" + getitemname(.@item_id) + ")";
-			
-			// Determine which category this card belongs to
-			.@category$ = GetCardCat_Orig(.@item_id);
-			debugmes "[CardCollector] RegCardsInv: Card " + .@item_id + " belongs to category: " + .@category$;
-			
-			// Check if card is already registered in its category
-			if (!IsCardFound(.@item_id, .@category$)) {
-				// Add card to found list in appropriate category
-				AddCardToCategory(.@item_id, .@category$);
-				.@new_cards++;
-				debugmes "[CardCollector] RegCardsInv: Registered NEW card " + .@item_id + " in category " + .@category$;
-			} else {
-				debugmes "[CardCollector] RegCardsInv: Card " + .@item_id + " already registered";
+	.@inv_size = getinventorysize();
+	for (.@i = 0; .@i < .@inv_size; .@i++) {
+		.@item_id = getinventorylist(.@i);
+		if (.@item_id >= 4001 && .@item_id <= 27999) {
+			.@cat$ = GetCardCategory(.@item_id);
+			if (.@cat$ != "") {
+				debugmes "[CardCollector] Card " + .@item_id + " -> Category: " + .@cat$;
 			}
 		}
 	}
 	
-	debugmes "[CardCollector] RegCardsInv: Complete - Total unique: " + .@total_unique + ", New cards: " + .@new_cards;
-	// Store results in temporary variables for caller to use
-	@reg_total = .@total_unique;
-	@reg_new = .@new_cards;
-	return;
-}
-
-// ===== FUNCTION: Show Progress =====
-// Builds progress strings and stores in @progress_line1$ through @progress_line10$
-function ShowProgress {
-	debugmes "[CardCollector] ShowProgress: Building progress data";
-	
-	// Count found cards per letter
-	// Line 1: A, B, C
-	.@cA = CountFound("A");
-	.@cB = CountFound("B");
-	.@cC = CountFound("C");
-	.@tA = getarraysize(.carta_A);
-	.@tB = getarraysize(.carta_B);
-	.@tC = getarraysize(.carta_C);
-	@progress_line1$ = "A: " + .@cA + "/" + .@tA + "  ";
-	@progress_line1$ = @progress_line1$ + "B: " + .@cB + "/" + .@tB + "  ";
-	@progress_line1$ = @progress_line1$ + "C: " + .@cC + "/" + .@tC;
-	
-	// Line 2: D, F, G
-	.@cD = CountFound("D");
-	.@cF = CountFound("F");
-	.@cG = CountFound("G");
-	.@tD = getarraysize(.carta_D);
-	.@tF = getarraysize(.carta_F);
-	.@tG = getarraysize(.carta_G);
-	@progress_line2$ = "D: " + .@cD + "/" + .@tD + "  ";
-	@progress_line2$ = @progress_line2$ + "F: " + .@cF + "/" + .@tF + "  ";
-	@progress_line2$ = @progress_line2$ + "G: " + .@cG + "/" + .@tG;
-	
-	// Line 3: H, I, J
-	.@cH = CountFound("H");
-	.@cI = CountFound("I");
-	.@cJ = CountFound("J");
-	.@tH = getarraysize(.carta_H);
-	.@tI = getarraysize(.carta_I);
-	.@tJ = getarraysize(.carta_J);
-	@progress_line3$ = "H: " + .@cH + "/" + .@tH + "  ";
-	@progress_line3$ = @progress_line3$ + "I: " + .@cI + "/" + .@tI + "  ";
-	@progress_line3$ = @progress_line3$ + "J: " + .@cJ + "/" + .@tJ;
-	
-	// Line 4: K, L, M
-	.@cK = CountFound("K");
-	.@cL = CountFound("L");
-	.@cM = CountFound("M");
-	.@tK = getarraysize(.carta_K);
-	.@tL = getarraysize(.carta_L);
-	.@tM = getarraysize(.carta_M);
-	@progress_line4$ = "K: " + .@cK + "/" + .@tK + "  ";
-	@progress_line4$ = @progress_line4$ + "L: " + .@cL + "/" + .@tL + "  ";
-	@progress_line4$ = @progress_line4$ + "M: " + .@cM + "/" + .@tM;
-	
-	// Line 5: N, O, P
-	.@cN = CountFound("N");
-	.@cO = CountFound("O");
-	.@cP = CountFound("P");
-	.@tN = getarraysize(.carta_N);
-	.@tO = getarraysize(.carta_O);
-	.@tP = getarraysize(.carta_P);
-	@progress_line5$ = "N: " + .@cN + "/" + .@tN + "  ";
-	@progress_line5$ = @progress_line5$ + "O: " + .@cO + "/" + .@tO + "  ";
-	@progress_line5$ = @progress_line5$ + "P: " + .@cP + "/" + .@tP;
-	
-	// Line 6: Q, R, S
-	.@cQ = CountFound("Q");
-	.@cR = CountFound("R");
-	.@cS = CountFound("S");
-	.@tQ = getarraysize(.carta_Q);
-	.@tR = getarraysize(.carta_R);
-	.@tS = getarraysize(.carta_S);
-	@progress_line6$ = "Q: " + .@cQ + "/" + .@tQ + "  ";
-	@progress_line6$ = @progress_line6$ + "R: " + .@cR + "/" + .@tR + "  ";
-	@progress_line6$ = @progress_line6$ + "S: " + .@cS + "/" + .@tS;
-	
-	// Line 7: T, U, V
-	.@cT = CountFound("T");
-	.@cU = CountFound("U");
-	.@cV = CountFound("V");
-	.@tT = getarraysize(.carta_T);
-	.@tU = getarraysize(.carta_U);
-	.@tV = getarraysize(.carta_V);
-	@progress_line7$ = "T: " + .@cT + "/" + .@tT + "  ";
-	@progress_line7$ = @progress_line7$ + "U: " + .@cU + "/" + .@tU + "  ";
-	@progress_line7$ = @progress_line7$ + "V: " + .@cV + "/" + .@tV;
-	
-	// Line 8: W, Y, Z
-	.@cW = CountFound("W");
-	.@cY = CountFound("Y");
-	.@cZ = CountFound("Z");
-	.@tW = getarraysize(.carta_W);
-	.@tY = getarraysize(.carta_Y);
-	.@tZ = getarraysize(.carta_Z);
-	@progress_line8$ = "W: " + .@cW + "/" + .@tW + "  ";
-	@progress_line8$ = @progress_line8$ + "Y: " + .@cY + "/" + .@tY + "  ";
-	@progress_line8$ = @progress_line8$ + "Z: " + .@cZ + "/" + .@tZ;
-	
-	// Special categories
-	.@cBOSS = CountFound("BOSS");
-	.@cMVP = CountFound("MVP");
-	.@tBOSS = getarraysize(.carta_BOSS);
-	.@tMVP = getarraysize(.carta_MVP);
-	@progress_line9$ = "BOSS: " + .@cBOSS + "/" + .@tBOSS;
-	@progress_line10$ = "MVP: " + .@cMVP + "/" + .@tMVP;
-	
-	debugmes "[CardCollector] ShowProgress: Progress data built successfully";
-	return;
-}
-
-// ===== FUNCTION: Find Missing Cards =====
-function FindMissing {
-	mes .npc_name$;
-	mes "Which cards would you like to search for?";
-	mes "Enter a letter (A-Z) or 'BOSS' or 'MVP'.";
-	next;
-	
-	input .@search$;
-	.@search$ = strtoupper(.@search$);
-	
-	// Validate input
-	if (.@search$ == "") {
-		mes .npc_name$;
-		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
-		close;
-		return;
-	}
-	
-	// Validate letter (single character)
-	if (getstrlen(.@search$) == 1) {
-		if (.@search$ != "A" && .@search$ != "B" && .@search$ != "C" && 
-		    .@search$ != "D" && .@search$ != "F" && .@search$ != "G" && 
-		    .@search$ != "H" && .@search$ != "I" && .@search$ != "J" && 
-		    .@search$ != "K" && .@search$ != "L" && .@search$ != "M" && 
-		    .@search$ != "N" && .@search$ != "O" && .@search$ != "P" && 
-		    .@search$ != "Q" && .@search$ != "R" && .@search$ != "S" && 
-		    .@search$ != "T" && .@search$ != "U" && .@search$ != "V" && 
-		    .@search$ != "W" && .@search$ != "Y" && .@search$ != "Z") {
-			mes .npc_name$;
-			mes "That's not a valid letter!";
-			close;
-			return;
-		}
-		ShowMissingLtr(.@search$);
-	} else if (.@search$ == "BOSS" || .@search$ == "MVP") {
-		ShowMissingType(.@search$);
-	} else {
-		mes .npc_name$;
-		mes "Please enter a single letter, 'BOSS', or 'MVP'.";
-		close;
-	}
-	return;
-}
-
-// ===== FUNCTION: Display Missing By Letter =====
-function ShowMissingLtr {
-	.@letter$ = getarg(0);
-	.@missing$ = "";
-	
-	// Get the correct array
-	if (.@letter$ == "A") copyarray(.@carta[0], .carta_A[0], getarraysize(.carta_A));
-	else if (.@letter$ == "B") copyarray(.@carta[0], .carta_B[0], getarraysize(.carta_B));
-	else if (.@letter$ == "C") copyarray(.@carta[0], .carta_C[0], getarraysize(.carta_C));
-	else if (.@letter$ == "D") copyarray(.@carta[0], .carta_D[0], getarraysize(.carta_D));
-	else if (.@letter$ == "F") copyarray(.@carta[0], .carta_F[0], getarraysize(.carta_F));
-	else if (.@letter$ == "G") copyarray(.@carta[0], .carta_G[0], getarraysize(.carta_G));
-	else if (.@letter$ == "H") copyarray(.@carta[0], .carta_H[0], getarraysize(.carta_H));
-	else if (.@letter$ == "I") copyarray(.@carta[0], .carta_I[0], getarraysize(.carta_I));
-	else if (.@letter$ == "J") copyarray(.@carta[0], .carta_J[0], getarraysize(.carta_J));
-	else if (.@letter$ == "K") copyarray(.@carta[0], .carta_K[0], getarraysize(.carta_K));
-	else if (.@letter$ == "L") copyarray(.@carta[0], .carta_L[0], getarraysize(.carta_L));
-	else if (.@letter$ == "M") copyarray(.@carta[0], .carta_M[0], getarraysize(.carta_M));
-	else if (.@letter$ == "N") copyarray(.@carta[0], .carta_N[0], getarraysize(.carta_N));
-	else if (.@letter$ == "O") copyarray(.@carta[0], .carta_O[0], getarraysize(.carta_O));
-	else if (.@letter$ == "P") copyarray(.@carta[0], .carta_P[0], getarraysize(.carta_P));
-	else if (.@letter$ == "Q") copyarray(.@carta[0], .carta_Q[0], getarraysize(.carta_Q));
-	else if (.@letter$ == "R") copyarray(.@carta[0], .carta_R[0], getarraysize(.carta_R));
-	else if (.@letter$ == "S") copyarray(.@carta[0], .carta_S[0], getarraysize(.carta_S));
-	else if (.@letter$ == "T") copyarray(.@carta[0], .carta_T[0], getarraysize(.carta_T));
-	else if (.@letter$ == "U") copyarray(.@carta[0], .carta_U[0], getarraysize(.carta_U));
-	else if (.@letter$ == "V") copyarray(.@carta[0], .carta_V[0], getarraysize(.carta_V));
-	else if (.@letter$ == "W") copyarray(.@carta[0], .carta_W[0], getarraysize(.carta_W));
-	else if (.@letter$ == "Y") copyarray(.@carta[0], .carta_Y[0], getarraysize(.carta_Y));
-	else if (.@letter$ == "Z") copyarray(.@carta[0], .carta_Z[0], getarraysize(.carta_Z));
-	
-	// Find missing cards
-	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (!IsCardFound(.@carta[.@i], .@letter$)) {
-			if (.@missing$ == "") {
-				.@missing$ = getitemname(.@carta[.@i]);
-			} else {
-				.@missing$ = .@missing$ + ", " + getitemname(.@carta[.@i]);
-			}
-		}
-	}
-	
-	mes .npc_name$;
-	if (.@missing$ == "") {
-		mes "Congratulations! You have all cards from letter " + .@letter$ + "!";
-	} else {
-		mes "Missing cards from letter " + .@letter$ + ":";
-		mes .@missing$;
-	}
-	close;
-	return;
-}
-
-// ===== FUNCTION: Display Missing By Type =====
-function ShowMissingType {
-	.@type$ = getarg(0);
-	.@missing$ = "";
-	
-	if (.@type$ == "BOSS") copyarray(.@carta[0], .carta_BOSS[0], getarraysize(.carta_BOSS));
-	else if (.@type$ == "MVP") copyarray(.@carta[0], .carta_MVP[0], getarraysize(.carta_MVP));
-	
-	// Find missing cards
-	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (!IsCardFound(.@carta[.@i], .@type$)) {
-			if (.@missing$ == "") {
-				.@missing$ = getitemname(.@carta[.@i]);
-			} else {
-				.@missing$ = .@missing$ + ", " + getitemname(.@carta[.@i]);
-			}
-		}
-	}
-	
-	mes .npc_name$;
-	if (.@missing$ == "") {
-		mes "Congratulations! You have all " + .@type$ + " cards!";
-	} else {
-		mes "Missing " + .@type$ + " cards:";
-		mes .@missing$;
-	}
-	close;
-	return;
-}
-
-// ===== FUNCTION: View Collection =====
-function ViewCollect {
-	mes .npc_name$;
-	mes "Which cards would you like to review?";
-	mes "Enter a letter (A-Z) or 'BOSS' or 'MVP'.";
-	next;
-	
-	input .@search$;
-	.@search$ = strtoupper(.@search$);
-	
-	// Validate input
-	if (.@search$ == "") {
-		mes .npc_name$;
-		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
-		close;
-		return;
-	}
-	
-	// Validate letter (single character)
-	if (getstrlen(.@search$) == 1) {
-		if (.@search$ != "A" && .@search$ != "B" && .@search$ != "C" && 
-		    .@search$ != "D" && .@search$ != "F" && .@search$ != "G" && 
-		    .@search$ != "H" && .@search$ != "I" && .@search$ != "J" && 
-		    .@search$ != "K" && .@search$ != "L" && .@search$ != "M" && 
-		    .@search$ != "N" && .@search$ != "O" && .@search$ != "P" && 
-		    .@search$ != "Q" && .@search$ != "R" && .@search$ != "S" && 
-		    .@search$ != "T" && .@search$ != "U" && .@search$ != "V" && 
-		    .@search$ != "W" && .@search$ != "Y" && .@search$ != "Z") {
-			mes .npc_name$;
-			mes "That's not a valid letter!";
-			close;
-			return;
-		}
-		ShowCollectLtr(.@search$);
-	} else if (.@search$ == "BOSS" || .@search$ == "MVP") {
-		ShowCollectType(.@search$);
-	} else {
-		mes .npc_name$;
-		mes "Please enter a single letter, 'BOSS', or 'MVP'.";
-		close;
-	}
-	return;
-}
-
-// ===== FUNCTION: Display Collection By Letter =====
-function ShowCollectLtr {
-	.@letter$ = getarg(0);
-	.@collection$ = "";
-	
-	// Get the correct array
-	if (.@letter$ == "A") copyarray(.@carta[0], .carta_A[0], getarraysize(.carta_A));
-	else if (.@letter$ == "B") copyarray(.@carta[0], .carta_B[0], getarraysize(.carta_B));
-	else if (.@letter$ == "C") copyarray(.@carta[0], .carta_C[0], getarraysize(.carta_C));
-	else if (.@letter$ == "D") copyarray(.@carta[0], .carta_D[0], getarraysize(.carta_D));
-	else if (.@letter$ == "F") copyarray(.@carta[0], .carta_F[0], getarraysize(.carta_F));
-	else if (.@letter$ == "G") copyarray(.@carta[0], .carta_G[0], getarraysize(.carta_G));
-	else if (.@letter$ == "H") copyarray(.@carta[0], .carta_H[0], getarraysize(.carta_H));
-	else if (.@letter$ == "I") copyarray(.@carta[0], .carta_I[0], getarraysize(.carta_I));
-	else if (.@letter$ == "J") copyarray(.@carta[0], .carta_J[0], getarraysize(.carta_J));
-	else if (.@letter$ == "K") copyarray(.@carta[0], .carta_K[0], getarraysize(.carta_K));
-	else if (.@letter$ == "L") copyarray(.@carta[0], .carta_L[0], getarraysize(.carta_L));
-	else if (.@letter$ == "M") copyarray(.@carta[0], .carta_M[0], getarraysize(.carta_M));
-	else if (.@letter$ == "N") copyarray(.@carta[0], .carta_N[0], getarraysize(.carta_N));
-	else if (.@letter$ == "O") copyarray(.@carta[0], .carta_O[0], getarraysize(.carta_O));
-	else if (.@letter$ == "P") copyarray(.@carta[0], .carta_P[0], getarraysize(.carta_P));
-	else if (.@letter$ == "Q") copyarray(.@carta[0], .carta_Q[0], getarraysize(.carta_Q));
-	else if (.@letter$ == "R") copyarray(.@carta[0], .carta_R[0], getarraysize(.carta_R));
-	else if (.@letter$ == "S") copyarray(.@carta[0], .carta_S[0], getarraysize(.carta_S));
-	else if (.@letter$ == "T") copyarray(.@carta[0], .carta_T[0], getarraysize(.carta_T));
-	else if (.@letter$ == "U") copyarray(.@carta[0], .carta_U[0], getarraysize(.carta_U));
-	else if (.@letter$ == "V") copyarray(.@carta[0], .carta_V[0], getarraysize(.carta_V));
-	else if (.@letter$ == "W") copyarray(.@carta[0], .carta_W[0], getarraysize(.carta_W));
-	else if (.@letter$ == "Y") copyarray(.@carta[0], .carta_Y[0], getarraysize(.carta_Y));
-	else if (.@letter$ == "Z") copyarray(.@carta[0], .carta_Z[0], getarraysize(.carta_Z));
-	
-	// Find found cards
-	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (IsCardFound(.@carta[.@i], .@letter$)) {
-			if (.@collection$ == "") {
-				.@collection$ = getitemname(.@carta[.@i]);
-			} else {
-				.@collection$ = .@collection$ + ", " + getitemname(.@carta[.@i]);
-			}
-		}
-	}
-	
-	mes .npc_name$;
-	if (.@collection$ == "") {
-		mes "You don't have any cards from letter " + .@letter$ + " yet.";
-	} else {
-		mes "Cards from letter " + .@letter$ + ":";
-		mes .@collection$;
-	}
-	close;
-	return;
-}
-
-// ===== FUNCTION: Display Collection By Type =====
-function ShowCollectType {
-	.@type$ = getarg(0);
-	.@collection$ = "";
-	
-	if (.@type$ == "BOSS") copyarray(.@carta[0], .carta_BOSS[0], getarraysize(.carta_BOSS));
-	else if (.@type$ == "MVP") copyarray(.@carta[0], .carta_MVP[0], getarraysize(.carta_MVP));
-	
-	// Find found cards
-	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (IsCardFound(.@carta[.@i], .@type$)) {
-			if (.@collection$ == "") {
-				.@collection$ = getitemname(.@carta[.@i]);
-			} else {
-				.@collection$ = .@collection$ + ", " + getitemname(.@carta[.@i]);
-			}
-		}
-	}
-	
-	mes .npc_name$;
-	if (.@collection$ == "") {
-		mes "You don't have any " + .@type$ + " cards yet.";
-	} else {
-		mes "Your " + .@type$ + " cards:";
-		mes .@collection$;
-	}
-	close;
-	return;
-}
-
-// ===== FUNCTION: Count Found Cards =====
-function CountFound {
-	.@letter$ = getarg(0);
-	.@count = 0;
-	
-	// Get the correct array
-	if (.@letter$ == "A") copyarray(.@carta[0], .carta_A[0], getarraysize(.carta_A));
-	else if (.@letter$ == "B") copyarray(.@carta[0], .carta_B[0], getarraysize(.carta_B));
-	else if (.@letter$ == "C") copyarray(.@carta[0], .carta_C[0], getarraysize(.carta_C));
-	else if (.@letter$ == "D") copyarray(.@carta[0], .carta_D[0], getarraysize(.carta_D));
-	else if (.@letter$ == "F") copyarray(.@carta[0], .carta_F[0], getarraysize(.carta_F));
-	else if (.@letter$ == "G") copyarray(.@carta[0], .carta_G[0], getarraysize(.carta_G));
-	else if (.@letter$ == "H") copyarray(.@carta[0], .carta_H[0], getarraysize(.carta_H));
-	else if (.@letter$ == "I") copyarray(.@carta[0], .carta_I[0], getarraysize(.carta_I));
-	else if (.@letter$ == "J") copyarray(.@carta[0], .carta_J[0], getarraysize(.carta_J));
-	else if (.@letter$ == "K") copyarray(.@carta[0], .carta_K[0], getarraysize(.carta_K));
-	else if (.@letter$ == "L") copyarray(.@carta[0], .carta_L[0], getarraysize(.carta_L));
-	else if (.@letter$ == "M") copyarray(.@carta[0], .carta_M[0], getarraysize(.carta_M));
-	else if (.@letter$ == "N") copyarray(.@carta[0], .carta_N[0], getarraysize(.carta_N));
-	else if (.@letter$ == "O") copyarray(.@carta[0], .carta_O[0], getarraysize(.carta_O));
-	else if (.@letter$ == "P") copyarray(.@carta[0], .carta_P[0], getarraysize(.carta_P));
-	else if (.@letter$ == "Q") copyarray(.@carta[0], .carta_Q[0], getarraysize(.carta_Q));
-	else if (.@letter$ == "R") copyarray(.@carta[0], .carta_R[0], getarraysize(.carta_R));
-	else if (.@letter$ == "S") copyarray(.@carta[0], .carta_S[0], getarraysize(.carta_S));
-	else if (.@letter$ == "T") copyarray(.@carta[0], .carta_T[0], getarraysize(.carta_T));
-	else if (.@letter$ == "U") copyarray(.@carta[0], .carta_U[0], getarraysize(.carta_U));
-	else if (.@letter$ == "V") copyarray(.@carta[0], .carta_V[0], getarraysize(.carta_V));
-	else if (.@letter$ == "W") copyarray(.@carta[0], .carta_W[0], getarraysize(.carta_W));
-	else if (.@letter$ == "Y") copyarray(.@carta[0], .carta_Y[0], getarraysize(.carta_Y));
-	else if (.@letter$ == "Z") copyarray(.@carta[0], .carta_Z[0], getarraysize(.carta_Z));
-	else if (.@letter$ == "BOSS") copyarray(.@carta[0], .carta_BOSS[0], getarraysize(.carta_BOSS));
-	else if (.@letter$ == "MVP") copyarray(.@carta[0], .carta_MVP[0], getarraysize(.carta_MVP));
-	
-	// Count found cards
-	for (.@i = 0; .@i < getarraysize(.@carta); .@i++) {
-		if (IsCardFound(.@carta[.@i], .@letter$)) {
-			.@count++;
-		}
-	}
-	
-	return .@count;
-}
-
-// ===== FUNCTION: Get Card Array Reference =====
-// Helper to avoid duplicating 26+ if-else chains
-function GetCardArray {
-	.@letter$ = getarg(0);
-	
-	if (.@letter$ == "A") return .carta_A;
-	else if (.@letter$ == "B") return .carta_B;
-	else if (.@letter$ == "C") return .carta_C;
-	else if (.@letter$ == "D") return .carta_D;
-	else if (.@letter$ == "F") return .carta_F;
-	else if (.@letter$ == "G") return .carta_G;
-	else if (.@letter$ == "H") return .carta_H;
-	else if (.@letter$ == "I") return .carta_I;
-	else if (.@letter$ == "J") return .carta_J;
-	else if (.@letter$ == "K") return .carta_K;
-	else if (.@letter$ == "L") return .carta_L;
-	else if (.@letter$ == "M") return .carta_M;
-	else if (.@letter$ == "N") return .carta_N;
-	else if (.@letter$ == "O") return .carta_O;
-	else if (.@letter$ == "P") return .carta_P;
-	else if (.@letter$ == "Q") return .carta_Q;
-	else if (.@letter$ == "R") return .carta_R;
-	else if (.@letter$ == "S") return .carta_S;
-	else if (.@letter$ == "T") return .carta_T;
-	else if (.@letter$ == "U") return .carta_U;
-	else if (.@letter$ == "V") return .carta_V;
-	else if (.@letter$ == "W") return .carta_W;
-	else if (.@letter$ == "Y") return .carta_Y;
-	else if (.@letter$ == "Z") return .carta_Z;
-	else if (.@letter$ == "BOSS") return .carta_BOSS;
-	else if (.@letter$ == "MVP") return .carta_MVP;
-	
-	return;
-}
-
-// ===== FUNCTION: Get Card Category =====
-function GetCardCat_Orig {
-	.@item_id = getarg(0);
-	debugmes "[GetCardCat_Orig] Searching for card ID: " + .@item_id;
-	
-	// Check each category - using simpler logic to avoid infinite loops
-	.@size = getarraysize(.carta_A);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_A[.@i] == .@item_id) return "A";
-	
-	.@size = getarraysize(.carta_B);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_B[.@i] == .@item_id) return "B";
-	
-	.@size = getarraysize(.carta_C);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_C[.@i] == .@item_id) return "C";
-	
-	.@size = getarraysize(.carta_D);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_D[.@i] == .@item_id) return "D";
-	
-	.@size = getarraysize(.carta_F);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_F[.@i] == .@item_id) return "F";
-	
-	.@size = getarraysize(.carta_G);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_G[.@i] == .@item_id) return "G";
-	
-	.@size = getarraysize(.carta_H);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_H[.@i] == .@item_id) return "H";
-	
-	.@size = getarraysize(.carta_I);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_I[.@i] == .@item_id) return "I";
-	
-	.@size = getarraysize(.carta_J);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_J[.@i] == .@item_id) return "J";
-	
-	.@size = getarraysize(.carta_K);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_K[.@i] == .@item_id) return "K";
-	
-	.@size = getarraysize(.carta_L);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_L[.@i] == .@item_id) return "L";
-	
-	.@size = getarraysize(.carta_M);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_M[.@i] == .@item_id) return "M";
-	
-	.@size = getarraysize(.carta_N);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_N[.@i] == .@item_id) return "N";
-	
-	.@size = getarraysize(.carta_O);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_O[.@i] == .@item_id) return "O";
-	
-	.@size = getarraysize(.carta_P);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_P[.@i] == .@item_id) return "P";
-	
-	.@size = getarraysize(.carta_Q);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_Q[.@i] == .@item_id) return "Q";
-	
-	.@size = getarraysize(.carta_R);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_R[.@i] == .@item_id) return "R";
-	
-	.@size = getarraysize(.carta_S);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_S[.@i] == .@item_id) return "S";
-	
-	.@size = getarraysize(.carta_T);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_T[.@i] == .@item_id) return "T";
-	
-	.@size = getarraysize(.carta_U);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_U[.@i] == .@item_id) return "U";
-	
-	.@size = getarraysize(.carta_V);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_V[.@i] == .@item_id) return "V";
-	
-	.@size = getarraysize(.carta_W);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_W[.@i] == .@item_id) return "W";
-	
-	.@size = getarraysize(.carta_Y);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_Y[.@i] == .@item_id) return "Y";
-	
-	.@size = getarraysize(.carta_Z);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_Z[.@i] == .@item_id) return "Z";
-	
-	.@size = getarraysize(.carta_BOSS);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_BOSS[.@i] == .@item_id) return "BOSS";
-	
-	.@size = getarraysize(.carta_MVP);
-	if (.@size > 0) for (.@i = 0; .@i < .@size; .@i++) if (.carta_MVP[.@i] == .@item_id) return "MVP";
-	
-	debugmes "[GetCardCat_Orig] Card not found in any category!";
-	return ""; // Unknown card
-}
-
-// ===== FUNCTION: Check if Card is Found =====
-function IsCardFound {
-	.@item_id = getarg(0);
-	.@category$ = getarg(1);
-	
-	// Get the correct variable based on category
-	if (.@category$ == "A") return (strpos(#CARD_A$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "B") return (strpos(#CARD_B$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "C") return (strpos(#CARD_C$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "D") return (strpos(#CARD_D$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "F") return (strpos(#CARD_F$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "G") return (strpos(#CARD_G$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "H") return (strpos(#CARD_H$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "I") return (strpos(#CARD_I$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "J") return (strpos(#CARD_J$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "K") return (strpos(#CARD_K$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "L") return (strpos(#CARD_L$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "M") return (strpos(#CARD_M$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "N") return (strpos(#CARD_N$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "O") return (strpos(#CARD_O$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "P") return (strpos(#CARD_P$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "Q") return (strpos(#CARD_Q$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "R") return (strpos(#CARD_R$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "S") return (strpos(#CARD_S$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "T") return (strpos(#CARD_T$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "U") return (strpos(#CARD_U$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "V") return (strpos(#CARD_V$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "W") return (strpos(#CARD_W$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "Y") return (strpos(#CARD_Y$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "Z") return (strpos(#CARD_Z$, "|" + .@item_id + "|") != -1);
-	else if (.@category$ == "BOSS") {
-		// BOSS split into two variables
-		if (strpos(#CARD_BOSS1$, "|" + .@item_id + "|") != -1) return 1;
-		if (strpos(#CARD_BOSS2$, "|" + .@item_id + "|") != -1) return 1;
-		return 0;
-	}
-	else if (.@category$ == "MVP") {
-		// MVP split into two variables
-		if (strpos(#CARD_MVP1$, "|" + .@item_id + "|") != -1) return 1;
-		if (strpos(#CARD_MVP2$, "|" + .@item_id + "|") != -1) return 1;
-		return 0;
-	}
-	
-	return 0;
-}
-
-// ===== FUNCTION: Add Card to Category =====
-function AddCardToCategory {
-	.@item_id = getarg(0);
-	.@category$ = getarg(1);
-	
-	debugmes "[CardCollector] AddCardToCategory: Adding card " + .@item_id + " to category " + .@category$;
-	
-	// Add card to the correct variable based on category
-	// If variable is empty, start with "|" to match strpos search pattern
-	if (.@category$ == "A") {
-		if (#CARD_A$ == "") #CARD_A$ = "|";
-		#CARD_A$ = #CARD_A$ + .@item_id + "|";
-	}
-	else if (.@category$ == "B") {
-		if (#CARD_B$ == "") #CARD_B$ = "|";
-		#CARD_B$ = #CARD_B$ + .@item_id + "|";
-	}
-	else if (.@category$ == "C") {
-		if (#CARD_C$ == "") #CARD_C$ = "|";
-		#CARD_C$ = #CARD_C$ + .@item_id + "|";
-	}
-	else if (.@category$ == "D") {
-		if (#CARD_D$ == "") #CARD_D$ = "|";
-		#CARD_D$ = #CARD_D$ + .@item_id + "|";
-	}
-	else if (.@category$ == "F") {
-		if (#CARD_F$ == "") #CARD_F$ = "|";
-		#CARD_F$ = #CARD_F$ + .@item_id + "|";
-	}
-	else if (.@category$ == "G") {
-		if (#CARD_G$ == "") #CARD_G$ = "|";
-		#CARD_G$ = #CARD_G$ + .@item_id + "|";
-	}
-	else if (.@category$ == "H") {
-		if (#CARD_H$ == "") #CARD_H$ = "|";
-		#CARD_H$ = #CARD_H$ + .@item_id + "|";
-	}
-	else if (.@category$ == "I") {
-		if (#CARD_I$ == "") #CARD_I$ = "|";
-		#CARD_I$ = #CARD_I$ + .@item_id + "|";
-	}
-	else if (.@category$ == "J") {
-		if (#CARD_J$ == "") #CARD_J$ = "|";
-		#CARD_J$ = #CARD_J$ + .@item_id + "|";
-	}
-	else if (.@category$ == "K") {
-		if (#CARD_K$ == "") #CARD_K$ = "|";
-		#CARD_K$ = #CARD_K$ + .@item_id + "|";
-	}
-	else if (.@category$ == "L") {
-		if (#CARD_L$ == "") #CARD_L$ = "|";
-		#CARD_L$ = #CARD_L$ + .@item_id + "|";
-	}
-	else if (.@category$ == "M") {
-		if (#CARD_M$ == "") #CARD_M$ = "|";
-		#CARD_M$ = #CARD_M$ + .@item_id + "|";
-	}
-	else if (.@category$ == "N") {
-		if (#CARD_N$ == "") #CARD_N$ = "|";
-		#CARD_N$ = #CARD_N$ + .@item_id + "|";
-	}
-	else if (.@category$ == "O") {
-		if (#CARD_O$ == "") #CARD_O$ = "|";
-		#CARD_O$ = #CARD_O$ + .@item_id + "|";
-	}
-	else if (.@category$ == "P") {
-		if (#CARD_P$ == "") #CARD_P$ = "|";
-		#CARD_P$ = #CARD_P$ + .@item_id + "|";
-	}
-	else if (.@category$ == "Q") {
-		if (#CARD_Q$ == "") #CARD_Q$ = "|";
-		#CARD_Q$ = #CARD_Q$ + .@item_id + "|";
-	}
-	else if (.@category$ == "R") {
-		if (#CARD_R$ == "") #CARD_R$ = "|";
-		#CARD_R$ = #CARD_R$ + .@item_id + "|";
-	}
-	else if (.@category$ == "S") {
-		if (#CARD_S$ == "") #CARD_S$ = "|";
-		#CARD_S$ = #CARD_S$ + .@item_id + "|";
-	}
-	else if (.@category$ == "T") {
-		if (#CARD_T$ == "") #CARD_T$ = "|";
-		#CARD_T$ = #CARD_T$ + .@item_id + "|";
-	}
-	else if (.@category$ == "U") {
-		if (#CARD_U$ == "") #CARD_U$ = "|";
-		#CARD_U$ = #CARD_U$ + .@item_id + "|";
-	}
-	else if (.@category$ == "V") {
-		if (#CARD_V$ == "") #CARD_V$ = "|";
-		#CARD_V$ = #CARD_V$ + .@item_id + "|";
-	}
-	else if (.@category$ == "W") {
-		if (#CARD_W$ == "") #CARD_W$ = "|";
-		#CARD_W$ = #CARD_W$ + .@item_id + "|";
-	}
-	else if (.@category$ == "Y") {
-		if (#CARD_Y$ == "") #CARD_Y$ = "|";
-		#CARD_Y$ = #CARD_Y$ + .@item_id + "|";
-	}
-	else if (.@category$ == "Z") {
-		if (#CARD_Z$ == "") #CARD_Z$ = "|";
-		#CARD_Z$ = #CARD_Z$ + .@item_id + "|";
-	}
-	else if (.@category$ == "BOSS") {
-		// BOSS split: first 40 cards go to BOSS1, rest to BOSS2
-		// Initialize if empty
-		if (#CARD_BOSS1$ == "") #CARD_BOSS1$ = "|";
-		if (#CARD_BOSS2$ == "") #CARD_BOSS2$ = "|";
-		// Calculate estimated position
-		.@len = getstrlen(#CARD_BOSS1$);
-		if (.@len < 200) {
-			#CARD_BOSS1$ = #CARD_BOSS1$ + .@item_id + "|";
-		} else {
-			#CARD_BOSS2$ = #CARD_BOSS2$ + .@item_id + "|";
-		}
-	}
-	else if (.@category$ == "MVP") {
-		// MVP split: first 40 cards go to MVP1, rest to MVP2
-		// Initialize if empty
-		if (#CARD_MVP1$ == "") #CARD_MVP1$ = "|";
-		if (#CARD_MVP2$ == "") #CARD_MVP2$ = "|";
-		// Calculate estimated position
-		.@len = getstrlen(#CARD_MVP1$);
-		if (.@len < 200) {
-			#CARD_MVP1$ = #CARD_MVP1$ + .@item_id + "|";
-		} else {
-			#CARD_MVP2$ = #CARD_MVP2$ + .@item_id + "|";
-		}
-	}
-	
-	return;
-}
-
-// ===== FUNCTION: Migrate Old Format Data =====
-function MigrateOldFormat {
-	// Fix old format data that doesn't start with "|"
-	// Old: "4013|4032|" -> New: "|4013|4032|"
-	// Check if first character is not "|" by seeing if "|" is at position 0
-	if (#CARD_A$ != "" && strpos(#CARD_A$, "|") != 0) #CARD_A$ = "|" + #CARD_A$;
-	if (#CARD_B$ != "" && strpos(#CARD_B$, "|") != 0) #CARD_B$ = "|" + #CARD_B$;
-	if (#CARD_C$ != "" && strpos(#CARD_C$, "|") != 0) #CARD_C$ = "|" + #CARD_C$;
-	if (#CARD_D$ != "" && strpos(#CARD_D$, "|") != 0) #CARD_D$ = "|" + #CARD_D$;
-	if (#CARD_F$ != "" && strpos(#CARD_F$, "|") != 0) #CARD_F$ = "|" + #CARD_F$;
-	if (#CARD_G$ != "" && strpos(#CARD_G$, "|") != 0) #CARD_G$ = "|" + #CARD_G$;
-	if (#CARD_H$ != "" && strpos(#CARD_H$, "|") != 0) #CARD_H$ = "|" + #CARD_H$;
-	if (#CARD_I$ != "" && strpos(#CARD_I$, "|") != 0) #CARD_I$ = "|" + #CARD_I$;
-	if (#CARD_J$ != "" && strpos(#CARD_J$, "|") != 0) #CARD_J$ = "|" + #CARD_J$;
-	if (#CARD_K$ != "" && strpos(#CARD_K$, "|") != 0) #CARD_K$ = "|" + #CARD_K$;
-	if (#CARD_L$ != "" && strpos(#CARD_L$, "|") != 0) #CARD_L$ = "|" + #CARD_L$;
-	if (#CARD_M$ != "" && strpos(#CARD_M$, "|") != 0) #CARD_M$ = "|" + #CARD_M$;
-	if (#CARD_N$ != "" && strpos(#CARD_N$, "|") != 0) #CARD_N$ = "|" + #CARD_N$;
-	if (#CARD_O$ != "" && strpos(#CARD_O$, "|") != 0) #CARD_O$ = "|" + #CARD_O$;
-	if (#CARD_P$ != "" && strpos(#CARD_P$, "|") != 0) #CARD_P$ = "|" + #CARD_P$;
-	if (#CARD_Q$ != "" && strpos(#CARD_Q$, "|") != 0) #CARD_Q$ = "|" + #CARD_Q$;
-	if (#CARD_R$ != "" && strpos(#CARD_R$, "|") != 0) #CARD_R$ = "|" + #CARD_R$;
-	if (#CARD_S$ != "" && strpos(#CARD_S$, "|") != 0) #CARD_S$ = "|" + #CARD_S$;
-	if (#CARD_T$ != "" && strpos(#CARD_T$, "|") != 0) #CARD_T$ = "|" + #CARD_T$;
-	if (#CARD_U$ != "" && strpos(#CARD_U$, "|") != 0) #CARD_U$ = "|" + #CARD_U$;
-	if (#CARD_V$ != "" && strpos(#CARD_V$, "|") != 0) #CARD_V$ = "|" + #CARD_V$;
-	if (#CARD_W$ != "" && strpos(#CARD_W$, "|") != 0) #CARD_W$ = "|" + #CARD_W$;
-	if (#CARD_Y$ != "" && strpos(#CARD_Y$, "|") != 0) #CARD_Y$ = "|" + #CARD_Y$;
-	if (#CARD_Z$ != "" && strpos(#CARD_Z$, "|") != 0) #CARD_Z$ = "|" + #CARD_Z$;
-	if (#CARD_BOSS1$ != "" && strpos(#CARD_BOSS1$, "|") != 0) #CARD_BOSS1$ = "|" + #CARD_BOSS1$;
-	if (#CARD_BOSS2$ != "" && strpos(#CARD_BOSS2$, "|") != 0) #CARD_BOSS2$ = "|" + #CARD_BOSS2$;
-	if (#CARD_MVP1$ != "" && strpos(#CARD_MVP1$, "|") != 0) #CARD_MVP1$ = "|" + #CARD_MVP1$;
-	if (#CARD_MVP2$ != "" && strpos(#CARD_MVP2$, "|") != 0) #CARD_MVP2$ = "|" + #CARD_MVP2$;
-	return;
-}
-
-
+	debugmes "[CardCollector] Scan complete";
+	end;
 
 OnInit:
 	.npc_name$ = "[ Card Collector ]";
 
-	setarray .carta_A, 4013,4032,4043,4062,4075,4094,4114,4138,4160,4234,4240,4242,4244,4245,4246,4247,4248,4249,4252,4253,4344,4347,4371,4378,4379,4387,4400,4401,4402,4409,4443,4464,4473,4513,4515,4567,4596,4629,31022;
-	setarray .carta_B, 4074,4119,4129,4212,4213,4214,4215,4233,4320,4327,4356,4390,4438,4450,4466,4472,4518,4519,4582,4626,4627;
-	setarray .carta_C, 4009,4015,4040,4041,4061,4063,4153,4202,4229,4235,4284,4285,4288,4289,4293,4296,4297,4298,4299,4368,4373,4447,4448,4452,4475,4516,4517,4568,4569,4595,27182,27361;
-	setarray .carta_D, 4004,4023,4056,4069,4082,4098,4122,4125,4133,4170,4173,4176,4177,4178,4180,4181,4182,4272,4279,4370,4385,4388,4421,4444,4449,4458,4506;
-	setarray .carta_F, 4002,4020,4080,4088,4158,4312,4316,4319,4380,4381,4405,4439,4570,4607;
-	setarray .carta_G, 4060,4072,4087,4110,4149,4150,4151,4152,4155,4157,4161,4162,4164,4165,4270,4271,4278,4280,4283,4323,4355,4377,4418,4508,4571;
-	setarray .carta_H, 4019,4035,4045,4081,4103,4115,4321,4322,4325,4328,4331,4345,4362,4413,4437,4453,4467,4477;
-	setarray .carta_I, 4116,4231,4239,4268,4269,4412,4417,4433;
-	setarray .carta_J, 4109,4139,4474,4589;
-	setarray .carta_K, 4027,4065,4091,4136,4140,4286,4287,4291,4292,4295,4301,4307,4351,4366,4434;
-	setarray .carta_L, 4006,4184,4188,4191,4193,4195,4217,4265,4445,4459,4511,4579,4597,4598,4599,4600,4663;
-	setarray .carta_M, 4030,4036,4046,4055,4057,4067,4076,4079,4084,4090,4095,4097,4105,4106,4108,4112,4113,4124,4126,4196,4199,4200,4201,4204,4205,4206,4208,4317,4339,4341,4343,4364,4420,4432,4510,4584,4585,4593;
-	setarray .carta_N, 4127,4159,4166,4167,4334,4382,4383,4469,4470,4545,4628;
-	setarray .carta_O, 4066,4071,4085,4093,4255,4256,4338,4375;
-	setarray .carta_P, 4001,4003,4005,4007,4008,4011,4024,4031,4033,4048,4073,4077,4099,4118,4120,4175,4309,4310,4311,4313,4314,4315,4329,4335,4337,4389,4461,4465,4468,4476,4512,4514,4523,4594;
-	setarray .carta_Q, 4294;
-	setarray .carta_R, 4014,4021,4083,4104,4154,4185,4186,4187,4192,4194,4350,4353,4422,4436,4460,4531,4572,4581,27352;
-	setarray .carta_S, 4017,4022,4025,4037,4039,4042,4044,4068,4078,4086,4089,4092,4100,4101,4111,4117,4156,4216,4218,4219,4220,4221,4222,4223,4224,4225,4226,4227,4228,4230,4273,4326,4358,4404,4414,4415,4416,4424,4505,4521,4522,4530,4575;
-	setarray .carta_T, 4012,4016,4026,4028,4050,4058,4172,4282,4304,4308,4340,4442,4573,4586,4587,4630;
-	setarray .carta_U, 4336;
-	setarray .carta_V, 4049,4053,4107,4209,4211,4333,4369,4411;
-	setarray .carta_W, 4010,4029,4034,4102,4189,4190,4210,4232,4257,4258,4259,4260,4261,4264,4303,4332,4348,4558,4588;
-	setarray .carta_Y, 4051,4346;
-	setarray .carta_Z, 4038,4064,4096,4274,4275,4277,4281,4435;
-	setarray .carta_BOSS, 4047,4054,4130,4147,4163,4169,4171,4174,4179,4183,4197,4198,4203,4207,4237,4238,4241,4254,4290,4300,4306,4354,4384,4391,4392,4393,4394,4395,4396,4397,4398,4406,4423,4426,4427,4428,4429,4431,4440,4451,4457,4462,4463,4509,4520,4524,4526,4527,4528,4529,4532,4533,4534,4560,4561,4562,4563,4564,4565,4566,4590,4591,4605,4606,4610,4631,4632;
-	setarray .carta_MVP, 4121,4128,4131,4132,4134,4135,4137,4142,4143,4144,4145,4146,4147,4148,4168,4236,4263,4276,4302,4305,4318,4324,4330,4342,4352,4357,4359,4361,4363,4365,4367,4372,4374,4376,4386,4399,4403,4407,4408,4419,4425,4430,4441,4456,4507,4525,4574,4576,4578,4580,4592,4601,4603,4625,27164;
-	
+	// Category A
+	setd ".card_cat_4013$","A"; setd ".card_cat_4032$","A"; setd ".card_cat_4043$","A"; setd ".card_cat_4062$","A"; setd ".card_cat_4075$","A"; setd ".card_cat_4094$","A"; setd ".card_cat_4114$","A"; setd ".card_cat_4138$","A"; setd ".card_cat_4160$","A"; setd ".card_cat_4234$","A"; setd ".card_cat_4240$","A"; setd ".card_cat_4242$","A"; setd ".card_cat_4244$","A"; setd ".card_cat_4245$","A"; setd ".card_cat_4246$","A"; setd ".card_cat_4247$","A"; setd ".card_cat_4248$","A"; setd ".card_cat_4249$","A"; setd ".card_cat_4252$","A"; setd ".card_cat_4253$","A"; setd ".card_cat_4344$","A"; setd ".card_cat_4347$","A"; setd ".card_cat_4371$","A"; setd ".card_cat_4378$","A"; setd ".card_cat_4379$","A"; setd ".card_cat_4387$","A"; setd ".card_cat_4400$","A"; setd ".card_cat_4401$","A"; setd ".card_cat_4402$","A"; setd ".card_cat_4409$","A"; setd ".card_cat_4443$","A"; setd ".card_cat_4464$","A"; setd ".card_cat_4473$","A"; setd ".card_cat_4513$","A"; setd ".card_cat_4515$","A"; setd ".card_cat_4567$","A"; setd ".card_cat_4596$","A"; setd ".card_cat_4629$","A"; setd ".card_cat_31022$","A";
+	// Category B
+	setd ".card_cat_4074$","B"; setd ".card_cat_4119$","B"; setd ".card_cat_4129$","B"; setd ".card_cat_4212$","B"; setd ".card_cat_4213$","B"; setd ".card_cat_4214$","B"; setd ".card_cat_4215$","B"; setd ".card_cat_4233$","B"; setd ".card_cat_4320$","B"; setd ".card_cat_4327$","B"; setd ".card_cat_4356$","B"; setd ".card_cat_4390$","B"; setd ".card_cat_4438$","B"; setd ".card_cat_4450$","B"; setd ".card_cat_4466$","B"; setd ".card_cat_4472$","B"; setd ".card_cat_4518$","B"; setd ".card_cat_4519$","B"; setd ".card_cat_4582$","B"; setd ".card_cat_4626$","B"; setd ".card_cat_4627$","B";
+	// Category C
+	setd ".card_cat_4009$","C"; setd ".card_cat_4015$","C"; setd ".card_cat_4040$","C"; setd ".card_cat_4041$","C"; setd ".card_cat_4061$","C"; setd ".card_cat_4063$","C"; setd ".card_cat_4153$","C"; setd ".card_cat_4202$","C"; setd ".card_cat_4229$","C"; setd ".card_cat_4235$","C"; setd ".card_cat_4284$","C"; setd ".card_cat_4285$","C"; setd ".card_cat_4288$","C"; setd ".card_cat_4289$","C"; setd ".card_cat_4293$","C"; setd ".card_cat_4296$","C"; setd ".card_cat_4297$","C"; setd ".card_cat_4298$","C"; setd ".card_cat_4299$","C"; setd ".card_cat_4368$","C"; setd ".card_cat_4373$","C"; setd ".card_cat_4447$","C"; setd ".card_cat_4448$","C"; setd ".card_cat_4452$","C"; setd ".card_cat_4475$","C"; setd ".card_cat_4516$","C"; setd ".card_cat_4517$","C"; setd ".card_cat_4568$","C"; setd ".card_cat_4569$","C"; setd ".card_cat_4595$","C"; setd ".card_cat_27182$","C"; setd ".card_cat_27361$","C";
+	// Category D
+	setd ".card_cat_4004$","D"; setd ".card_cat_4023$","D"; setd ".card_cat_4056$","D"; setd ".card_cat_4069$","D"; setd ".card_cat_4082$","D"; setd ".card_cat_4098$","D"; setd ".card_cat_4122$","D"; setd ".card_cat_4125$","D"; setd ".card_cat_4133$","D"; setd ".card_cat_4170$","D"; setd ".card_cat_4173$","D"; setd ".card_cat_4176$","D"; setd ".card_cat_4177$","D"; setd ".card_cat_4178$","D"; setd ".card_cat_4180$","D"; setd ".card_cat_4181$","D"; setd ".card_cat_4182$","D"; setd ".card_cat_4272$","D"; setd ".card_cat_4279$","D"; setd ".card_cat_4370$","D"; setd ".card_cat_4385$","D"; setd ".card_cat_4388$","D"; setd ".card_cat_4421$","D"; setd ".card_cat_4444$","D"; setd ".card_cat_4449$","D"; setd ".card_cat_4458$","D"; setd ".card_cat_4506$","D";
+	// Category F
+	setd ".card_cat_4002$","F"; setd ".card_cat_4020$","F"; setd ".card_cat_4080$","F"; setd ".card_cat_4088$","F"; setd ".card_cat_4158$","F"; setd ".card_cat_4312$","F"; setd ".card_cat_4316$","F"; setd ".card_cat_4319$","F"; setd ".card_cat_4380$","F"; setd ".card_cat_4381$","F"; setd ".card_cat_4405$","F"; setd ".card_cat_4439$","F"; setd ".card_cat_4570$","F"; setd ".card_cat_4607$","F";
+	// Category G
+	setd ".card_cat_4060$","G"; setd ".card_cat_4072$","G"; setd ".card_cat_4087$","G"; setd ".card_cat_4110$","G"; setd ".card_cat_4149$","G"; setd ".card_cat_4150$","G"; setd ".card_cat_4151$","G"; setd ".card_cat_4152$","G"; setd ".card_cat_4155$","G"; setd ".card_cat_4157$","G"; setd ".card_cat_4161$","G"; setd ".card_cat_4162$","G"; setd ".card_cat_4164$","G"; setd ".card_cat_4165$","G"; setd ".card_cat_4270$","G"; setd ".card_cat_4271$","G"; setd ".card_cat_4278$","G"; setd ".card_cat_4280$","G"; setd ".card_cat_4283$","G"; setd ".card_cat_4323$","G"; setd ".card_cat_4355$","G"; setd ".card_cat_4377$","G"; setd ".card_cat_4418$","G"; setd ".card_cat_4508$","G"; setd ".card_cat_4571$","G";
+	// Category H
+	setd ".card_cat_4019$","H"; setd ".card_cat_4035$","H"; setd ".card_cat_4045$","H"; setd ".card_cat_4081$","H"; setd ".card_cat_4103$","H"; setd ".card_cat_4115$","H"; setd ".card_cat_4321$","H"; setd ".card_cat_4322$","H"; setd ".card_cat_4325$","H"; setd ".card_cat_4328$","H"; setd ".card_cat_4331$","H"; setd ".card_cat_4345$","H"; setd ".card_cat_4362$","H"; setd ".card_cat_4413$","H"; setd ".card_cat_4437$","H"; setd ".card_cat_4453$","H"; setd ".card_cat_4467$","H"; setd ".card_cat_4477$","H";
+	// Category I
+	setd ".card_cat_4116$","I"; setd ".card_cat_4231$","I"; setd ".card_cat_4239$","I"; setd ".card_cat_4268$","I"; setd ".card_cat_4269$","I"; setd ".card_cat_4412$","I"; setd ".card_cat_4417$","I"; setd ".card_cat_4433$","I";
+	// Category J
+	setd ".card_cat_4109$","J"; setd ".card_cat_4139$","J"; setd ".card_cat_4474$","J"; setd ".card_cat_4589$","J";
+	// Category K
+	setd ".card_cat_4027$","K"; setd ".card_cat_4065$","K"; setd ".card_cat_4091$","K"; setd ".card_cat_4136$","K"; setd ".card_cat_4140$","K"; setd ".card_cat_4286$","K"; setd ".card_cat_4287$","K"; setd ".card_cat_4291$","K"; setd ".card_cat_4292$","K"; setd ".card_cat_4295$","K"; setd ".card_cat_4301$","K"; setd ".card_cat_4307$","K"; setd ".card_cat_4351$","K"; setd ".card_cat_4366$","K"; setd ".card_cat_4434$","K";
+	// Category L
+	setd ".card_cat_4006$","L"; setd ".card_cat_4184$","L"; setd ".card_cat_4188$","L"; setd ".card_cat_4191$","L"; setd ".card_cat_4193$","L"; setd ".card_cat_4195$","L"; setd ".card_cat_4217$","L"; setd ".card_cat_4265$","L"; setd ".card_cat_4445$","L"; setd ".card_cat_4459$","L"; setd ".card_cat_4511$","L"; setd ".card_cat_4579$","L"; setd ".card_cat_4597$","L"; setd ".card_cat_4598$","L"; setd ".card_cat_4599$","L"; setd ".card_cat_4600$","L"; setd ".card_cat_4663$","L";
+	// Category M
+	setd ".card_cat_4030$","M"; setd ".card_cat_4036$","M"; setd ".card_cat_4046$","M"; setd ".card_cat_4055$","M"; setd ".card_cat_4057$","M"; setd ".card_cat_4067$","M"; setd ".card_cat_4076$","M"; setd ".card_cat_4079$","M"; setd ".card_cat_4084$","M"; setd ".card_cat_4090$","M"; setd ".card_cat_4095$","M"; setd ".card_cat_4097$","M"; setd ".card_cat_4105$","M"; setd ".card_cat_4106$","M"; setd ".card_cat_4108$","M"; setd ".card_cat_4112$","M"; setd ".card_cat_4113$","M"; setd ".card_cat_4124$","M"; setd ".card_cat_4126$","M"; setd ".card_cat_4196$","M"; setd ".card_cat_4199$","M"; setd ".card_cat_4200$","M"; setd ".card_cat_4201$","M"; setd ".card_cat_4204$","M"; setd ".card_cat_4205$","M"; setd ".card_cat_4206$","M"; setd ".card_cat_4208$","M"; setd ".card_cat_4317$","M"; setd ".card_cat_4339$","M"; setd ".card_cat_4341$","M"; setd ".card_cat_4343$","M"; setd ".card_cat_4364$","M"; setd ".card_cat_4420$","M"; setd ".card_cat_4432$","M"; setd ".card_cat_4510$","M"; setd ".card_cat_4584$","M"; setd ".card_cat_4585$","M"; setd ".card_cat_4593$","M";
+	// Category N
+	setd ".card_cat_4127$","N"; setd ".card_cat_4159$","N"; setd ".card_cat_4166$","N"; setd ".card_cat_4167$","N"; setd ".card_cat_4334$","N"; setd ".card_cat_4382$","N"; setd ".card_cat_4383$","N"; setd ".card_cat_4469$","N"; setd ".card_cat_4470$","N"; setd ".card_cat_4545$","N"; setd ".card_cat_4628$","N";
+	// Category O
+	setd ".card_cat_4066$","O"; setd ".card_cat_4071$","O"; setd ".card_cat_4085$","O"; setd ".card_cat_4093$","O"; setd ".card_cat_4255$","O"; setd ".card_cat_4256$","O"; setd ".card_cat_4338$","O"; setd ".card_cat_4375$","O";
+	// Category P
+	setd ".card_cat_4001$","P"; setd ".card_cat_4003$","P"; setd ".card_cat_4005$","P"; setd ".card_cat_4007$","P"; setd ".card_cat_4008$","P"; setd ".card_cat_4011$","P"; setd ".card_cat_4024$","P"; setd ".card_cat_4031$","P"; setd ".card_cat_4033$","P"; setd ".card_cat_4048$","P"; setd ".card_cat_4073$","P"; setd ".card_cat_4077$","P"; setd ".card_cat_4099$","P"; setd ".card_cat_4118$","P"; setd ".card_cat_4120$","P"; setd ".card_cat_4175$","P"; setd ".card_cat_4309$","P"; setd ".card_cat_4310$","P"; setd ".card_cat_4311$","P"; setd ".card_cat_4313$","P"; setd ".card_cat_4314$","P"; setd ".card_cat_4315$","P"; setd ".card_cat_4329$","P"; setd ".card_cat_4335$","P"; setd ".card_cat_4337$","P"; setd ".card_cat_4389$","P"; setd ".card_cat_4461$","P"; setd ".card_cat_4465$","P"; setd ".card_cat_4468$","P"; setd ".card_cat_4476$","P"; setd ".card_cat_4512$","P"; setd ".card_cat_4514$","P"; setd ".card_cat_4523$","P"; setd ".card_cat_4594$","P";
+	// Category Q
+	setd ".card_cat_4294$","Q";
+	// Category R
+	setd ".card_cat_4014$","R"; setd ".card_cat_4021$","R"; setd ".card_cat_4083$","R"; setd ".card_cat_4104$","R"; setd ".card_cat_4154$","R"; setd ".card_cat_4185$","R"; setd ".card_cat_4186$","R"; setd ".card_cat_4187$","R"; setd ".card_cat_4192$","R"; setd ".card_cat_4194$","R"; setd ".card_cat_4350$","R"; setd ".card_cat_4353$","R"; setd ".card_cat_4422$","R"; setd ".card_cat_4436$","R"; setd ".card_cat_4460$","R"; setd ".card_cat_4531$","R"; setd ".card_cat_4572$","R"; setd ".card_cat_4581$","R"; setd ".card_cat_27352$","R";
+	// Category S
+	setd ".card_cat_4017$","S"; setd ".card_cat_4022$","S"; setd ".card_cat_4025$","S"; setd ".card_cat_4037$","S"; setd ".card_cat_4039$","S"; setd ".card_cat_4042$","S"; setd ".card_cat_4044$","S"; setd ".card_cat_4068$","S"; setd ".card_cat_4078$","S"; setd ".card_cat_4086$","S"; setd ".card_cat_4089$","S"; setd ".card_cat_4092$","S"; setd ".card_cat_4100$","S"; setd ".card_cat_4101$","S"; setd ".card_cat_4111$","S"; setd ".card_cat_4117$","S"; setd ".card_cat_4156$","S"; setd ".card_cat_4216$","S"; setd ".card_cat_4218$","S"; setd ".card_cat_4219$","S"; setd ".card_cat_4220$","S"; setd ".card_cat_4221$","S"; setd ".card_cat_4222$","S"; setd ".card_cat_4223$","S"; setd ".card_cat_4224$","S"; setd ".card_cat_4225$","S"; setd ".card_cat_4226$","S"; setd ".card_cat_4227$","S"; setd ".card_cat_4228$","S"; setd ".card_cat_4230$","S"; setd ".card_cat_4273$","S"; setd ".card_cat_4326$","S"; setd ".card_cat_4358$","S"; setd ".card_cat_4404$","S"; setd ".card_cat_4414$","S"; setd ".card_cat_4415$","S"; setd ".card_cat_4416$","S"; setd ".card_cat_4424$","S"; setd ".card_cat_4505$","S"; setd ".card_cat_4521$","S"; setd ".card_cat_4522$","S"; setd ".card_cat_4530$","S"; setd ".card_cat_4575$","S";
+	// Category T
+	setd ".card_cat_4012$","T"; setd ".card_cat_4016$","T"; setd ".card_cat_4026$","T"; setd ".card_cat_4028$","T"; setd ".card_cat_4050$","T"; setd ".card_cat_4058$","T"; setd ".card_cat_4172$","T"; setd ".card_cat_4282$","T"; setd ".card_cat_4304$","T"; setd ".card_cat_4308$","T"; setd ".card_cat_4340$","T"; setd ".card_cat_4442$","T"; setd ".card_cat_4573$","T"; setd ".card_cat_4586$","T"; setd ".card_cat_4587$","T"; setd ".card_cat_4630$","T";
+	// Category U
+	setd ".card_cat_4336$","U";
+	// Category V
+	setd ".card_cat_4049$","V"; setd ".card_cat_4053$","V"; setd ".card_cat_4107$","V"; setd ".card_cat_4209$","V"; setd ".card_cat_4211$","V"; setd ".card_cat_4333$","V"; setd ".card_cat_4369$","V"; setd ".card_cat_4411$","V";
+	// Category W
+	setd ".card_cat_4010$","W"; setd ".card_cat_4029$","W"; setd ".card_cat_4034$","W"; setd ".card_cat_4102$","W"; setd ".card_cat_4189$","W"; setd ".card_cat_4190$","W"; setd ".card_cat_4210$","W"; setd ".card_cat_4232$","W"; setd ".card_cat_4257$","W"; setd ".card_cat_4258$","W"; setd ".card_cat_4259$","W"; setd ".card_cat_4260$","W"; setd ".card_cat_4261$","W"; setd ".card_cat_4264$","W"; setd ".card_cat_4303$","W"; setd ".card_cat_4332$","W"; setd ".card_cat_4348$","W"; setd ".card_cat_4558$","W"; setd ".card_cat_4588$","W";
+	// Category Y
+	setd ".card_cat_4051$","Y"; setd ".card_cat_4346$","Y";
+	// Category Z
+	setd ".card_cat_4038$","Z"; setd ".card_cat_4064$","Z"; setd ".card_cat_4096$","Z"; setd ".card_cat_4274$","Z"; setd ".card_cat_4275$","Z"; setd ".card_cat_4277$","Z"; setd ".card_cat_4281$","Z"; setd ".card_cat_4435$","Z";
+	// Category BOSS
+	setd ".card_cat_4047$","BOSS"; setd ".card_cat_4054$","BOSS"; setd ".card_cat_4130$","BOSS"; setd ".card_cat_4147$","BOSS"; setd ".card_cat_4163$","BOSS"; setd ".card_cat_4169$","BOSS"; setd ".card_cat_4171$","BOSS"; setd ".card_cat_4174$","BOSS"; setd ".card_cat_4179$","BOSS"; setd ".card_cat_4183$","BOSS"; setd ".card_cat_4197$","BOSS"; setd ".card_cat_4198$","BOSS"; setd ".card_cat_4203$","BOSS"; setd ".card_cat_4207$","BOSS"; setd ".card_cat_4237$","BOSS"; setd ".card_cat_4238$","BOSS"; setd ".card_cat_4241$","BOSS"; setd ".card_cat_4254$","BOSS"; setd ".card_cat_4290$","BOSS"; setd ".card_cat_4300$","BOSS"; setd ".card_cat_4306$","BOSS"; setd ".card_cat_4354$","BOSS"; setd ".card_cat_4384$","BOSS"; setd ".card_cat_4391$","BOSS"; setd ".card_cat_4392$","BOSS"; setd ".card_cat_4393$","BOSS"; setd ".card_cat_4394$","BOSS"; setd ".card_cat_4395$","BOSS"; setd ".card_cat_4396$","BOSS"; setd ".card_cat_4397$","BOSS"; setd ".card_cat_4398$","BOSS"; setd ".card_cat_4406$","BOSS"; setd ".card_cat_4423$","BOSS"; setd ".card_cat_4426$","BOSS"; setd ".card_cat_4427$","BOSS"; setd ".card_cat_4428$","BOSS"; setd ".card_cat_4429$","BOSS"; setd ".card_cat_4431$","BOSS"; setd ".card_cat_4440$","BOSS"; setd ".card_cat_4451$","BOSS"; setd ".card_cat_4457$","BOSS"; setd ".card_cat_4462$","BOSS"; setd ".card_cat_4463$","BOSS"; setd ".card_cat_4509$","BOSS"; setd ".card_cat_4520$","BOSS"; setd ".card_cat_4524$","BOSS"; setd ".card_cat_4526$","BOSS"; setd ".card_cat_4527$","BOSS"; setd ".card_cat_4528$","BOSS"; setd ".card_cat_4529$","BOSS"; setd ".card_cat_4532$","BOSS"; setd ".card_cat_4533$","BOSS"; setd ".card_cat_4534$","BOSS"; setd ".card_cat_4560$","BOSS"; setd ".card_cat_4561$","BOSS"; setd ".card_cat_4562$","BOSS"; setd ".card_cat_4563$","BOSS"; setd ".card_cat_4564$","BOSS"; setd ".card_cat_4565$","BOSS"; setd ".card_cat_4566$","BOSS"; setd ".card_cat_4590$","BOSS"; setd ".card_cat_4591$","BOSS"; setd ".card_cat_4605$","BOSS"; setd ".card_cat_4606$","BOSS"; setd ".card_cat_4610$","BOSS"; setd ".card_cat_4631$","BOSS"; setd ".card_cat_4632$","BOSS";
+	// Category MVP
+	setd ".card_cat_4121$","MVP"; setd ".card_cat_4128$","MVP"; setd ".card_cat_4131$","MVP"; setd ".card_cat_4132$","MVP"; setd ".card_cat_4134$","MVP"; setd ".card_cat_4135$","MVP"; setd ".card_cat_4137$","MVP"; setd ".card_cat_4142$","MVP"; setd ".card_cat_4143$","MVP"; setd ".card_cat_4144$","MVP"; setd ".card_cat_4145$","MVP"; setd ".card_cat_4146$","MVP"; setd ".card_cat_4147$","MVP"; setd ".card_cat_4148$","MVP"; setd ".card_cat_4168$","MVP"; setd ".card_cat_4236$","MVP"; setd ".card_cat_4263$","MVP"; setd ".card_cat_4276$","MVP"; setd ".card_cat_4302$","MVP"; setd ".card_cat_4305$","MVP"; setd ".card_cat_4318$","MVP"; setd ".card_cat_4324$","MVP"; setd ".card_cat_4330$","MVP"; setd ".card_cat_4342$","MVP"; setd ".card_cat_4352$","MVP"; setd ".card_cat_4357$","MVP"; setd ".card_cat_4359$","MVP"; setd ".card_cat_4361$","MVP"; setd ".card_cat_4363$","MVP"; setd ".card_cat_4365$","MVP"; setd ".card_cat_4367$","MVP"; setd ".card_cat_4372$","MVP"; setd ".card_cat_4374$","MVP"; setd ".card_cat_4376$","MVP"; setd ".card_cat_4386$","MVP"; setd ".card_cat_4399$","MVP"; setd ".card_cat_4403$","MVP"; setd ".card_cat_4407$","MVP"; setd ".card_cat_4408$","MVP"; setd ".card_cat_4419$","MVP"; setd ".card_cat_4425$","MVP"; setd ".card_cat_4430$","MVP"; setd ".card_cat_4441$","MVP"; setd ".card_cat_4456$","MVP"; setd ".card_cat_4507$","MVP"; setd ".card_cat_4525$","MVP"; setd ".card_cat_4574$","MVP"; setd ".card_cat_4576$","MVP"; setd ".card_cat_4578$","MVP"; setd ".card_cat_4580$","MVP"; setd ".card_cat_4592$","MVP"; setd ".card_cat_4601$","MVP"; setd ".card_cat_4603$","MVP"; setd ".card_cat_4625$","MVP"; setd ".card_cat_27164$","MVP";
 	end;
+
+// Get card category by ID
+// Returns: "A", "B", ... "MVP", "BOSS" or "" if not found
+function	GetCardCategory	{
+	.@id = getarg(0);
+	.@cat$ = getd(".card_cat_" + .@id + "$");
+	return .@cat$;
+}
+
 }
 
 // Duplicates
