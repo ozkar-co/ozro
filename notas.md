@@ -195,6 +195,48 @@ close; // ✓ CRÍTICO: Cierra el diálogo después del switch
 
 ---
 
-**Última actualización:** 05 Enero 2026
+## Clarificaciones v4.0 (Enero 2026)
+
+### Deprecación de `debugmes`
+- `debugmes` está deprecado y puede ser removido.
+- Para mensajes al jugador, usar `dispbottom`.
+- Para logs de servidor, preferir herramientas del servidor o `logmes` según versión.
+
+### Lectura de inventario (`getinventorylist`)
+- Uso correcto:
+   ```javascript
+   getinventorylist;
+   for (.@i = 0; .@i < @inventorylist_count; .@i++) {
+         .@item_id = @inventorylist_id[.@i];
+         // ...
+   }
+   ```
+- No se llama `getinventorylist(.@i)`; se invoca sin argumentos y luego se iteran los arrays `@inventorylist_*`.
+
+### Invocación de funciones de usuario
+- Declaración de función:
+   ```javascript
+   function GetCardCategory {
+         // ...
+         return .@cat$;
+   }
+   ```
+- Llamada correcta:
+   ```javascript
+   .@cat$ = callfunc("GetCardCategory", .@item_id);
+   ```
+- Evitar llamar como `GetCardCategory(.@item_id)` en asignaciones.
+- Límite de nombre de función: ≤ 23 caracteres; mantener nombres cortos.
+
+### Tabla de búsqueda con `setd/getd`
+- Preparar datos en `OnInit` con `setd ".card_cat_<ID>$", "<CAT>"`.
+- Consulta en runtime con `getd(".card_cat_" + .@id + "$")` (O(1)).
+- Evita loops en tiempo de ejecución para resolución de categoría.
+
+### Concatenación segura
+- No mezclar llamadas a funciones dentro de concatenaciones de strings.
+- Construir primero la cadena necesaria y luego usarla en `getd/setd`.
+
+**Última actualización:** 10 Enero 2026
 **Actualizado por:** @copilot
 **Revisión necesaria:** Anual o al añadir nuevas categorías de cartas
