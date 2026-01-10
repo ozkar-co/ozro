@@ -123,10 +123,12 @@ S_RegisterCards:
 // Subroutine: View registered cards per category (counts only)
 S_ViewRegistered:
 	.@cat_count = getarraysize(.cat_codes$);
+	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] ViewRegistered: cat_count = " + .@cat_count;
 	mes "Registered cards per category:";
 	for (.@k = 0; .@k < .@cat_count; .@k++) {
 		.@code$ = .cat_codes$[.@k];
 		.@cnt = getd("#CARD_CT_" + .@code$);
+		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Category " + .@code$ + " (#CARD_CT_" + .@code$ + ") = " + .@cnt;
 		if (.@cnt > 0) {
 			mes .@code$ + ": " + .@cnt;
 		}
@@ -137,14 +139,21 @@ S_ViewRegistered:
 S_ResetCardData:
 	.@acc = getcharid(3);
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Resetting card data for account: " + .@acc;
+	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Before reset - #CARD_CT_P = " + #CARD_CT_P + ", #CARD_CT_MVP = " + #CARD_CT_MVP;
 	// Wipe DB rows (both account registries if present)
 	query_sql("DELETE FROM `acc_reg_num_db` WHERE account_id = " + .@acc + " AND (`key` LIKE '#CARD_SEEN_%' OR `key` LIKE '#CARD_CT_%')");
+	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Deleted from acc_reg_num_db";
 	query_sql("DELETE FROM `global_acc_reg_num_db` WHERE account_id = " + .@acc + " AND (`key` LIKE '#CARD_SEEN_%' OR `key` LIKE '#CARD_CT_%')");
+	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Deleted from global_acc_reg_num_db";
 	// Zero in-memory per-category counts
 	.@cat_count = getarraysize(.cat_codes$);
 	for (.@k = 0; .@k < .@cat_count; .@k++) {
-		setd("#CARD_CT_" + .cat_codes$[.@k], 0);
+		.@code$ = .cat_codes$[.@k];
+		.@old_val = getd("#CARD_CT_" + .@code$);
+		setd("#CARD_CT_" + .@code$, 0);
+		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Reset #CARD_CT_" + .@code$ + " from " + .@old_val + " to 0";
 	}
+	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] After reset - #CARD_CT_P = " + #CARD_CT_P + ", #CARD_CT_MVP = " + #CARD_CT_MVP;
 	mes "Reset complete.";
 	mes "Account: " + .@acc;
 	return;
