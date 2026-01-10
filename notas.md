@@ -200,7 +200,7 @@ close; // ✓ CRÍTICO: Cierra el diálogo después del switch
 ### Deprecación de `debugmes`
 - `debugmes` está deprecado y puede ser removido.
 - Para mensajes al jugador, usar `dispbottom`.
-- Para logs de servidor, preferir herramientas del servidor o `logmes` según versión.
+- Para logs de servidor, usar `consolemes CONSOLEMES_DEBUG` (en este build de Hercules). `logmes` puede no existir o variar según versión.
 
 ### Lectura de inventario (`getinventorylist`)
 - Uso correcto:
