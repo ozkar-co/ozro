@@ -63,12 +63,15 @@ function	script	GetCardCategory	{
 
 	}
 
-	switch(select("Registrar mis cartas", "Ver mis cartas registradas", "Salir")) {
+	switch(select("Registrar mis cartas", "Ver mi progreso", "Ver mis cartas", "Salir")) {
 		case 1:
 			callsub(S_RegisterCards);
 			close;
 		case 2:
-			callsub(S_ViewRegistered);
+			callsub(S_ViewProgress);
+			close;
+		case 3:
+			callsub(S_ViewCards);
 			close;
 		default:
 			close;
@@ -108,8 +111,8 @@ S_RegisterCards:
 	}
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Scan complete";
 
-	mes "Scan complete.";
-	mes "New cards registered: " + .@total_new;
+	mes "Escaneo completo.";
+	mes "Cartas nuevas registradas: " + .@total_new;
 	for (.@k = 0; .@k < .@cat_count; .@k++) {
 		if (.@new_cat[.@k] > 0) {
 			mes .cat_codes$[.@k] + ": " + .@new_cat[.@k];
@@ -117,8 +120,8 @@ S_RegisterCards:
 	}
 	return;
 
-// Subroutine: View registered cards per category (counts only)
-S_ViewRegistered:
+// Subroutine: View progress per category (counts only)
+S_ViewProgress:
 	.@cat_count = getarraysize(.cat_codes$);
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] ViewRegistered: cat_count = " + .@cat_count;
 	mes "Cartas registradas por categoria:";
@@ -130,6 +133,49 @@ S_ViewRegistered:
 		if (.@cnt > 0) {
 			mes .@code$ + ": " + .@cnt + "/" + .@total;
 		}
+	}
+	return;
+
+// Subroutine: View individual cards by category
+S_ViewCards:
+	mes "Ingresa la categoria que quieres ver:";
+	mes "Categorias: A-Z, BOSS, MVP";
+	input .@input_cat$;
+	.@input_cat$ = strtoupper(.@input_cat$);
+	
+	// Validate category exists
+	.@cat_count = getarraysize(.cat_codes$);
+	.@found = 0;
+	for (.@k = 0; .@k < .@cat_count; .@k++) {
+		if (.cat_codes$[.@k] == .@input_cat$) {
+			.@found = 1;
+			break;
+		}
+	}
+	
+	if (.@found == 0) {
+		mes "Categoria invalida.";
+		return;
+	}
+	
+	mes "Cartas registradas en categoria " + .@input_cat$ + ":";
+	next;
+	
+	// Scan all possible card IDs to find ones in this category
+	.@card_count = 0;
+	for (.@id = 4001; .@id <= 31022; .@id++) {
+		.@cat$ = getd(".card_cat_" + .@id + "$");
+		if (.@cat$ == .@input_cat$) {
+			.@seen_var$ = "#CARD_SEEN_" + .@id;
+			if (getd(.@seen_var$) == 1) {
+				.@card_count++;
+				mes "- " + getitemname(.@id);
+			}
+		}
+	}
+	
+	if (.@card_count == 0) {
+		mes "No tienes cartas registradas en esta categoria.";
 	}
 	return;
 
