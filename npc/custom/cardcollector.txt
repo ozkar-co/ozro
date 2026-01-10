@@ -35,7 +35,7 @@
 -	script	Card Collector	FAKE_NPC,{
 	function RegCardsInv; function ShowProgress; function FindMissing; function ViewCollect;
 	function ShowMissingLtr; function ShowMissingType; function ShowCollectLtr; function ShowCollectType;
-	function CountFound; function GetCardCategory; function IsCardFound; function AddCardToCategory;
+	function CountFound; function GetCardCat_Orig; function IsCardFound; function AddCardToCategory;
 	function MigrateOldFormat;
 	
 	debugmes "[CardCollector] NPC interaction started";
@@ -160,7 +160,7 @@ function RegCardsInv {
 			debugmes "[CardCollector] RegCardsInv: Found card ID " + .@item_id + " (" + getitemname(.@item_id) + ")";
 			
 			// Determine which category this card belongs to
-			.@category$ = GetCardCategory(.@item_id);
+			.@category$ = GetCardCat_Orig(.@item_id);
 			debugmes "[CardCollector] RegCardsInv: Card " + .@item_id + " belongs to category: " + .@category$;
 			
 			// Check if card is already registered in its category
@@ -621,27 +621,13 @@ function GetCardArray {
 }
 
 // ===== FUNCTION: Get Card Category =====
-function GetCardCategory {
-	.@item_id = getarg(0);
-	
-	// Check each category - optimized with helper function
-	.@letters = "ABCDFGHIJKLMNOPQRSTUVWYZ|BOSS|MVP";
-	.@letter$ = "";
-	for (.@i = 0; .@i < 30; .@i++) {
-		.@letter$ = substr(.@letters, .@i, 1);
-		if (.@letter$ == "|") continue;
-		
-		for (.@j = 0; .@j < getarraysize(.@carta); .@j++) {
-			if (.carta[.@j] == .@item_id) return .@letter$;
-		}
-	}
-	
-	return ""; // Unknown card
-}
-
-// ===== FUNCTION: Get Card Category (ORIGINAL - More reliable) =====
 function GetCardCat_Orig {
 	.@item_id = getarg(0);
+	debugmes "[GetCardCat_Orig] Searching for card ID: " + .@item_id;
+	debugmes "[GetCardCat_Orig] carta_P size: " + getarraysize(.carta_P);
+	debugmes "[GetCardCat_Orig] carta_P[0]: " + .carta_P[0];
+	debugmes "[GetCardCat_Orig] carta_P[1]: " + .carta_P[1];
+	debugmes "[GetCardCat_Orig] carta_P[2]: " + .carta_P[2];
 	
 	// Check each category
 	for (.@i = 0; .@i < getarraysize(.carta_A); .@i++) if (.carta_A[.@i] == .@item_id) return "A";
@@ -671,6 +657,7 @@ function GetCardCat_Orig {
 	for (.@i = 0; .@i < getarraysize(.carta_BOSS); .@i++) if (.carta_BOSS[.@i] == .@item_id) return "BOSS";
 	for (.@i = 0; .@i < getarraysize(.carta_MVP); .@i++) if (.carta_MVP[.@i] == .@item_id) return "MVP";
 	
+	debugmes "[GetCardCat_Orig] Card not found in any category!";
 	return ""; // Unknown card
 }
 
