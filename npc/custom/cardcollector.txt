@@ -63,15 +63,12 @@ function	script	GetCardCategory	{
 
 	}
 
-	switch(select("Register my cards", "View my registered cards", "Reset my card data", "Leave")) {
+	switch(select("Registrar mis cartas", "Ver mis cartas registradas", "Salir")) {
 		case 1:
 			callsub(S_RegisterCards);
 			close;
 		case 2:
 			callsub(S_ViewRegistered);
-			close;
-		case 3:
-			callsub(S_ResetCardData);
 			close;
 		default:
 			close;
@@ -124,46 +121,16 @@ S_RegisterCards:
 S_ViewRegistered:
 	.@cat_count = getarraysize(.cat_codes$);
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] ViewRegistered: cat_count = " + .@cat_count;
-	mes "Registered cards per category:";
+	mes "Cartas registradas por categoria:";
 	for (.@k = 0; .@k < .@cat_count; .@k++) {
 		.@code$ = .cat_codes$[.@k];
 		.@cnt = getd("#CARD_CT_" + .@code$);
+		.@total = .cat_total[.@k];
 		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Category " + .@code$ + " (#CARD_CT_" + .@code$ + ") = " + .@cnt;
 		if (.@cnt > 0) {
-			mes .@code$ + ": " + .@cnt;
+			mes .@code$ + ": " + .@cnt + "/" + .@total;
 		}
 	}
-	return;
-
-// Subroutine: Reset card data for this account (DB + in-memory)
-S_ResetCardData:
-	.@acc = getcharid(3);
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Resetting card data for account: " + .@acc;
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Before reset - #CARD_CT_P = " + #CARD_CT_P + ", #CARD_CT_MVP = " + #CARD_CT_MVP;
-	// Wipe DB rows (both account registries if present)
-	query_sql("DELETE FROM `acc_reg_num_db` WHERE account_id = " + .@acc + " AND (`key` LIKE '#CARD_SEEN_%' OR `key` LIKE '#CARD_CT_%')");
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Deleted from acc_reg_num_db";
-	query_sql("DELETE FROM `global_acc_reg_num_db` WHERE account_id = " + .@acc + " AND (`key` LIKE '#CARD_SEEN_%' OR `key` LIKE '#CARD_CT_%')");
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Deleted from global_acc_reg_num_db";
-	// Zero in-memory per-category counts
-	.@cat_count = getarraysize(.cat_codes$);
-	for (.@k = 0; .@k < .@cat_count; .@k++) {
-		.@code$ = .cat_codes$[.@k];
-		.@old_val = getd("#CARD_CT_" + .@code$);
-		setd("#CARD_CT_" + .@code$, 0);
-		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Reset #CARD_CT_" + .@code$ + " from " + .@old_val + " to 0";
-	}
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] After reset - #CARD_CT_P = " + #CARD_CT_P + ", #CARD_CT_MVP = " + #CARD_CT_MVP;
-	// Force account variable reload by detaching and reattaching
-	.@temp_rid = playerattached();
-	if (.@temp_rid > 0) {
-		detachrid();
-		attachrid(.@temp_rid);
-		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Forced account var reload via detach/attach";
-	}
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] After reload - #CARD_CT_P = " + #CARD_CT_P + ", #CARD_SEEN_4001 = " + #CARD_SEEN_4001;
-	mes "Reset complete.";
-	mes "Account: " + .@acc;
 	return;
 
 OnInit:
