@@ -143,14 +143,12 @@ S_ViewCards:
 	input .@input_cat$;
 	.@input_cat$ = strtoupper(.@input_cat$);
 	
-	// Validate category exists and get array
+	// Validate category exists
 	.@cat_count = getarraysize(.cat_codes$);
 	.@found = 0;
-	.@arr_idx = -1;
 	for (.@k = 0; .@k < .@cat_count; .@k++) {
 		if (.cat_codes$[.@k] == .@input_cat$) {
 			.@found = 1;
-			.@arr_idx = .@k;
 			break;
 		}
 	}
@@ -159,8 +157,6 @@ S_ViewCards:
 		mes "Categoria invalida.";
 		return;
 	}
-	
-	.@acc = getcharid(3);
 	
 	// Get array of all cards in this category
 	.@arr_name$ = ".card_arr_" + .@input_cat$;
@@ -171,17 +167,11 @@ S_ViewCards:
 	next;
 	
 	.@obtained = 0;
-	.@seen_count = query_sql("SELECT `key`, `value` FROM `acc_reg_num_db` WHERE account_id = " + .@acc + " AND `key` LIKE '#CARD_SEEN_%' AND `value` = 1", .@keys, .@values);
-	
-	if (.@seen_count > 0) {
-		for (.@i = 0; .@i < .@seen_count; .@i++) {
-			.@key$ = .@keys[.@i];
-			.@id = atoi(substr(.@key$, 12));
-			.@cat$ = getd(".card_cat_" + .@id + "$");
-			if (.@cat$ == .@input_cat$) {
-				.@obtained++;
-				mes "  [X] " + getitemname(.@id);
-			}
+	for (.@i = 0; .@i < .@total_in_cat; .@i++) {
+		.@card_id = getd(.@arr_name$ + "[" + .@i + "]");
+		if (getd("#CARD_SEEN_" + .@card_id) == 1) {
+			.@obtained++;
+			mes "  [X] " + getitemname(.@card_id);
 		}
 	}
 	
@@ -196,8 +186,7 @@ S_ViewCards:
 	.@missing = 0;
 	for (.@i = 0; .@i < .@total_in_cat; .@i++) {
 		.@card_id = getd(.@arr_name$ + "[" + .@i + "]");
-		.@seen_var$ = "#CARD_SEEN_" + .@card_id;
-		if (getd(.@seen_var$) == 0) {
+		if (getd("#CARD_SEEN_" + .@card_id) == 0) {
 			.@missing++;
 			mes "  [ ] " + getitemname(.@card_id);
 		}
