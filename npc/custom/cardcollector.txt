@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 4.0
+//= 4.1
 //===== Description: =========================================
 //= An investigator who travels the world collecting cards
 //= with their team, documenting every card's power and origin.
@@ -34,6 +34,13 @@
 //=     - Replaced setarray category lists with precomputed setd mapping .card_cat_<ID>$
 //=     - Added interaction that scans inventory and logs card -> category via debugmes
 //=     - No runtime loops for category resolution; lookups are O(1) via getd()
+//= 4.1 Complete UI/UX refinement and interaction flow enhancement
+//=     - Implemented persistent data storage via account variables (#CARD_SEEN_*, #CARD_CT_*)
+//=     - Built interactive menu system with 5 primary actions
+//=     - Added two-page progress display: summary (total %) + category breakdown
+//=     - Separated "Explorar" and "Ver faltantes" into direct-access options
+//=     - Enhanced visualization with percentage calculations per category
+//=     - Removed formatting clutter for cleaner narrative presentation
 //============================================================
 
 // Global function: Get card category by ID
@@ -120,8 +127,10 @@ S_RegisterCards:
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Scan complete";
 
 	if (.@total_new == 0) {
+		mes .npc_name$;
 		mes "Tu coleccion ya esta documentada. No hay nuevas cartas que registrar.";
 	} else {
+		mes .npc_name$;
 		mes "Revision completada exitosamente.";
 		mes "Cartas nuevas documentadas: " + .@total_new;
 		for (.@k = 0; .@k < .@cat_count; .@k++) {
@@ -136,7 +145,31 @@ S_RegisterCards:
 S_ViewProgress:
 	.@cat_count = getarraysize(.cat_codes$);
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] ViewRegistered: cat_count = " + .@cat_count;
+	
+	// Calculate total progress
+	.@total_obtained = 0;
+	.@total_possible = 0;
+	for (.@k = 0; .@k < .@cat_count; .@k++) {
+		.@code$ = .cat_codes$[.@k];
+		.@cnt = getd("#CARD_CT_" + .@code$);
+		.@total = .cat_total[.@k];
+		.@total_obtained += .@cnt;
+		.@total_possible += .@total;
+	}
+	
+	.@total_pct = 0;
+	if (.@total_possible > 0) {
+		.@total_pct = (.@total_obtained * 100) / .@total_possible;
+	}
+	
+	mes .npc_name$;
 	mes "Tu progreso en el Archivo Arcano:";
+	mes "";
+	mes "Total documentadas: " + .@total_obtained + "/" + .@total_possible + " (" + .@total_pct + "%)";
+	next;
+	
+	mes .npc_name$;
+	mes "Detalle por categoria:";
 	mes "";
 	for (.@k = 0; .@k < .@cat_count; .@k++) {
 		.@code$ = .cat_codes$[.@k];
@@ -147,14 +180,13 @@ S_ViewProgress:
 			.@pct = (.@cnt * 100) / .@total;
 		}
 		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Category " + .@code$ + " (#CARD_CT_" + .@code$ + ") = " + .@cnt;
-		if (.@cnt > 0) {
-			mes .@code$ + ": " + .@cnt + "/" + .@total + " (" + .@pct + "%)";
-		}
+		mes .@code$ + ": " + .@cnt + "/" + .@total + " (" + .@pct + "%)";
 	}
 	return;
 
 // Subroutine: Explore collection - show obtained cards directly
 S_ExploreCollection:
+	mes .npc_name$;
 	mes "Que categoria deseas explorar?";
 	mes "";
 	input .@input_cat$;
@@ -173,6 +205,7 @@ S_ExploreCollection:
 	}
 	
 	if (.@found == 0) {
+		mes .npc_name$;
 		mes "Esa categoria no existe en nuestros registros.";
 		return;
 	}
@@ -186,6 +219,7 @@ S_ExploreCollection:
 
 // Subroutine: View missing cards - select category and show directly
 S_ViewMissingCards:
+	mes .npc_name$;
 	mes "Que categoria deseas revisar?";
 	mes "";
 	input .@input_cat$;
@@ -204,6 +238,7 @@ S_ViewMissingCards:
 	}
 	
 	if (.@found == 0) {
+		mes .npc_name$;
 		mes "Esa categoria no existe en nuestros registros.";
 		return;
 	}
@@ -220,7 +255,7 @@ S_ViewObtained:
 	.@cat$ = getarg(0);
 	.@arr_name$ = getarg(1);
 	.@total = getarg(2);
-	
+	mes .npc_name$;
 	mes "Cartas Obtenidas en la Categoria " + .@cat$;
 	mes "";
 	
@@ -234,6 +269,7 @@ S_ViewObtained:
 	}
 	
 	if (.@count == 0) {
+		mes .npc_name$;
 		mes "Aun no has documentado ninguna carta de esta categoria.";
 	}
 	
@@ -246,7 +282,7 @@ S_ViewMissing:
 	.@cat$ = getarg(0);
 	.@arr_name$ = getarg(1);
 	.@total = getarg(2);
-	
+	mes .npc_name$;
 	mes "Cartas Faltantes - Categoria " + .@cat$;
 	mes "";
 	
@@ -260,6 +296,7 @@ S_ViewMissing:
 	}
 	
 	if (.@count == 0) {
+		mes .npc_name$;
 		mes "Has completado esta categoria! Excelente trabajo, aventurero.";
 	}
 	
