@@ -263,7 +263,7 @@ S_ViewObtained:
 		.@card_id = getd(.@arr_name$ + "[" + .@i + "]");
 		if (getd("#CARD_SEEN_" + .@card_id) == 1) {
 			.@count++;
-			mes "  [X] " + getitemname(.@card_id);
+			mes " - " + getitemname(.@card_id);
 		}
 	}
 	
@@ -289,7 +289,7 @@ S_ViewMissing:
 		.@card_id = getd(.@arr_name$ + "[" + .@i + "]");
 		if (getd("#CARD_SEEN_" + .@card_id) == 0) {
 			.@count++;
-			mes "  [ ] " + getitemname(.@card_id);
+			mes " - " + getitemname(.@card_id);
 		}
 	}
 	
