@@ -36,6 +36,14 @@
 //=     - No runtime loops for category resolution; lookups are O(1) via getd()
 //============================================================
 
+// Global function: Get card category by ID
+// Returns: "A", "B", ... "MVP", "BOSS" or "" if not found
+function	script	GetCardCategory	{
+	.@id = getarg(0);
+	.@cat$ = getd(".card_cat_" + .@id + "$");
+	return .@cat$;
+}
+
 -	script	Card Collector	FAKE_NPC,{
 	
 	dispbottom "[CardCollector v4] Scanning inventory for cards...";
@@ -110,14 +118,6 @@ OnInit:
 	// Category MVP
 	setd ".card_cat_4121$","MVP"; setd ".card_cat_4128$","MVP"; setd ".card_cat_4131$","MVP"; setd ".card_cat_4132$","MVP"; setd ".card_cat_4134$","MVP"; setd ".card_cat_4135$","MVP"; setd ".card_cat_4137$","MVP"; setd ".card_cat_4142$","MVP"; setd ".card_cat_4143$","MVP"; setd ".card_cat_4144$","MVP"; setd ".card_cat_4145$","MVP"; setd ".card_cat_4146$","MVP"; setd ".card_cat_4147$","MVP"; setd ".card_cat_4148$","MVP"; setd ".card_cat_4168$","MVP"; setd ".card_cat_4236$","MVP"; setd ".card_cat_4263$","MVP"; setd ".card_cat_4276$","MVP"; setd ".card_cat_4302$","MVP"; setd ".card_cat_4305$","MVP"; setd ".card_cat_4318$","MVP"; setd ".card_cat_4324$","MVP"; setd ".card_cat_4330$","MVP"; setd ".card_cat_4342$","MVP"; setd ".card_cat_4352$","MVP"; setd ".card_cat_4357$","MVP"; setd ".card_cat_4359$","MVP"; setd ".card_cat_4361$","MVP"; setd ".card_cat_4363$","MVP"; setd ".card_cat_4365$","MVP"; setd ".card_cat_4367$","MVP"; setd ".card_cat_4372$","MVP"; setd ".card_cat_4374$","MVP"; setd ".card_cat_4376$","MVP"; setd ".card_cat_4386$","MVP"; setd ".card_cat_4399$","MVP"; setd ".card_cat_4403$","MVP"; setd ".card_cat_4407$","MVP"; setd ".card_cat_4408$","MVP"; setd ".card_cat_4419$","MVP"; setd ".card_cat_4425$","MVP"; setd ".card_cat_4430$","MVP"; setd ".card_cat_4441$","MVP"; setd ".card_cat_4456$","MVP"; setd ".card_cat_4507$","MVP"; setd ".card_cat_4525$","MVP"; setd ".card_cat_4574$","MVP"; setd ".card_cat_4576$","MVP"; setd ".card_cat_4578$","MVP"; setd ".card_cat_4580$","MVP"; setd ".card_cat_4592$","MVP"; setd ".card_cat_4601$","MVP"; setd ".card_cat_4603$","MVP"; setd ".card_cat_4625$","MVP"; setd ".card_cat_27164$","MVP";
 	end;
-
-// Get card category by ID
-// Returns: "A", "B", ... "MVP", "BOSS" or "" if not found
-function	GetCardCategory	{
-	.@id = getarg(0);
-	.@cat$ = getd(".card_cat_" + .@id + "$");
-	return .@cat$;
-}
 
 }
 
