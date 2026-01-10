@@ -640,7 +640,7 @@ function GetCardCategory {
 }
 
 // ===== FUNCTION: Get Card Category (ORIGINAL - More reliable) =====
-function GetCardCategory_Original {
+function GetCardCat_Orig {
 	.@item_id = getarg(0);
 	
 	// Check each category
