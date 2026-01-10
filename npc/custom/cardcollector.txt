@@ -46,10 +46,12 @@ function	script	GetCardCategory	{
 -	script	Card Collector	FAKE_NPC,{
 	mes "We are a research group traveling the world documenting every card in existence.";
 	mes "If you help us, we'll record which cards you have seen!!";
-	mes "Are you willing to participate?"
+	mes "Are you willing to participate?";
 	switch(select ("yes, of course", "not now")){
 		case 1:
-			mes "great!"
+			mes "great!";
+			close;
+		case 2:
 			close;
 
 	}
