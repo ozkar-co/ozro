@@ -280,7 +280,6 @@ S_ViewMissing:
 	.@cat$ = getarg(0);
 	.@arr_name$ = getarg(1);
 	.@total = getarg(2);
-	mes .npc_name$;
 	mes "Cartas Faltantes - Categoria " + .@cat$;
 	mes "";
 	
