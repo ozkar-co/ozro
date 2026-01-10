@@ -44,15 +44,19 @@ function	script	GetCardCategory	{
 	return .@cat$;
 }
 -	script	Card Collector	FAKE_NPC,{
-	mes "We are a research group traveling the world documenting every card in existence.";
-	mes "If you help us, we'll record which cards you have seen!!";
-	mes "Are you willing to participate?";
+	mes .npc_name$;
+	mes "Soy parte de la Iniciativa de Archivo Arcano, un pequeno escuadron que recorre el mundo tras la huella de cada carta.";
+	mes "No las coleccionamos para venderlas: registramos su historia y que poder esconden.";
+	mes "Tu mochila ya huele a polvo de mazmorra... Nos ayudaras a completar el archivo?";
 	next;
-	switch(select ("yes, of course", "not now")){
+	switch(select ("Claro, cuenten conmigo", "Ahora no")){
 		case 1:
-			mes "great!";
+			mes "Excelente. Cada carta registrada es una historia que no se pierde.";
+			mes "Solo necesito tu permiso para revisar lo que llevas y anotar los hallazgos.";
 			next;
+			break;
 		case 2:
+			mes "Entiendo. Si cambias de idea, estare donde se juntan las anecdotas y el polvo.";
 			close;
 
 	}
@@ -143,7 +147,7 @@ S_ResetCardData:
 	return;
 
 OnInit:
-	.npc_name$ = "[ Card Collector ]";
+	.npc_name$ = "[ Archivista de Cartas ]";
 	// Category list and total cards per category
 	setarray .cat_codes$, "A","B","C","D","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","Y","Z","BOSS","MVP";
 	// Totals aligned with .cat_codes$ (precomputed once, total cards = 550)
