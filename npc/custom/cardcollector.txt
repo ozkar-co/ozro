@@ -44,16 +44,25 @@ function	script	GetCardCategory	{
 	return .@cat$;
 }
 -	script	Card Collector	FAKE_NPC,{
-	switch(select("Who are you?", "Register my cards", "View my registered cards", "Leave")) {
+	mes "We are a research group traveling the world documenting every card in existence.";
+	mes "If you help us, we'll record which cards you have seen!!";
+	mes "Are you willing to participate?"
+	switch(select ("yes, of course", "not now")){
 		case 1:
-			mes "We are a research group traveling the world documenting every card we find.";
-			mes "If you help us, we'll record which cards you have seen and in which category they belong.";
+			mes "great!"
 			close;
-		case 2:
+
+	}
+
+	switch(select("Register my cards", "View my registered cards", "Reset my card data", "Leave")) {
+		case 1:
 			callsub(S_RegisterCards);
 			close;
-		case 3:
+		case 2:
 			callsub(S_ViewRegistered);
+			close;
+		case 3:
+			callsub(S_ResetCardData);
 			close;
 		default:
 			close;
@@ -112,6 +121,22 @@ S_ViewRegistered:
 			mes .@code$ + ": " + .@cnt;
 		}
 	}
+	return;
+
+// Subroutine: Reset card data for this account (DB + in-memory)
+S_ResetCardData:
+	.@acc = getcharid(3);
+	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Resetting card data for account: " + .@acc;
+	// Wipe DB rows (both account registries if present)
+	query_sql("DELETE FROM `acc_reg_num_db` WHERE account_id = " + .@acc + " AND (`key` LIKE '#CARD_SEEN_%' OR `key` LIKE '#CARD_CT_%')");
+	query_sql("DELETE FROM `global_acc_reg_num_db` WHERE account_id = " + .@acc + " AND (`key` LIKE '#CARD_SEEN_%' OR `key` LIKE '#CARD_CT_%')");
+	// Zero in-memory per-category counts
+	.@cat_count = getarraysize(.cat_codes$);
+	for (.@k = 0; .@k < .@cat_count; .@k++) {
+		setd("#CARD_CT_" + .cat_codes$[.@k], 0);
+	}
+	mes "Reset complete.";
+	mes "Account: " + .@acc;
 	return;
 
 OnInit:
