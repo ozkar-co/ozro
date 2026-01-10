@@ -46,7 +46,9 @@ function	script	GetCardCategory	{
 -	script	Card Collector	FAKE_NPC,{
 	mes .npc_name$;
 	mes "Soy parte de la Iniciativa de Archivo Arcano, un pequeno escuadron que recorre el mundo tras la huella de cada carta.";
+	next;
 	mes "No las coleccionamos para venderlas: registramos su historia y que poder esconden.";
+	next;
 	mes "Tu mochila ya huele a polvo de mazmorra... Nos ayudaras a completar el archivo?";
 	next;
 	switch(select ("Claro, cuenten conmigo", "Ahora no")){
@@ -92,8 +94,7 @@ S_RegisterCards:
 				.@seen_var$ = "#CARD_SEEN_" + .@item_id;
 				if (getd(.@seen_var$) == 0) {
 					setd(.@seen_var$, 1);
-					setd("#CARD_CT_" + .@cat$, getd("#CARD_CT_" + .@cat$) + 1);
-					.@idx = -1;
+					setd("#CARD_CT_" + .@cat$, getd("#CARD_CT_" + .@cat$) + 1);				consolemes CONSOLEMES_DEBUG, "[CardCollector v4] NEW card registered: " + .@item_id + " -> " + .@seen_var$ + " = 1, #CARD_CT_" + .@cat$ + " = " + getd("#CARD_CT_" + .@cat$);					.@idx = -1;
 					for (.@j = 0; .@j < .@cat_count; .@j++) {
 						if (.cat_codes$[.@j] == .@cat$) { .@idx = .@j; break; }
 					}
