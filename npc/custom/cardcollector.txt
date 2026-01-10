@@ -55,6 +55,14 @@ function	script	GetCardCategory	{
 		if (.@type == 6) { // IT_CARD
 			.@cat$ = getd(".card_cat_" + .@item_id + "$");
 			if (.@cat$ == "") .@cat$ = "N/A";
+			else {
+				// Persist seen flag per card as numeric (no 255-char issues)
+				.@seen_var$ = "#CARD_SEEN_" + .@item_id;
+				if (getd(.@seen_var$) == 0) {
+					setd(.@seen_var$, 1);
+					setd("#CARD_CT_" + .@cat$, getd("#CARD_CT_" + .@cat$) + 1);
+				}
+			}
 			consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Card " + .@item_id + " (" + getitemname(.@item_id) + ") -> Category: " + .@cat$;
 		}
 	}
@@ -64,6 +72,10 @@ function	script	GetCardCategory	{
 
 OnInit:
 	.npc_name$ = "[ Card Collector ]";
+	// Category list and total cards per category
+	setarray .cat_codes$, "A","B","C","D","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","Y","Z","BOSS","MVP";
+	// Totals aligned with .cat_codes$ (precomputed once, total cards = 550)
+	setarray .cat_total, 39,21,32,27,14,25,18,8,4,15,17,38,11,8,34,1,19,43,16,1,8,19,2,8,67,55;
 
 	// Category A
 	setd ".card_cat_4013$","A"; setd ".card_cat_4032$","A"; setd ".card_cat_4043$","A"; setd ".card_cat_4062$","A"; setd ".card_cat_4075$","A"; setd ".card_cat_4094$","A"; setd ".card_cat_4114$","A"; setd ".card_cat_4138$","A"; setd ".card_cat_4160$","A"; setd ".card_cat_4234$","A"; setd ".card_cat_4240$","A"; setd ".card_cat_4242$","A"; setd ".card_cat_4244$","A"; setd ".card_cat_4245$","A"; setd ".card_cat_4246$","A"; setd ".card_cat_4247$","A"; setd ".card_cat_4248$","A"; setd ".card_cat_4249$","A"; setd ".card_cat_4252$","A"; setd ".card_cat_4253$","A"; setd ".card_cat_4344$","A"; setd ".card_cat_4347$","A"; setd ".card_cat_4371$","A"; setd ".card_cat_4378$","A"; setd ".card_cat_4379$","A"; setd ".card_cat_4387$","A"; setd ".card_cat_4400$","A"; setd ".card_cat_4401$","A"; setd ".card_cat_4402$","A"; setd ".card_cat_4409$","A"; setd ".card_cat_4443$","A"; setd ".card_cat_4464$","A"; setd ".card_cat_4473$","A"; setd ".card_cat_4513$","A"; setd ".card_cat_4515$","A"; setd ".card_cat_4567$","A"; setd ".card_cat_4596$","A"; setd ".card_cat_4629$","A"; setd ".card_cat_31022$","A";
