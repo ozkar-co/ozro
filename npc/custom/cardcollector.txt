@@ -180,7 +180,7 @@ S_SelectCategory:
 	
 	.@missing = .@total_in_cat - .@obtained;
 	
-	mes "=== Categoria " + .@input_cat$ + " ===";
+	mes "Categoria " + .@input_cat$;
 	mes "Progreso: " + .@obtained + "/" + .@total_in_cat + " (" + (.@obtained * 100 / .@total_in_cat) + "%)";
 	mes "";
 	
