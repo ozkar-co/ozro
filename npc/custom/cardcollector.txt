@@ -29,6 +29,7 @@
 //=     - ShowProgress builds progress strings in @progress_line1$ through @progress_line10$
 //=     - All dialog display happens in main menu after switch
 //=     - Added debugmes statements for troubleshooting
+//=     - Changed Cecil Damond Card (4368) from S to C
 //============================================================
 
 -	script	Card Collector	FAKE_NPC,{
@@ -298,47 +299,35 @@ function FindMissing {
 	.@search$ = strtoupper(.@search$);
 	
 	// Validate input
-	.@len = getstrlen(.@search$);
 	if (.@search$ == "") {
 		mes .npc_name$;
 		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
 		close;
-	}
-	if (.@len > 1) {
-		if (.@search$ != "BOSS" && .@search$ != "MVP") {
-			mes .npc_name$;
-			mes "Please enter a single letter or 'BOSS' or 'MVP'.";
-			close;
-		}
+		return;
 	}
 	
-	// Handle letter search
+	// Validate letter (single character)
 	if (getstrlen(.@search$) == 1) {
-		if (.@search$ == "A" || .@search$ == "B" || .@search$ == "C" || 
-		    .@search$ == "D" || .@search$ == "F" || .@search$ == "G" || 
-		    .@search$ == "H" || .@search$ == "I" || .@search$ == "J" || 
-		    .@search$ == "K" || .@search$ == "L" || .@search$ == "M" || 
-		    .@search$ == "N" || .@search$ == "O" || .@search$ == "P" || 
-		    .@search$ == "Q" || .@search$ == "R" || .@search$ == "S" || 
-		    .@search$ == "T" || .@search$ == "U" || .@search$ == "V" || 
-		    .@search$ == "W" || .@search$ == "Y" || .@search$ == "Z") {
-			ShowMissingLtr(.@search$);
-		} else {
+		if (.@search$ != "A" && .@search$ != "B" && .@search$ != "C" && 
+		    .@search$ != "D" && .@search$ != "F" && .@search$ != "G" && 
+		    .@search$ != "H" && .@search$ != "I" && .@search$ != "J" && 
+		    .@search$ != "K" && .@search$ != "L" && .@search$ != "M" && 
+		    .@search$ != "N" && .@search$ != "O" && .@search$ != "P" && 
+		    .@search$ != "Q" && .@search$ != "R" && .@search$ != "S" && 
+		    .@search$ != "T" && .@search$ != "U" && .@search$ != "V" && 
+		    .@search$ != "W" && .@search$ != "Y" && .@search$ != "Z") {
 			mes .npc_name$;
 			mes "That's not a valid letter!";
 			close;
+			return;
 		}
+		ShowMissingLtr(.@search$);
+	} else if (.@search$ == "BOSS" || .@search$ == "MVP") {
+		ShowMissingType(.@search$);
 	} else {
-		// Handle BOSS/MVP search
-		if (.@search$ == "BOSS") {
-			ShowMissingType("BOSS");
-		} else if (.@search$ == "MVP") {
-			ShowMissingType("MVP");
-		} else {
-			mes .npc_name$;
-			mes "Please enter a single letter, 'BOSS', or 'MVP'.";
-			close;
-		}
+		mes .npc_name$;
+		mes "Please enter a single letter, 'BOSS', or 'MVP'.";
+		close;
 	}
 	return;
 }
@@ -437,47 +426,35 @@ function ViewCollect {
 	.@search$ = strtoupper(.@search$);
 	
 	// Validate input
-	.@len = getstrlen(.@search$);
 	if (.@search$ == "") {
 		mes .npc_name$;
 		mes "Please enter a single letter or 'BOSS' or 'MVP'.";
 		close;
-	}
-	if (.@len > 1) {
-		if (.@search$ != "BOSS" && .@search$ != "MVP") {
-			mes .npc_name$;
-			mes "Please enter a single letter or 'BOSS' or 'MVP'.";
-			close;
-		}
+		return;
 	}
 	
-	// Handle letter search
+	// Validate letter (single character)
 	if (getstrlen(.@search$) == 1) {
-		if (.@search$ == "A" || .@search$ == "B" || .@search$ == "C" || 
-		    .@search$ == "D" || .@search$ == "F" || .@search$ == "G" || 
-		    .@search$ == "H" || .@search$ == "I" || .@search$ == "J" || 
-		    .@search$ == "K" || .@search$ == "L" || .@search$ == "M" || 
-		    .@search$ == "N" || .@search$ == "O" || .@search$ == "P" || 
-		    .@search$ == "Q" || .@search$ == "R" || .@search$ == "S" || 
-		    .@search$ == "T" || .@search$ == "U" || .@search$ == "V" || 
-		    .@search$ == "W" || .@search$ == "Y" || .@search$ == "Z") {
-			ShowCollectLtr(.@search$);
-		} else {
+		if (.@search$ != "A" && .@search$ != "B" && .@search$ != "C" && 
+		    .@search$ != "D" && .@search$ != "F" && .@search$ != "G" && 
+		    .@search$ != "H" && .@search$ != "I" && .@search$ != "J" && 
+		    .@search$ != "K" && .@search$ != "L" && .@search$ != "M" && 
+		    .@search$ != "N" && .@search$ != "O" && .@search$ != "P" && 
+		    .@search$ != "Q" && .@search$ != "R" && .@search$ != "S" && 
+		    .@search$ != "T" && .@search$ != "U" && .@search$ != "V" && 
+		    .@search$ != "W" && .@search$ != "Y" && .@search$ != "Z") {
 			mes .npc_name$;
 			mes "That's not a valid letter!";
 			close;
+			return;
 		}
+		ShowCollectLtr(.@search$);
+	} else if (.@search$ == "BOSS" || .@search$ == "MVP") {
+		ShowCollectType(.@search$);
 	} else {
-		// Handle BOSS/MVP search
-		if (.@search$ == "BOSS") {
-			ShowCollectType("BOSS");
-		} else if (.@search$ == "MVP") {
-			ShowCollectType("MVP");
-		} else {
-			mes .npc_name$;
-			mes "Please enter a single letter, 'BOSS', or 'MVP'.";
-			close;
-		}
+		mes .npc_name$;
+		mes "Please enter a single letter, 'BOSS', or 'MVP'.";
+		close;
 	}
 	return;
 }
@@ -608,8 +585,62 @@ function CountFound {
 	return .@count;
 }
 
+// ===== FUNCTION: Get Card Array Reference =====
+// Helper to avoid duplicating 26+ if-else chains
+function GetCardArray {
+	.@letter$ = getarg(0);
+	
+	if (.@letter$ == "A") return .carta_A;
+	else if (.@letter$ == "B") return .carta_B;
+	else if (.@letter$ == "C") return .carta_C;
+	else if (.@letter$ == "D") return .carta_D;
+	else if (.@letter$ == "F") return .carta_F;
+	else if (.@letter$ == "G") return .carta_G;
+	else if (.@letter$ == "H") return .carta_H;
+	else if (.@letter$ == "I") return .carta_I;
+	else if (.@letter$ == "J") return .carta_J;
+	else if (.@letter$ == "K") return .carta_K;
+	else if (.@letter$ == "L") return .carta_L;
+	else if (.@letter$ == "M") return .carta_M;
+	else if (.@letter$ == "N") return .carta_N;
+	else if (.@letter$ == "O") return .carta_O;
+	else if (.@letter$ == "P") return .carta_P;
+	else if (.@letter$ == "Q") return .carta_Q;
+	else if (.@letter$ == "R") return .carta_R;
+	else if (.@letter$ == "S") return .carta_S;
+	else if (.@letter$ == "T") return .carta_T;
+	else if (.@letter$ == "U") return .carta_U;
+	else if (.@letter$ == "V") return .carta_V;
+	else if (.@letter$ == "W") return .carta_W;
+	else if (.@letter$ == "Y") return .carta_Y;
+	else if (.@letter$ == "Z") return .carta_Z;
+	else if (.@letter$ == "BOSS") return .carta_BOSS;
+	else if (.@letter$ == "MVP") return .carta_MVP;
+	
+	return;
+}
+
 // ===== FUNCTION: Get Card Category =====
 function GetCardCategory {
+	.@item_id = getarg(0);
+	
+	// Check each category - optimized with helper function
+	.@letters = "ABCDFGHIJKLMNOPQRSTUVWYZ|BOSS|MVP";
+	.@letter$ = "";
+	for (.@i = 0; .@i < 30; .@i++) {
+		.@letter$ = substr(.@letters, .@i, 1);
+		if (.@letter$ == "|") continue;
+		
+		for (.@j = 0; .@j < getarraysize(.@carta); .@j++) {
+			if (.carta[.@j] == .@item_id) return .@letter$;
+		}
+	}
+	
+	return ""; // Unknown card
+}
+
+// ===== FUNCTION: Get Card Category (ORIGINAL - More reliable) =====
+function GetCardCategory_Original {
 	.@item_id = getarg(0);
 	
 	// Check each category
@@ -867,7 +898,7 @@ OnInit:
 
 	setarray .carta_A, 4013,4032,4043,4062,4075,4094,4114,4138,4160,4234,4240,4242,4244,4245,4246,4247,4248,4249,4252,4253,4344,4347,4371,4378,4379,4387,4400,4401,4402,4409,4443,4464,4473,4513,4515,4567,4596,4629,31022;
 	setarray .carta_B, 4074,4119,4129,4212,4213,4214,4215,4233,4320,4327,4356,4390,4438,4450,4466,4472,4518,4519,4582,4626,4627;
-	setarray .carta_C, 4009,4015,4040,4041,4061,4063,4153,4202,4229,4235,4284,4285,4288,4289,4293,4296,4297,4298,4299,4373,4447,4448,4452,4475,4516,4517,4568,4569,4595,27182,27361;
+	setarray .carta_C, 4009,4015,4040,4041,4061,4063,4153,4202,4229,4235,4284,4285,4288,4289,4293,4296,4297,4298,4299,4368,4373,4447,4448,4452,4475,4516,4517,4568,4569,4595,27182,27361;
 	setarray .carta_D, 4004,4023,4056,4069,4082,4098,4122,4125,4133,4170,4173,4176,4177,4178,4180,4181,4182,4272,4279,4370,4385,4388,4421,4444,4449,4458,4506;
 	setarray .carta_F, 4002,4020,4080,4088,4158,4312,4316,4319,4380,4381,4405,4439,4570,4607;
 	setarray .carta_G, 4060,4072,4087,4110,4149,4150,4151,4152,4155,4157,4161,4162,4164,4165,4270,4271,4278,4280,4283,4323,4355,4377,4418,4508,4571;
@@ -882,7 +913,7 @@ OnInit:
 	setarray .carta_P, 4001,4003,4005,4007,4008,4011,4024,4031,4033,4048,4073,4077,4099,4118,4120,4175,4309,4310,4311,4313,4314,4315,4329,4335,4337,4389,4461,4465,4468,4476,4512,4514,4523,4594;
 	setarray .carta_Q, 4294;
 	setarray .carta_R, 4014,4021,4083,4104,4154,4185,4186,4187,4192,4194,4350,4353,4422,4436,4460,4531,4572,4581,27352;
-	setarray .carta_S, 4017,4022,4025,4037,4039,4042,4044,4068,4078,4086,4089,4092,4100,4101,4111,4117,4156,4216,4218,4219,4220,4221,4222,4223,4224,4225,4226,4227,4228,4230,4273,4326,4358,4368,4404,4414,4415,4416,4424,4505,4521,4522,4530,4575;
+	setarray .carta_S, 4017,4022,4025,4037,4039,4042,4044,4068,4078,4086,4089,4092,4100,4101,4111,4117,4156,4216,4218,4219,4220,4221,4222,4223,4224,4225,4226,4227,4228,4230,4273,4326,4358,4404,4414,4415,4416,4424,4505,4521,4522,4530,4575;
 	setarray .carta_T, 4012,4016,4026,4028,4050,4058,4172,4282,4304,4308,4340,4442,4573,4586,4587,4630;
 	setarray .carta_U, 4336;
 	setarray .carta_V, 4049,4053,4107,4209,4211,4333,4369,4411;

@@ -147,7 +147,199 @@ if (.@len > 1) {
 }
 ```
 
-### 6. Debug en OnInit
+### 6. Control de Flujo de Diálogo: next, close, return
+
+Este es uno de los errores más comunes en scripts de diálogo. Los problemas surgen cuando se mezclan incorrectamente `next`, `close` y `return`.
+
+#### ¿Cuál es la diferencia?
+
+| Comando | Propósito | Detiene Diálogo | Detiene Función | Espera Input |
+|---------|-----------|-----------------|-----------------|--------------|
+| `next` | Separa mensajes | ❌ No | ❌ No | ⏳ Espera que usuario presione botón |
+| `close` | Cierra diálogo | ✅ Sí | ❌ No | ❌ No |
+| `return` | Sale de función | ❌ No | ✅ Sí | ❌ No |
+
+**Combinación correcta: `close; return;`**
+
+#### Caso 1: Función que termina el diálogo
+
+❌ **INCORRECTO** - Sin `return`, el código sigue ejecutándose:
+```c
+function ShowMessage {
+    mes .npc_name$;
+    mes "This is a message";
+    close;  // ❌ Cierra diálogo pero función continúa
+    // Esto sigue ejecutándose (PROBLEMA)
+    mes "Esto nunca debería verse";
+}
+```
+
+✅ **CORRECTO** - Con `return` después de `close`:
+```c
+function ShowMessage {
+    mes .npc_name$;
+    mes "This is a message";
+    close;
+    return;  // ✅ Sale de la función inmediatamente
+}
+```
+
+#### Caso 2: Validación con salida temprana
+
+❌ **INCORRECTO** - Sin `return`, flujo continúa a líneas no deseadas:
+```c
+function ViewCollection {
+    input .@search$;
+    
+    if (.@search$ == "") {
+        mes "Error: Enter something";
+        close;  // ❌ Cierra pero sigue ejecutando
+    }
+    // PROBLEMA: Esto se ejecuta aunque se haya cerrado el diálogo
+    ShowCollectionLtr(.@search$);
+}
+```
+
+✅ **CORRECTO** - Con `return` después de `close`:
+```c
+function ViewCollection {
+    input .@search$;
+    
+    if (.@search$ == "") {
+        mes "Error: Enter something";
+        close;
+        return;  // ✅ Sale de la función completamente
+    }
+    // Ahora esto SOLO se ejecuta si la validación pasó
+    ShowCollectionLtr(.@search$);
+}
+```
+
+#### Caso 3: Múltiples validaciones
+
+✅ **CORRECTO** - Cada error termina con `close; return;`:
+```c
+function FindCards {
+    mes "What letter?";
+    next;
+    input .@search$;
+    .@search$ = strtoupper(.@search$);
+    
+    // Validación 1
+    if (.@search$ == "") {
+        mes "Please enter something";
+        close;
+        return;
+    }
+    
+    // Validación 2
+    if (getstrlen(.@search$) == 1) {
+        if (.@search$ != "A" && .@search$ != "B" && .@search$ != "C") {
+            mes "Invalid letter";
+            close;
+            return;
+        }
+    } else if (.@search$ != "BOSS" && .@search$ != "MVP") {
+        mes "Invalid input";
+        close;
+        return;
+    }
+    
+    // Si llegamos aquí, todas las validaciones pasaron
+    ShowResults(.@search$);
+}
+```
+
+#### Caso 4: Menús con switch
+
+❌ **INCORRECTO** - `close` sin `return` al final:
+```c
+function MainMenu {
+    mes "What do you want?";
+    next;
+    
+    switch(select("Option 1", "Option 2", "Exit")) {
+        case 1:
+            DoOption1();
+            break;
+        case 2:
+            DoOption2();
+            break;
+        case 3:
+            mes "Goodbye";
+            close;
+            // ❌ PROBLEMA: Sin return, código continúa después del switch
+    }
+    
+    // PROBLEMA: Esto se ejecuta aunque el usuario presionó Exit
+    mes "Esto no debería verse después de Exit";
+    close;
+}
+```
+
+✅ **CORRECTO** - `close; return;` al final:
+```c
+function MainMenu {
+    mes "What do you want?";
+    next;
+    
+    switch(select("Option 1", "Option 2", "Exit")) {
+        case 1:
+            DoOption1();
+            break;
+        case 2:
+            DoOption2();
+            break;
+        case 3:
+            mes "Goodbye";
+            close;
+            return;  // ✅ Asegura salida completa
+    }
+    
+    close;  // ✅ Para otros casos si es necesario
+}
+```
+
+#### Caso 5: Funciones que hacen sus propios `close`
+
+Cuando una función llamada contiene `close`, necesita `return`:
+
+```c
+// En main NPC
+case 1:
+    FindMissing();  // Esta función ya hace close
+    // No necesitamos otro close aquí si FindMissing() retorna
+
+// En función FindMissing
+function FindMissing {
+    input .@search$;
+    
+    if (.@search$ == "") {
+        mes "Invalid";
+        close;
+        return;  // ✅ Importante: el return previene que el código continúe
+    }
+    
+    // Procesar...
+    close;
+    return;  // ✅ Sale completamente
+}
+```
+
+#### Regla de Oro
+
+- **Si haces `close`, siempre sigue con `return`** en funciones internas
+- **Separa mensajes con `next` solo dentro de `mes` statements**
+- **No uses `next` después de `close`** (nunca se ejecutará)
+
+❌ **NUNCA hacer esto**:
+```c
+close;
+next;  // ❌ El diálogo ya está cerrado, next nunca se ejecuta
+mes "No se verá";
+```
+
+### 7. Debug en OnInit
 - ❌ `consolemes()` en `OnInit` causa error: "player not attached"
 - ✅ Usa `debugmes()` para logs del servidor sin jugador
 - `consolemes()` solo funciona cuando hay un jugador activo (RID attached)
