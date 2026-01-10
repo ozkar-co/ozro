@@ -154,6 +154,14 @@ S_ResetCardData:
 		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Reset #CARD_CT_" + .@code$ + " from " + .@old_val + " to 0";
 	}
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] After reset - #CARD_CT_P = " + #CARD_CT_P + ", #CARD_CT_MVP = " + #CARD_CT_MVP;
+	// Force account variable reload by detaching and reattaching
+	.@temp_rid = playerattached();
+	if (.@temp_rid > 0) {
+		detachrid();
+		attachrid(.@temp_rid);
+		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Forced account var reload via detach/attach";
+	}
+	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] After reload - #CARD_CT_P = " + #CARD_CT_P + ", #CARD_SEEN_4001 = " + #CARD_SEEN_4001;
 	mes "Reset complete.";
 	mes "Account: " + .@acc;
 	return;
