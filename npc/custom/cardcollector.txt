@@ -46,7 +46,7 @@ function	script	GetCardCategory	{
 
 -	script	Card Collector	FAKE_NPC,{
 	
-	debugmes "[CardCollector v4] Scanning inventory for cards...";
+	logmes "[CardCollector v4] Scanning inventory for cards...";
 
 	getinventorylist;
 	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
@@ -55,11 +55,11 @@ function	script	GetCardCategory	{
 		if (.@type == 6) { // IT_CARD
 			.@cat$ = getd(".card_cat_" + .@item_id + "$");
 			if (.@cat$ == "") .@cat$ = "N/A";
-			debugmes "[CardCollector v4] Card " + .@item_id + " (" + getitemname(.@item_id) + ") -> Category: " + .@cat$;
+			logmes "[CardCollector v4] Card " + .@item_id + " (" + getitemname(.@item_id) + ") -> Category: " + .@cat$;
 		}
 	}
 
-	debugmes "[CardCollector v4] Scan complete";
+	logmes "[CardCollector v4] Scan complete";
 	end;
 
 OnInit:
