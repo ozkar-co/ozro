@@ -44,10 +44,12 @@ function	script	GetCardCategory	{
 	return .@cat$;
 }
 
--	script	Card Collector	FAKE_NPC,{
-	
+// Subroutine: Register cards from inventory
+S_RegisterCards:
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Scanning inventory for cards...";
-
+	.@cat_count = getarraysize(.cat_codes$);
+	for (.@k = 0; .@k < .@cat_count; .@k++) .@new_cat[.@k] = 0;
+	.@total_new = 0;
 	getinventorylist;
 	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
 		.@item_id = @inventorylist_id[.@i];
@@ -56,19 +58,59 @@ function	script	GetCardCategory	{
 			.@cat$ = getd(".card_cat_" + .@item_id + "$");
 			if (.@cat$ == "") .@cat$ = "N/A";
 			else {
-				// Persist seen flag per card as numeric (no 255-char issues)
 				.@seen_var$ = "#CARD_SEEN_" + .@item_id;
 				if (getd(.@seen_var$) == 0) {
 					setd(.@seen_var$, 1);
 					setd("#CARD_CT_" + .@cat$, getd("#CARD_CT_" + .@cat$) + 1);
+					.@idx = inarray(.cat_codes$, .@cat$);
+					if (.@idx >= 0) {
+						.@new_cat[.@idx]++;
+					}
+					.@total_new++;
 				}
 			}
 			consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Card " + .@item_id + " (" + getitemname(.@item_id) + ") -> Category: " + .@cat$;
 		}
 	}
-
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Scan complete";
-	end;
+
+	mes "Scan complete.";
+	mes "New cards registered: " + .@total_new;
+	for (.@k = 0; .@k < .@cat_count; .@k++) {
+		if (.@new_cat[.@k] > 0) {
+			mes .cat_codes$[.@k] + ": " + .@new_cat[.@k];
+		}
+	}
+	return;
+
+// Subroutine: View registered cards per category (counts only)
+S_ViewRegistered:
+	.@cat_count = getarraysize(.cat_codes$);
+	mes "Registered cards per category:";
+	for (.@k = 0; .@k < .@cat_count; .@k++) {
+		.@code$ = .cat_codes$[.@k];
+		.@cnt = getd("#CARD_CT_" + .@code$);
+		if (.@cnt > 0) {
+			mes .@code$ + ": " + .@cnt;
+		}
+	}
+	return;
+
+-	script	Card Collector	FAKE_NPC,{
+	switch(select("Who are you?", "Register my cards", "View my registered cards", "Leave")) {
+		case 1:
+			mes "We are a research group traveling the world documenting every card we find.";
+			mes "If you help us, we'll record which cards you have seen and in which category they belong.";
+			close;
+		case 2:
+			callsub(S_RegisterCards);
+			close;
+		case 3:
+			callsub(S_ViewRegistered);
+			close;
+		default:
+			close;
+	}
 
 OnInit:
 	.npc_name$ = "[ Card Collector ]";
