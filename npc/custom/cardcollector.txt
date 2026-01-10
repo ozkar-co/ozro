@@ -45,25 +45,25 @@ function	script	GetCardCategory	{
 }
 -	script	Card Collector	FAKE_NPC,{
 	mes .npc_name$;
-	mes "Soy parte de la Iniciativa de Archivo Arcano, un pequeno escuadron que recorre el mundo tras la huella de cada carta.";
+	mes "Soy parte de la Iniciativa de Archivo Arcano, un pequeno escuadron que recorre los rincones del mundo recolectando el saber que habita en cada carta.";
 	next;
-	mes "No las coleccionamos para venderlas: registramos su historia y que poder esconden.";
+	mes "Las cartas no son simples objetos... guardan los secretos de los monstruos que las portan. Cada una tiene una historia que contar.";
 	next;
-	mes "Tu mochila ya huele a polvo de mazmorra... Nos ayudaras a completar el archivo?";
+	mes "Se nota que has pasado por muchas mazmorras... Podrias ayudarnos a completar nuestro Archivo?";
 	next;
-	switch(select ("Claro, cuenten conmigo", "Ahora no")){
+	switch(select ("Claro, es un honor ayudar", "Quizas despues")){
 		case 1:
-			mes "Excelente. Cada carta registrada es una historia que no se pierde.";
-			mes "Solo necesito tu permiso para revisar lo que llevas y anotar los hallazgos.";
+			mes "Excelente aventurero. Cada carta registrada es una victora contra el olvido.";
+			mes "Solo necesito tu permiso para documentar tus hallazgos.";
 			next;
 			break;
 		case 2:
-			mes "Entiendo. Si cambias de idea, estare donde se juntan las anecdotas y el polvo.";
+			mes "Comprendo. Cuando el camino te canse, vuelve. El Archivo siempre estara aqui.";
 			close;
 
 	}
 
-	switch(select("Registrar mis cartas", "Ver mi progreso", "Ver mis cartas", "Salir")) {
+	switch(select("Registrar mis cartas", "Ver mi progreso", "Explorar mi coleccion", "Despedirse")) {
 		case 1:
 			callsub(S_RegisterCards);
 			close;
@@ -71,9 +71,10 @@ function	script	GetCardCategory	{
 			callsub(S_ViewProgress);
 			close;
 		case 3:
-			callsub(S_ViewCards);
+			callsub(S_SelectCategory);
 			close;
 		default:
+			mes "Que el Archivo te guarde en sus memorias, aventurero.";
 			close;
 	}
 
@@ -111,11 +112,15 @@ S_RegisterCards:
 	}
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Scan complete";
 
-	mes "Escaneo completo.";
-	mes "Cartas nuevas registradas: " + .@total_new;
-	for (.@k = 0; .@k < .@cat_count; .@k++) {
-		if (.@new_cat[.@k] > 0) {
-			mes .cat_codes$[.@k] + ": " + .@new_cat[.@k];
+	if (.@total_new == 0) {
+		mes "Tu coleccion ya esta documentada. No hay nuevas cartas que registrar.";
+	} else {
+		mes "Revision completada exitosamente.";
+		mes "Cartas nuevas documentadas: " + .@total_new;
+		for (.@k = 0; .@k < .@cat_count; .@k++) {
+			if (.@new_cat[.@k] > 0) {
+				mes "  " + .cat_codes$[.@k] + ": " + .@new_cat[.@k];
+			}
 		}
 	}
 	return;
@@ -124,7 +129,8 @@ S_RegisterCards:
 S_ViewProgress:
 	.@cat_count = getarraysize(.cat_codes$);
 	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] ViewRegistered: cat_count = " + .@cat_count;
-	mes "Cartas registradas por categoria:";
+	mes "Tu progreso en el Archivo Arcano:";
+	mes "";
 	for (.@k = 0; .@k < .@cat_count; .@k++) {
 		.@code$ = .cat_codes$[.@k];
 		.@cnt = getd("#CARD_CT_" + .@code$);
@@ -136,68 +142,109 @@ S_ViewProgress:
 	}
 	return;
 
-// Subroutine: View individual cards by category
-S_ViewCards:
-	mes "Ingresa la categoria que quieres ver:";
-	mes "Categorias: A-Z, BOSS, MVP";
+// Subroutine: Select category to explore
+S_SelectCategory:
+	mes "Que categoria deseas revisar?";
+	mes "";
 	input .@input_cat$;
 	.@input_cat$ = strtoupper(.@input_cat$);
 	
-	// Validate category exists
+	// Validate category
 	.@cat_count = getarraysize(.cat_codes$);
 	.@found = 0;
+	.@cat_idx = -1;
 	for (.@k = 0; .@k < .@cat_count; .@k++) {
 		if (.cat_codes$[.@k] == .@input_cat$) {
 			.@found = 1;
+			.@cat_idx = .@k;
 			break;
 		}
 	}
 	
 	if (.@found == 0) {
-		mes "Categoria invalida.";
+		mes "Esa categoria no existe en nuestros registros.";
 		return;
 	}
 	
-	// Get array of all cards in this category
 	.@arr_name$ = ".card_arr_" + .@input_cat$;
 	.@total_in_cat = getarraysize(getd(.@arr_name$));
 	
-	mes "=== Categoria " + .@input_cat$ + " ===";
-	mes "Cartas obtidas:";
-	next;
-	
+	// Count obtained
 	.@obtained = 0;
 	for (.@i = 0; .@i < .@total_in_cat; .@i++) {
 		.@card_id = getd(.@arr_name$ + "[" + .@i + "]");
 		if (getd("#CARD_SEEN_" + .@card_id) == 1) {
 			.@obtained++;
+		}
+	}
+	
+	.@missing = .@total_in_cat - .@obtained;
+	
+	mes "=== Categoria " + .@input_cat$ + " ===";
+	mes "Progreso: " + .@obtained + "/" + .@total_in_cat + " (" + (.@obtained * 100 / .@total_in_cat) + "%)";
+	mes "";
+	
+	switch(select("Ver cartas obtenidas", "Ver cartas faltantes", "Volver")) {
+		case 1:
+			callsub(S_ViewObtained, .@input_cat$, .@arr_name$, .@total_in_cat);
+			return;
+		case 2:
+			callsub(S_ViewMissing, .@input_cat$, .@arr_name$, .@total_in_cat);
+			return;
+		default:
+			return;
+	}
+
+// Subroutine: View obtained cards in category
+S_ViewObtained:
+	.@cat$ = getarg(0);
+	.@arr_name$ = getarg(1);
+	.@total = getarg(2);
+	
+	mes "Cartas Obtenidas en la Categoria " + .@cat$;
+	mes "";
+	
+	.@count = 0;
+	for (.@i = 0; .@i < .@total; .@i++) {
+		.@card_id = getd(.@arr_name$ + "[" + .@i + "]");
+		if (getd("#CARD_SEEN_" + .@card_id) == 1) {
+			.@count++;
 			mes "  [X] " + getitemname(.@card_id);
 		}
 	}
 	
-	if (.@obtained == 0) {
-		mes "  (Ninguna)";
+	if (.@count == 0) {
+		mes "Aun no has documentado ninguna carta de esta categoria.";
 	}
 	
 	mes "";
-	mes "Cartas faltantes:";
-	next;
+	mes "Total documentadas: " + .@count;
+	return;
+
+// Subroutine: View missing cards in category
+S_ViewMissing:
+	.@cat$ = getarg(0);
+	.@arr_name$ = getarg(1);
+	.@total = getarg(2);
 	
-	.@missing = 0;
-	for (.@i = 0; .@i < .@total_in_cat; .@i++) {
+	mes "Cartas Faltantes - Categoria " + .@cat$;
+	mes "";
+	
+	.@count = 0;
+	for (.@i = 0; .@i < .@total; .@i++) {
 		.@card_id = getd(.@arr_name$ + "[" + .@i + "]");
 		if (getd("#CARD_SEEN_" + .@card_id) == 0) {
-			.@missing++;
+			.@count++;
 			mes "  [ ] " + getitemname(.@card_id);
 		}
 	}
 	
-	if (.@missing == 0) {
-		mes "  (Completa!)";
+	if (.@count == 0) {
+		mes "Has completado esta categoria! Excelente trabajo, aventurero.";
 	}
 	
 	mes "";
-	mes "Progreso: " + .@obtained + "/" + .@total_in_cat;
+	mes "Total faltantes: " + .@count;
 	return;
 
 OnInit:
