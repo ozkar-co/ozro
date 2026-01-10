@@ -38,20 +38,20 @@
 
 -	script	Card Collector	FAKE_NPC,{
 	
-	debugmes "[CardCollector] Scanning inventory for cards...";
-	
-	.@inv_size = getinventorysize();
-	for (.@i = 0; .@i < .@inv_size; .@i++) {
-		.@item_id = getinventorylist(.@i);
+	dispbottom "[CardCollector v4] Scanning inventory for cards...";
+
+	getinventorylist;
+	for (.@i = 0; .@i < @inventorylist_count; .@i++) {
+		.@item_id = @inventorylist_id[.@i];
 		if (.@item_id >= 4001 && .@item_id <= 27999) {
 			.@cat$ = GetCardCategory(.@item_id);
 			if (.@cat$ != "") {
-				debugmes "[CardCollector] Card " + .@item_id + " -> Category: " + .@cat$;
+				dispbottom "[CardCollector v4] Card " + .@item_id + " -> Category: " + .@cat$;
 			}
 		}
 	}
-	
-	debugmes "[CardCollector] Scan complete";
+
+	dispbottom "[CardCollector v4] Scan complete";
 	end;
 
 OnInit:
