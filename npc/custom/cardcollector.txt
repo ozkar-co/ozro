@@ -170,7 +170,7 @@ S_ViewProgress:
 	mes .npc_name$;
 	mes "Tu progreso en el Archivo Arcano.";
 	mes "";
-	mes "Has registrado un total de " + .@total_obtained + ", segun nuestros registros, en el mundo hay " + .@total_possible + " llevas un " + .@total_pct + "% de avance.";
+	mes "Has registrado un total de " + .@total_obtained + " cartas, y segun nuestros registros, en el mundo hay " + .@total_possible + " de ellas. Has encontrado un " + .@total_pct + "% de todas las cartas existentes.";
 	next;
 	
 	mes .npc_name$;
