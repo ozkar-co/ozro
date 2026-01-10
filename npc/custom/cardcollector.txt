@@ -43,6 +43,21 @@ function	script	GetCardCategory	{
 	.@cat$ = getd(".card_cat_" + .@id + "$");
 	return .@cat$;
 }
+-	script	Card Collector	FAKE_NPC,{
+	switch(select("Who are you?", "Register my cards", "View my registered cards", "Leave")) {
+		case 1:
+			mes "We are a research group traveling the world documenting every card we find.";
+			mes "If you help us, we'll record which cards you have seen and in which category they belong.";
+			close;
+		case 2:
+			callsub(S_RegisterCards);
+			close;
+		case 3:
+			callsub(S_ViewRegistered);
+			close;
+		default:
+			close;
+	}
 
 // Subroutine: Register cards from inventory
 S_RegisterCards:
@@ -95,22 +110,6 @@ S_ViewRegistered:
 		}
 	}
 	return;
-
--	script	Card Collector	FAKE_NPC,{
-	switch(select("Who are you?", "Register my cards", "View my registered cards", "Leave")) {
-		case 1:
-			mes "We are a research group traveling the world documenting every card we find.";
-			mes "If you help us, we'll record which cards you have seen and in which category they belong.";
-			close;
-		case 2:
-			callsub(S_RegisterCards);
-			close;
-		case 3:
-			callsub(S_ViewRegistered);
-			close;
-		default:
-			close;
-	}
 
 OnInit:
 	.npc_name$ = "[ Card Collector ]";
