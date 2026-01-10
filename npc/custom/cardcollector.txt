@@ -47,23 +47,27 @@ function	script	GetCardCategory	{
 	mes .npc_name$;
 	mes "Soy parte de la Iniciativa de Archivo Arcano, un pequeno escuadron que recorre los rincones del mundo recolectando el saber que habita en cada carta.";
 	next;
+	mes .npc_name$;
 	mes "Las cartas no son simples objetos... guardan los secretos de los monstruos que las portan. Cada una tiene una historia que contar.";
 	next;
+	mes .npc_name$;
 	mes "Se nota que has pasado por muchas mazmorras... Podrias ayudarnos a completar nuestro Archivo?";
 	next;
 	switch(select ("Claro, es un honor ayudar", "Quizas despues")){
 		case 1:
+			mes .npc_name$;
 			mes "Excelente aventurero. Cada carta registrada es una victora contra el olvido.";
 			mes "Solo necesito tu permiso para documentar tus hallazgos.";
 			next;
 			break;
 		case 2:
+			mes .npc_name$;
 			mes "Comprendo. Cuando el camino te canse, vuelve. El Archivo siempre estara aqui.";
 			close;
 
 	}
 
-	switch(select("Registrar mis cartas", "Ver mi progreso", "Explorar mi coleccion", "Despedirse")) {
+	switch(select("Registrar mis cartas", "Ver mi progreso", "Explorar mi coleccion", "Ver cartas faltantes", "Despedirse")) {
 		case 1:
 			callsub(S_RegisterCards);
 			close;
@@ -71,7 +75,10 @@ function	script	GetCardCategory	{
 			callsub(S_ViewProgress);
 			close;
 		case 3:
-			callsub(S_SelectCategory);
+			callsub(S_ExploreCollection);
+			close;
+		case 4:
+			callsub(S_ViewMissingCards);
 			close;
 		default:
 			mes "Que el Archivo te guarde en sus memorias, aventurero.";
@@ -135,15 +142,50 @@ S_ViewProgress:
 		.@code$ = .cat_codes$[.@k];
 		.@cnt = getd("#CARD_CT_" + .@code$);
 		.@total = .cat_total[.@k];
+		.@pct = 0;
+		if (.@total > 0) {
+			.@pct = (.@cnt * 100) / .@total;
+		}
 		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Category " + .@code$ + " (#CARD_CT_" + .@code$ + ") = " + .@cnt;
 		if (.@cnt > 0) {
-			mes .@code$ + ": " + .@cnt + "/" + .@total;
+			mes .@code$ + ": " + .@cnt + "/" + .@total + " (" + .@pct + "%)";
 		}
 	}
 	return;
 
-// Subroutine: Select category to explore
-S_SelectCategory:
+// Subroutine: Explore collection - show obtained cards directly
+S_ExploreCollection:
+	mes "Que categoria deseas explorar?";
+	mes "";
+	input .@input_cat$;
+	.@input_cat$ = strtoupper(.@input_cat$);
+	
+	// Validate category
+	.@cat_count = getarraysize(.cat_codes$);
+	.@found = 0;
+	.@cat_idx = -1;
+	for (.@k = 0; .@k < .@cat_count; .@k++) {
+		if (.cat_codes$[.@k] == .@input_cat$) {
+			.@found = 1;
+			.@cat_idx = .@k;
+			break;
+		}
+	}
+	
+	if (.@found == 0) {
+		mes "Esa categoria no existe en nuestros registros.";
+		return;
+	}
+	
+	.@arr_name$ = ".card_arr_" + .@input_cat$;
+	.@total_in_cat = getarraysize(getd(.@arr_name$));
+	
+	// Show obtained cards directly
+	callsub(S_ViewObtained, .@input_cat$, .@arr_name$, .@total_in_cat);
+	return;
+
+// Subroutine: View missing cards - select category and show directly
+S_ViewMissingCards:
 	mes "Que categoria deseas revisar?";
 	mes "";
 	input .@input_cat$;
@@ -169,31 +211,9 @@ S_SelectCategory:
 	.@arr_name$ = ".card_arr_" + .@input_cat$;
 	.@total_in_cat = getarraysize(getd(.@arr_name$));
 	
-	// Count obtained
-	.@obtained = 0;
-	for (.@i = 0; .@i < .@total_in_cat; .@i++) {
-		.@card_id = getd(.@arr_name$ + "[" + .@i + "]");
-		if (getd("#CARD_SEEN_" + .@card_id) == 1) {
-			.@obtained++;
-		}
-	}
-	
-	.@missing = .@total_in_cat - .@obtained;
-	
-	mes "Categoria " + .@input_cat$;
-	mes "Progreso: " + .@obtained + "/" + .@total_in_cat + " (" + (.@obtained * 100 / .@total_in_cat) + "%)";
-	mes "";
-	
-	switch(select("Ver cartas obtenidas", "Ver cartas faltantes", "Volver")) {
-		case 1:
-			callsub(S_ViewObtained, .@input_cat$, .@arr_name$, .@total_in_cat);
-			return;
-		case 2:
-			callsub(S_ViewMissing, .@input_cat$, .@arr_name$, .@total_in_cat);
-			return;
-		default:
-			return;
-	}
+	// Show missing cards directly
+	callsub(S_ViewMissing, .@input_cat$, .@arr_name$, .@total_in_cat);
+	return;
 
 // Subroutine: View obtained cards in category
 S_ViewObtained:
