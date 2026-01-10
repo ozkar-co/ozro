@@ -163,9 +163,9 @@ S_ViewProgress:
 	}
 	
 	mes .npc_name$;
-	mes "Tu progreso en el Archivo Arcano:";
+	mes "Tu progreso en el Archivo Arcano.";
 	mes "";
-	mes "Total documentadas: " + .@total_obtained + "/" + .@total_possible + " (" + .@total_pct + "%)";
+	mes "Has registrado un total de " + .@total_obtained + ", segun nuestros registros, en el mundo hay " + .@total_possible + " llevas un " + .@total_pct + "% de avance.";
 	next;
 	
 	mes .npc_name$;
@@ -188,6 +188,7 @@ S_ViewProgress:
 S_ExploreCollection:
 	mes .npc_name$;
 	mes "Que categoria deseas explorar?";
+	mes	"A-Z, BOSS, MVP";
 	mes "";
 	input .@input_cat$;
 	.@input_cat$ = strtoupper(.@input_cat$);
@@ -205,7 +206,6 @@ S_ExploreCollection:
 	}
 	
 	if (.@found == 0) {
-		mes .npc_name$;
 		mes "Esa categoria no existe en nuestros registros.";
 		return;
 	}
@@ -221,6 +221,7 @@ S_ExploreCollection:
 S_ViewMissingCards:
 	mes .npc_name$;
 	mes "Que categoria deseas revisar?";
+	mes "A-Z, BOSS, MVP";
 	mes "";
 	input .@input_cat$;
 	.@input_cat$ = strtoupper(.@input_cat$);
@@ -238,7 +239,6 @@ S_ViewMissingCards:
 	}
 	
 	if (.@found == 0) {
-		mes .npc_name$;
 		mes "Esa categoria no existe en nuestros registros.";
 		return;
 	}
@@ -255,7 +255,6 @@ S_ViewObtained:
 	.@cat$ = getarg(0);
 	.@arr_name$ = getarg(1);
 	.@total = getarg(2);
-	mes .npc_name$;
 	mes "Cartas Obtenidas en la Categoria " + .@cat$;
 	mes "";
 	
@@ -269,7 +268,6 @@ S_ViewObtained:
 	}
 	
 	if (.@count == 0) {
-		mes .npc_name$;
 		mes "Aun no has documentado ninguna carta de esta categoria.";
 	}
 	
@@ -296,7 +294,6 @@ S_ViewMissing:
 	}
 	
 	if (.@count == 0) {
-		mes .npc_name$;
 		mes "Has completado esta categoria! Excelente trabajo, aventurero.";
 	}
 	
