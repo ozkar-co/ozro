@@ -1,0 +1,33 @@
+{
+  "name": "hercules-npc-syntax",
+  "displayName": "Hercules NPC Script Syntax",
+  "description": "Syntax highlighting for Hercules/Athena NPC scripts (.txt)",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "hercules-npc",
+        "aliases": [
+          "Hercules NPC"
+        ],
+        "extensions": [
+          ".txt"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "hercules-npc",
+        "scopeName": "source.hercules-npc",
+        "path": "./syntaxes/hercules-npc.tmLanguage.json"
+      }
+    ]
+  }
+}

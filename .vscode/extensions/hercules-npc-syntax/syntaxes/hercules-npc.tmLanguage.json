@@ -1,0 +1,103 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Hercules NPC Script",
+  "scopeName": "source.hercules-npc",
+  "fileTypes": ["txt"],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#functions"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#variables"
+    },
+    {
+      "include": "#numbers"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.hercules-npc",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.hercules-npc",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.hercules-npc",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.hercules-npc",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.hercules-npc",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.hercules-npc",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "support.function.hercules-npc",
+          "match": "\\b(mes|next|close|callsub|return|getinventorylist|getiteminfo|getitemname|getd|setd|query_sql|getarraysize|strtoupper|atoi|substr|select|input|consolemes|getcharid|setarray|break|case|switch|function|script|if|else|for)\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.hercules-npc",
+          "match": "\\b(if|else|for|while|switch|case|default|break|continue|return|function|script)\\b"
+        },
+        {
+          "name": "keyword.other.hercules-npc",
+          "match": "\\b(OnInit|OnTimer|OnTalk|OnTouch|OnUnequip|OnEquip|OnDrop|OnUse|OnPCLogout|OnPCLogin)\\b"
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "name": "variable.other.hercules-npc",
+          "match": "(#|@|\\.@|\\.)[a-zA-Z_][a-zA-Z0-9_]*"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hercules-npc",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    }
+  }
+}
