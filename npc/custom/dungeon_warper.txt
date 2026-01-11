@@ -1,0 +1,172 @@
+//===== Hercules Script ======================================
+//= Dungeon Warper NPCs
+//===== By: ==================================================
+//= Custom
+//===== Current Version: =====================================
+//= 1.0
+//===== Description: =========================================
+//= Two NPCs that warp players to dungeon entrances/first floors
+//= - One in Geffen: Rune-Midgard dungeons
+//= - One in Juno: Arunafeltz and Schwartzvald dungeons
+//= Cost: 1 Blue Gemstone + 10,000 zeny
+//= Restriction: Reborn (transcendent) jobs or higher, and extended jobs
+//===== Additional Comments: =================================
+//= 1.0 Initial release
+//============================================================
+
+-	script	Dungeon_Warper	FAKE_NPC,{
+
+function CheckRequirements;
+function WarpToDungeon;
+
+// Check requirements before showing menu
+if (!CheckRequirements()) {
+	end;
+}
+
+// Different menus based on NPC location
+if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
+	mes "[Dungeon Warper]";
+	mes "I can transport you to the entrance of various dungeons in Rune-Midgard.";
+	mes " ";
+	mes "^FF0000Fee: 1 Blue Gemstone + 10,000 Zeny^000000";
+	next;
+	
+	switch(select("Anthell", "Byalan Dungeon", "Clock Tower", "Coal Mines", "Culvert", 
+	              "Geffen Dungeon", "Gefenia", "Glast Heim", "Hidden Dungeon", "Ice Dungeon",
+	              "Magma Dungeon", "Orc Dungeon", "Payon Dungeon", "Pyramids", "Sphinx",
+	              "Sunken Ship", "Toy Factory", "Turtle Dungeon", "Umbala Dungeon", "Beach Dungeon",
+	              "Amatsu Dungeon", "Ayothaya Dungeon", "Gonryun Dungeon", "Louyang Dungeon", 
+	              "Moscovia Dungeon", "Cancel")) {
+		case 1: WarpToDungeon("anthell01", 35, 262); break;
+		case 2: WarpToDungeon("iz_dun00", 168, 168); break;
+		case 3: WarpToDungeon("c_tower1", 199, 159); break;
+		case 4: WarpToDungeon("mjo_dun01", 52, 17); break;
+		case 5: WarpToDungeon("prt_sewb1", 131, 247); break;
+		case 6: WarpToDungeon("gef_dun00", 104, 99); break;
+		case 7: WarpToDungeon("gefenia01", 40, 103); break;
+		case 8: WarpToDungeon("glast_01", 370, 304); break;
+		case 9: WarpToDungeon("prt_maze01", 176, 7); break;
+		case 10: WarpToDungeon("ice_dun01", 157, 14); break;
+		case 11: WarpToDungeon("mag_dun01", 126, 68); break;
+		case 12: WarpToDungeon("orcsdun01", 32, 170); break;
+		case 13: WarpToDungeon("pay_dun00", 21, 183); break;
+		case 14: WarpToDungeon("moc_pryd01", 192, 9); break;
+		case 15: WarpToDungeon("in_sphinx1", 288, 9); break;
+		case 16: WarpToDungeon("treasure01", 69, 24); break;
+		case 17: WarpToDungeon("xmas_dun01", 205, 15); break;
+		case 18: WarpToDungeon("tur_dun01", 154, 49); break;
+		case 19: WarpToDungeon("um_dun01", 42, 31); break;
+		case 20: WarpToDungeon("beach_dun", 266, 67); break;
+		case 21: WarpToDungeon("ama_dun01", 228, 11); break;
+		case 22: WarpToDungeon("ayo_dun01", 275, 19); break;
+		case 23: WarpToDungeon("gon_dun01", 153, 53); break;
+		case 24: WarpToDungeon("lou_dun01", 218, 196); break;
+		case 25: WarpToDungeon("mosk_dun01", 189, 48); break;
+		case 26:
+			mes "[Dungeon Warper]";
+			mes "Come back anytime!";
+			close;
+	}
+} else {
+	// Juno NPC - Arunafeltz and Schwartzvald dungeons
+	mes "[Dungeon Warper]";
+	mes "I can transport you to the entrance of various dungeons in Arunafeltz and Schwartzvald.";
+	mes " ";
+	mes "^FF0000Fee: 1 Blue Gemstone + 10,000 Zeny^000000";
+	next;
+	
+	.@menu = select("^0000FFArunafeltz Dungeons^000000", "^FF0000Schwartzvald Dungeons^000000", "Cancel");
+	
+	if (.@menu == 3) {
+		mes "[Dungeon Warper]";
+		mes "Come back anytime!";
+		close;
+	}
+	
+	if (.@menu == 1) {
+		// Arunafeltz dungeons
+		switch(select("Rachel Sanctuary", "Thor Volcano", "Cursed Abbey", "Odin Temple", "Abyss Lakes", "Cancel")) {
+			case 1: WarpToDungeon("ra_san01", 140, 11); break;
+			case 2: WarpToDungeon("thor_v01", 21, 228); break;
+			case 3: WarpToDungeon("abbey01", 51, 14); break;
+			case 4: WarpToDungeon("odin_tem01", 298, 167); break;
+			case 5: WarpToDungeon("abyss_01", 261, 272); break;
+			case 6:
+				mes "[Dungeon Warper]";
+				mes "Come back anytime!";
+				close;
+		}
+	} else {
+		// Schwartzvald dungeons
+		switch(select("Bio Labs", "Einbroch Dungeon", "Juperos Cave", "Kiel Dungeon", "Thanatos Tower", "Nidhogg's Dungeon", "Cancel")) {
+			case 1: WarpToDungeon("lhz_dun01", 150, 288); break;
+			case 2: WarpToDungeon("ein_dun01", 22, 14); break;
+			case 3: WarpToDungeon("jupe_cave", 140, 51); break;
+			case 4: WarpToDungeon("kh_dun01", 28, 226); break;
+			case 5: WarpToDungeon("tha_t01", 150, 39); break;
+			case 6: WarpToDungeon("nyd_dun01", 61, 239); break;
+			case 7:
+				mes "[Dungeon Warper]";
+				mes "Come back anytime!";
+				close;
+		}
+	}
+}
+
+end;
+
+// Check if player meets requirements
+function CheckRequirements {
+	// Check job restrictions: Reborn (Upper >= 1) or Extended jobs
+	// Extended jobs: Taekwon (4046), Star Gladiator (4047), Soul Linker (4049)
+	// Gunslinger (24), Ninja (25), Super Novice (23) and their expanded versions
+	.@isReborn = (Upper >= 1); // Transcendent or third class
+	.@isExtended = (BaseJob == Job_SuperNovice || BaseJob == Job_Gunslinger || BaseJob == Job_Ninja || 
+	                BaseJob == Job_Taekwon || BaseJob == Job_Star_Gladiator || BaseJob == Job_Soul_Linker);
+	
+	if (!.@isReborn && !.@isExtended) {
+		mes "[Dungeon Warper]";
+		mes "I'm sorry, but my services are only available to transcendent classes and extended job classes.";
+		close;
+		return 0;
+	}
+	
+	return 1;
+}
+
+// Warp to dungeon after payment
+function WarpToDungeon {
+	// Check if player has required items
+	if (countitem(Blue_Gemstone) < 1) {
+		mes "[Dungeon Warper]";
+		mes "You need ^FF00001 Blue Gemstone^000000 to use this service.";
+		close;
+		return;
+	}
+	
+	if (Zeny < 10000) {
+		mes "[Dungeon Warper]";
+		mes "You need ^FF000010,000 Zeny^000000 to use this service.";
+		close;
+		return;
+	}
+	
+	// Deduct payment
+	delitem Blue_Gemstone, 1;
+	Zeny -= 10000;
+	
+	mes "[Dungeon Warper]";
+	mes "Have a safe journey!";
+	close2;
+	warp getarg(0), getarg(1), getarg(2);
+	end;
+}
+
+}
+
+// --------------------------------------------------
+//	NPC Duplicates:
+// --------------------------------------------------
+geffen,110,66,4	duplicate(Dungeon_Warper)	Dungeon Warper#geffen	4_F_KAFRA6
+yuno,151,87,4	duplicate(Dungeon_Warper)	Dungeon Warper#juno	4_F_KAFRA6
