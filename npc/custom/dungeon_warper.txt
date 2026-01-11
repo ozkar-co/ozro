@@ -119,8 +119,7 @@ end;
 // Check if player meets requirements
 function CheckRequirements {
 	// Check job restrictions: Reborn (Upper >= 1) or Extended jobs
-	// Extended jobs: Taekwon (4046), Star Gladiator (4047), Soul Linker (4049)
-	// Gunslinger (24), Ninja (25), Super Novice (23) and their expanded versions
+	// Extended jobs: Super Novice, Gunslinger, Ninja, Taekwon, Star Gladiator, Soul Linker
 	.@isReborn = (Upper >= 1); // Transcendent or third class
 	.@isExtended = (BaseJob == Job_SuperNovice || BaseJob == Job_Gunslinger || BaseJob == Job_Ninja || 
 	                BaseJob == Job_Taekwon || BaseJob == Job_Star_Gladiator || BaseJob == Job_Soul_Linker);
