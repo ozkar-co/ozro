@@ -13,22 +13,20 @@ prontera,274,352,3	script	Gravekeeper Ludovico	1_M_PASTOR,{
     .@deaths = PC_DIE_COUNTER;
 
     mes "^FF0000[Gravekeeper Ludovico]^000000";
-    mes "This ground remembers every scream that ended here.";
-    mes "I tend these graves; the echoes cling to my robes.";
+    mes "Cada vez que un alma se separa de su vasija, deja un eco frio en este mundo.";
+    mes "Yo soy quien escucha esos ecos.";
     next;
 
     if (.@deaths == 0) {
         mes "^FF0000[Ludovico]^000000";
-        mes "You keep slipping past Niflheim's jaws, traveler.";
-        mes "The dead whisper your name, but Prontera's bells refuse to toll.";
+        mes "Tu hilo de vida es notablemente fuerte, viajero. Ni un solo nudo, ni una sola ruptura.";
+        mes "Que los dioses lo mantengan asi.";
     } else {
         mes "^FF0000[Ludovico]^000000";
-        mes "You have fallen often, yet this soil still rejects your soul.";
-        mes "I feel ^FF0000" + .@deaths + " deaths^000000 clinging to you; Hel waits if you tire.";
+        mes "Tu destino esta marcado por la lucha y la perseverancia.";
+        mes "Veo el peso de ^FF0000" + .@deaths + " muertes^000000 sobre tus hombros.";
+        mes "No te avergüences. Cada retorno del abismo es una victoria sobre Hela misma.";
     }
-    next;
-    mes "^FF0000[Gravekeeper Ludovico]^000000";
-    mes "Go now. If you return, I will keep a candle lit for your wandering soul.";
     
     close;
 }
