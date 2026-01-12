@@ -62,35 +62,64 @@ function CalculateMVPReward {
 	// MVP array with coin rewards: MVP_ID, coins, MVP_ID, coins, etc
 	// Each MVP gives the same coins whether you killed it or supported
 	setarray .@mvp_rewards[0],
-		1159, 10,
-		1115, 10,
-		1150, 10,
-		1059, 10,
-		1039, 10,
-		1112, 10,
-		1038, 10,
-		1046, 10,
-		1190, 10,
-		1087, 10,
-		1086, 10,
-		1511, 10,
-		1785, 10,
-		1685, 10,
-		1688, 10,
-		1272, 10,
-		1389, 10,
-		1289, 10,
-		1623, 10,
-		1252, 10,
-		1768, 10,
-		1751, 10,
-		1658, 10,
-		1779, 10,
-		2022, 10,
-		2068, 10,
-		2087, 10,
-		2317, 10,
-		1832, 10;
+		1832, 100,  //Ifrit
+		1648, 100,  //MasterSmith Howard
+		1719, 90,  //Detardeurus
+		1871, 90,  //Falling Bishop
+		2202, 90,  //Kraken
+		1917, 100,  //Wounded Morroc
+		1874, 100,  //Beelzebub
+		1649, 96,  //High Priest 
+		1646, 93,  //Lord Knight Seyren
+		1651, 90,  //High Wizard Kathryne
+		2476, 85,  //Amdarais
+		1647, 84,  //Assassin Cross Eremes
+		1650, 82,  //Sniper Cecil
+		2319, 81,  //Buwaya
+		2483, 80,  //Nightmare Baphomet
+		1685, 76,  //Vesper
+		2022, 69,  //Nidhoggur's Shadow
+		1751, 80,  //Valkyrie Randgris
+		2341, 64,  //2011 RWC Boss
+		1768, 60,  //Gloom Under Night
+		1779, 52,  //Ktullanux
+		2362, 50,  //Amon Ra - Nightmare
+		2251, 50,  //Gioia
+		2255, 50,  //Dark Guardian Kades
+		1734, 50,  //Kiel D-01
+		2253, 50,  //General Daehyon
+		2087, 45,  //Queen Scaraba
+		2249, 44,  //Angry Student Pyuriel
+		2475, 36,  //Corrupted Soul
+		1785, 30,  //Atroce
+		1708, 35,  //Memory of Thanatos
+		1312, 28,  //Turtle General
+		2068, 25,  //Boitata
+		1252, 25,  //Hatii
+		1583, 25,  //Tao Gunka
+		1272, 23,  //Dark Lord
+		1038, 23,  //Osiris
+		1885, 22,  //Gopinch
+		1511, 20,  //Amon Ra
+		1623, 20,  //RSX-0806
+		1492, 19,  //Samurai 
+		1157, 18,  //Pharaoh
+		1112, 16,  //Drake
+		1630, 14,  //White Lady
+		1039, 15,  //Baphomet
+		1980, 12,  //Kublin
+		1251, 12,  //Stormy 
+		1373, 12,  //Lord the Dead
+		1190, 7,  //Orc Lord
+		1046, 10,  //Doppelganger
+		1147, 7,  //Maya
+		1059, 10,  //Mistress
+		1087, 7,  //Orc Hero
+		1688, 10,  //Lady Tanee
+		1389, 10,  //Dracula
+		1150, 6,  //Moonlight Flower
+		1159, 6,  //Phreeoni
+		1086, 4;  //Golden Thief Bug
 	
 	.@total_coins = 0;
 	.@array_size = getarraysize(.@mvp_rewards);

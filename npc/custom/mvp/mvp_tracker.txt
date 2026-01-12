@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 1.2
+//= 1.3
 //===== Description: =========================================
 //= Global tracker that records MVP kills for each player.
 //= Stores kills in character variables for persistence.
@@ -12,10 +12,73 @@
 //= 1.0 Initial version.
 //= 1.1 Added party support tracking (MVP_SUPP_<id> variables).
 //= 1.2 Fixed MVP detection using getmonsterinfo instead of strmobinfo.
+//= 1.3 Add MVP list for filtering tracked MVPs.
 //============================================================
 
 -	script	MVP_Tracker	-1,{
 OnNPCKillEvent:
+
+	//List of MVP IDs.
+	setarray .@all_mvps[0], 		
+		1832, //Ifrit
+		1648, //MasterSmith Howard
+		1719, //Detardeurus
+		1871, //Falling Bishop
+		2202, //Kraken
+		1917, //Wounded Morroc
+		1874, //Beelzebub
+		1649, //High Priest 
+		1646, //Lord Knight Seyren
+		1651, //High Wizard Kathryne
+		2476, //Amdarais
+		1647, //Assassin Cross Eremes
+		1650, //Sniper Cecil
+		2319, //Buwaya
+		2483, //Nightmare Baphomet
+		1685, //Vesper
+		2022, //Nidhoggur's Shadow
+		1751, //Valkyrie Randgris
+		2341, //2011 RWC Boss
+		1768, //Gloom Under Night
+		1779, //Ktullanux
+		2362, //Amon Ra - Nightmare
+		2251, //Gioia
+		2255, //Dark Guardian Kades
+		1734, //Kiel D-01
+		2253, //General Daehyon
+		2087, //Queen Scaraba
+		2249, //Angry Student Pyuriel
+		2475, //Corrupted Soul
+		1785, //Atroce
+		1708, //Memory of Thanatos
+		1312, //Turtle General
+		2068, //Boitata
+		1252, //Hatii
+		1583, //Tao Gunka
+		1272, //Dark Lord
+		1038, //Osiris
+		1885, //Gopinch
+		1511, //Amon Ra
+		1623, //RSX-0806
+		1492, //Samurai 
+		1157, //Pharaoh
+		1112, //Drake
+		1630, //White Lady
+		1039, //Baphomet
+		1980, //Kublin
+		1251, //Stormy 
+		1373, //Lord the Dead
+		1190, //Orc Lord
+		1046, //Doppelganger
+		1147, //Maya
+		1059, //Mistress
+		1087, //Orc Hero
+		1688, //Lady Tanee
+		1389, //Dracula
+		1150, //Moonlight Flower
+		1159, //Phreeoni
+		1086; //Golden Thief Bug
+
 	// Check if killed monster is an MVP (MOB_MVPEXP = 22)
 	if (getmonsterinfo(killedrid, 22) <= 0) end;
 	
@@ -26,43 +89,67 @@ OnNPCKillEvent:
 	.@killer_aid = getcharid(3);
 	.@killer_name$ = strcharinfo(0);
 	
-	// Give KILL point to the player who dealt the final blow
-	.@kill_var$ = "MVP_KILL_" + .@mvp_id;
-	.@kill_count = getd(.@kill_var$);
-	setd .@kill_var$, .@kill_count + 1;
+	// Check if MVP is in the official list
+	.@is_tracked = 0;
+	.@array_size = getarraysize(.@all_mvps);
+	for (.@i = 0; .@i < .@array_size; .@i = .@i + 1) {
+		if (.@all_mvps[.@i] == .@mvp_id) {
+			.@is_tracked = 1;
+			break;
+		}
+	}
 	
-	// If player is in a party, give SUPP points to party members
-	if (.@party_id != 0) {
-		getpartymember .@party_id, 2;
-		.@supp_given = 0;
+	// Only give points if MVP is in the tracked list
+	if (.@is_tracked) {
+		// Give KILL point to the player who dealt the final blow
+		.@kill_var$ = "MVP_KILL_" + .@mvp_id;
+		.@kill_count = getd(.@kill_var$);
+		setd .@kill_var$, .@kill_count + 1;
 		
-		for (.@i = 0; .@i < $@partymembercount; .@i = .@i + 1) {
-			// Skip the killer (they already have their KILL point)
-			if ($@partymemberaid[.@i] == .@killer_aid) continue;
+		// If player is in a party, give SUPP points to party members
+		if (.@party_id != 0) {
+			getpartymember .@party_id, 2;
+			.@supp_given = 0;
 			
-			if (attachrid($@partymemberaid[.@i])) {
-				// Only give SUPP if party member is on the same map
-				if (strcharinfo(3) == .@map$) {
-					.@supp_var$ = "MVP_SUPP_" + .@mvp_id;
-					.@supp_count = getd(.@supp_var$);
-					setd .@supp_var$, .@supp_count + 1;
-					.@msg$ = "You assisted in defeating " + .@mvp_name$ + "! Support record updated.";
-					dispbottom .@msg$;
-					.@supp_given = .@supp_given + 1;
+			for (.@i = 0; .@i < $@partymembercount; .@i = .@i + 1) {
+				// Skip the killer (they already have their KILL point)
+				if ($@partymemberaid[.@i] == .@killer_aid) continue;
+				
+				if (attachrid($@partymemberaid[.@i])) {
+					// Only give SUPP if party member is on the same map
+					if (strcharinfo(3) == .@map$) {
+						.@supp_var$ = "MVP_SUPP_" + .@mvp_id;
+						.@supp_count = getd(.@supp_var$);
+						setd .@supp_var$, .@supp_count + 1;
+						.@msg$ = "You assisted in defeating " + .@mvp_name$ + "! Support record updated.";
+						dispbottom .@msg$;
+						.@supp_given = .@supp_given + 1;
+					}
 				}
 			}
-		}
-		
-		if (.@supp_given > 0) {
-			// Party kill announcement (using pre-captured killer name)
-			.@announce_msg$ = "[" + .@killer_name$ + "] derroto a " + .@mvp_name$ + " con la ayuda de su party!";
-			announce .@announce_msg$, bc_all;
-			end;
+			
+			if (.@supp_given > 0) {
+				// Party kill announcement (using pre-captured killer name)
+				.@announce_msg$ = "[" + .@killer_name$ + "] derroto a " + .@mvp_name$ + " con la ayuda de su party!";
+				announce .@announce_msg$, bc_all;
+				end;
+			}
 		}
 	}
 
-	// Solo kill announcement (no party or no SUPP awarded)
-	.@announce_msg$ = .@killer_name$ + " acaba de cazar a " + .@mvp_name$ + "!";
-	announce .@announce_msg$, bc_all;
+	// Announcement for all MVPs (tracked or not)
+	if (.@party_id != 0 && .@is_tracked) {
+		// Solo announcement for tracked MVP without party support
+		.@announce_msg$ = .@killer_name$ + " acaba de cazar a " + .@mvp_name$ + "!";
+		announce .@announce_msg$, bc_all;
+	} else if (!.@is_tracked) {
+		// Event MVP announcement (no points given)
+		.@announce_msg$ = .@killer_name$ + " derroto al MVP de evento " + .@mvp_name$ + "!";
+		announce .@announce_msg$, bc_all;
+	} else {
+		// Solo kill announcement for tracked MVP
+		.@announce_msg$ = .@killer_name$ + " acaba de cazar a " + .@mvp_name$ + "!";
+		announce .@announce_msg$, bc_all;
+	}
 	end;
 }
