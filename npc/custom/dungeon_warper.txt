@@ -27,8 +27,9 @@ if (!CheckRequirements()) {
 // Different menus based on NPC location
 if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 	mes "[Teletransportadora Renegada]";
-	mes "Soy una Kafra que ya no sirve a la Corporación... Uso técnicas de teletransportación ^FF0000EXPERIMENTALES^000000.";
-	mes "Solo las almas más fuertes pueden resistir este poder.";
+	mes "[Teletransportadora Renegada]";
+	mes "Soy una Kafra que ya no sirve a la Corporacion... Uso tecnicas de teletransportacion ^FF0000EXPERIMENTALES^000000.";
+	mes "Solo las almas mas fuertes pueden resistir este poder.";
 	mes " ";
 	mes "^0000FFDungeons de Rune-Midgard^000000";
 	mes " ";
@@ -68,14 +69,14 @@ if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 		case 25: WarpToDungeon("mosk_dun01", 189, 48); break;
 		case 26:
 			mes "[Teletransportadora Renegada]";
-			mes "¿Cambiar de opinión? Vuelve cuando tengas el valor necesario...";
+			mes "?Cambiar de opinion? Vuelve cuando tengas el valor necesario...";
 			close;
 	}
 } else {
 	// Juno NPC - Arunafeltz and Schwartzvald dungeons
 	mes "[Teletransportadora Renegada]";
-	mes "Soy una Kafra que ya no sirve a la Corporación... Uso técnicas de teletransportación ^FF0000EXPERIMENTALES^000000.";
-	mes "Solo las almas más fuertes pueden resistir este poder.";
+	mes "Soy una Kafra que ya no sirve a la Corporacion... Uso tecnicas de teletransportacion ^FF0000EXPERIMENTALES^000000.";
+	mes "Solo las almas mas fuertes pueden resistir este poder.";
 	mes " ";
 	mes "^0000FFDungeons de Arunafeltz y Schwartzvald^000000";
 	mes " ";
@@ -100,7 +101,7 @@ if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 		case 11: WarpToDungeon("nyd_dun01", 61, 239); break;
 		case 12:
 			mes "[Teletransportadora Renegada]";
-			mes "¿Cambiar de opinión? Vuelve cuando tengas el valor necesario...";
+			mes "?Cambiar de opinion? Vuelve cuando tengas el valor necesario...";
 			close;
 	}
 }
@@ -116,7 +117,7 @@ function CheckRequirements {
 	
 	if (!.@isReborn && !.@isThird && !.@isExpandedThird) {
 		mes "[Teletransportadora Renegada]";
-		mes "¡No! Tu alma es demasiado débil para resistir mi teletransportación experimental.";
+		mes "!No! Tu alma es demasiado debil para resistir mi teletransportacion experimental.";
 		mes "Solo los trascendentes y aquellos con poder especial pueden usarla.";
 		close;
 		return 0;
@@ -144,13 +145,13 @@ function WarpToDungeon {
 	
 	// Confirmation before warping
 	mes "[Teletransportadora Renegada]";
-	mes "¿Estás seguro? Mi teletransportación experimental es ^FF0000PELIGROSA^000000.";
+	mes "?Estas seguro? Mi teletransportacion experimental es ^FF0000PELIGROSA^000000.";
 	mes "Solo los valientes avanzan...";
 	next;
 	
 	if (select("Adelante, no temo nada", "Espera, mejor luego") == 2) {
 		mes "[Teletransportadora Renegada]";
-		mes "Sabia decisión... Vuelve cuando estés listo.";
+		mes "Sabia decision... Vuelve cuando estes listo.";
 		close;
 		return;
 	}
@@ -160,7 +161,7 @@ function WarpToDungeon {
 	Zeny -= 10000;
 	
 	mes "[Teletransportadora Renegada]";
-	mes "¡Que tu alma aguante el viaje!";
+	mes "Que tu alma aguante el viaje!";
 	close2;
 	warp getarg(0), getarg(1), getarg(2);
 	end;

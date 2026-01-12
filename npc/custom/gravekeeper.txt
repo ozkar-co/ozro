@@ -25,7 +25,7 @@ prontera,274,352,3	script	Gravekeeper Ludovico	1_M_PASTOR,{
         mes "^FF0000[Ludovico]^000000";
         mes "Tu destino esta marcado por la lucha y la perseverancia.";
         mes "Veo el peso de ^FF0000" + .@deaths + " muertes^000000 sobre tus hombros.";
-        mes "No te avergüences. Cada retorno del abismo es una victoria sobre Hela misma.";
+        mes "No te averguences. Cada retorno del abismo es una victoria sobre Hela misma.";
     }
     
     close;
