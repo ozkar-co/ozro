@@ -68,7 +68,7 @@ function	script	GetCardCategory	{
 	switch(select ("Claro, es un honor ayudar", "Quizas despues")){
 		case 1:
 			mes .npc_name$;
-			mes "Excelente aventurero. Cada carta registrada es una victora contra el olvido.";
+			mes "Excelente aventurero. Cada carta registrada es una victoria contra el olvido.";
 			mes "Solo necesito tu permiso para documentar tus hallazgos.";
 			next;
 			break;
