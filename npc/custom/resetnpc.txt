@@ -199,7 +199,6 @@ OnInit:
 	mes "Has renacido, pero recuerda:";
 	mes "este camino no puede recorrerse de nuevo.";
 	close;
-}
 
 function StrongSoulCheck {
 	// Trascendentes, tercera clase o expandidos fuertes
@@ -215,4 +214,5 @@ function GetBirthstoneID {
 	if (.@size <= 0) return 718;
 	.@idx = .@count % .@size;
 	return .birthstones[.@idx];
+}
 }
