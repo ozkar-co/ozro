@@ -3,7 +3,7 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 1.1
+//= 1.2
 //===== Description: =========================================
 //= NPC that displays MVP kill statistics for players.
 //= Shows total kills, unique MVPs defeated, and most killed.
@@ -11,6 +11,7 @@
 //===== Additional Comments: =================================
 //= 1.0 Initial version.
 //= 1.1 Added support for tracking party assists (MVP_SUPP_<id>).
+//= 1.2 Traduccion al espanol y ampliacion de lista de MVPs para totales.
 //============================================================
 
 prontera,150,180,4	script	Hunting Journal	4_M_SAGE_C,{
@@ -18,11 +19,11 @@ prontera,150,180,4	script	Hunting Journal	4_M_SAGE_C,{
 	function CheckSpecificMVP;
 	
 	mes "^0000FF[Hunting Journal]^000000";
-	mes "Greetings, hunter. I can read the stories written in your scars.";
-	mes "What would you like to know?";
+	mes "Saludos, cazador. Puedo leer las historias escritas en tus cicatrices.";
+	mes "Que deseas saber?";
 	next;
 	
-	switch(select("View Statistics:Check Specific MVP:Cancel")) {
+	switch(select("Ver estadisticas:Revisar MVP especifico:Cancelar")) {
 		case 1:
 			GetMVPStats();
 			break;
@@ -37,7 +38,7 @@ prontera,150,180,4	script	Hunting Journal	4_M_SAGE_C,{
 // Function to check specific MVP
 function CheckSpecificMVP {
 	mes "^0000FF[Hunting Journal]^000000";
-	mes "Which beast's record shall we check?";
+	mes "Que registro de bestia deseas ver?";
 	next;
 	
 	// Popular MVPs selection menu
@@ -70,20 +71,20 @@ function CheckSpecificMVP {
 	.@name$ = strmobinfo(2, .@id);
 	
 	mes "^0000FF[Hunting Journal]^000000";
-	.@title$ = "Records for ^FF0000" + .@name$ + "^000000:";
+	.@title$ = "Registros de ^FF0000" + .@name$ + "^000000:";
 	mes .@title$;
-	.@msg1$ = " - Killing Blows: ^00FF00" + .@kills + "^000000";
+	.@msg1$ = " - Golpes finales: ^00FF00" + .@kills + "^000000";
 	mes .@msg1$;
-	.@msg2$ = " - Battles Assisted: ^00FF00" + .@supps + "^000000";
+	.@msg2$ = " - Batallas asistidas: ^00FF00" + .@supps + "^000000";
 	mes .@msg2$;
 	mes " ";
 	
 	if (.@kills == 0 && .@supps == 0) {
-		mes "You haven't faced this mighty beast yet.";
+		mes "Aun no has enfrentado a esta bestia poderosa.";
 	} else if (.@kills > .@supps) {
-		mes "You are a true executioner.";
+		mes "Eres un verdugo verdadero.";
 	} else if (.@supps > 0) {
-		mes "Your presence is a blessing for any party.";
+		mes "Tu presencia es una bendicion para cualquier party.";
 	}
 	
 	return;
@@ -92,10 +93,11 @@ function CheckSpecificMVP {
 // Function to calculate and display statistics
 function GetMVPStats {
 	// All MVP IDs from the requirements
-	setarray .@all_mvps[0], 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1182, 1247, 1288,
-	                         1395, 1396, 1397, 1398, 1690, 1750, 1792, 1798, 1812, 1815, 1816,
-	                         1840, 1877, 1878, 1906, 1909, 1910, 1911, 1912, 1913, 1914, 1915,
-	                         1932, 1934, 1935, 1936, 1951, 1952, 1953, 1954;
+	setarray .@all_mvps[0], 1159, 1115, 1150, 1059, 1039, 1112, 1038, 1046,
+	                        1190, 1087, 1086, 1511, 1785, 1685,
+	                        1688, 1272, 1389, 1289, 1623, 1252,
+	                        1768, 1751, 1658, 1779, 2022, 2068,
+	                        2087, 2317, 1832;
 	
 	.@total_kills = 0;
 	.@total_supps = 0;
@@ -132,39 +134,39 @@ function GetMVPStats {
 	}
 	
 	mes "^0000FF[Hunting Journal]^000000";
-	mes "^777777--- Your MVP Hunting Statistics ---^000000";
+	mes "^777777--- Tus estadisticas de caza de MVP ---^000000";
 	next;
 	
 	mes "^0000FF[Hunting Journal]^000000";
-	.@msg1$ = "^00FF00Total Killing Blows:^000000 " + .@total_kills;
+	.@msg1$ = "^00FF00Total golpes finales:^000000 " + .@total_kills;
 	mes .@msg1$;
-	.@msg2$ = "^00FF00Total Assists:^000000 " + .@total_supps;
+	.@msg2$ = "^00FF00Total asistencias:^000000 " + .@total_supps;
 	mes .@msg2$;
-	.@msg3$ = "^00FF00Unique MVP Types:^000000 " + .@unique_mvps + " / " + .@array_size;
+	.@msg3$ = "^00FF00MVP unicos:^000000 " + .@unique_mvps + " / " + .@array_size;
 	mes .@msg3$;
 	
 	if (.@most_killed_id > 0) {
 		.@most_killed_name$ = strmobinfo(2, .@most_killed_id);
-		mes "^00FF00Most Killed MVP:^000000";
+		mes "^00FF00MVP mas cazado:^000000";
 		.@msg4$ = "^FF0000" + .@most_killed_name$ + "^000000";
 		mes .@msg4$;
-		.@msg5$ = "(" + .@most_killed_count + " killing blows)";
+		.@msg5$ = "(" + .@most_killed_count + " golpes finales)";
 		mes .@msg5$;
 	}
 	
 	if (.@most_supported_id > 0) {
 		.@most_supported_name$ = strmobinfo(2, .@most_supported_id);
-		mes "^00FF00Most Assisted MVP:^000000";
+		mes "^00FF00MVP mas asistido:^000000";
 		.@msg6$ = "^0000FF" + .@most_supported_name$ + "^000000";
 		mes .@msg6$;
-		.@msg7$ = "(" + .@most_supported_count + " assists)";
+		.@msg7$ = "(" + .@most_supported_count + " asistencias)";
 		mes .@msg7$;
 	}
 	
 	if (.@total_kills == 0 && .@total_supps == 0) {
 		mes " ";
-		mes "You haven't defeated any MVPs yet.";
-		mes "Start your hunting journey today!";
+		mes "Aun no has derrotado ningun MVP.";
+		mes "Empieza tu viaje de caza hoy mismo.";
 	}
 	
 	return;
