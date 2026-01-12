@@ -24,7 +24,7 @@ geffen_in,82,62,3	script	Ushi the Ox Hunter	4_M_COWRAIDERS3,{
 	next;
 	
 	mes "^8B4513[Ushi el Cazador]^000000";
-	mes "Este año celebramos al Buey, simbolo de fuerza y tenacidad.";
+	mes "Estamos celebramos al Buey, simbolo de fuerza y tenacidad.";
 	mes "He venido a Rune Midgard para escuchar las historias";
 	mes "de cazadores valientes como tu.";
 	next;
