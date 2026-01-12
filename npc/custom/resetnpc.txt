@@ -14,75 +14,160 @@
 //= 1.2 Cleaning [Euphy]
 //= 1.3 All statuses removed upon skill reset. [Euphy]
 //= 1.4 Added one-time use, lore and death chance [Ozcodex]
+//= 1.5 Translated to Spanish and add more than one use to third class [Ozkar]
 //============================================================
 
-prontera,150,186,5	script	Mystic Channeler	4_GEFFEN_09,{
+prontera,150,186,5	script	Canalizadora Mistica	4_GEFFEN_09,{
+function StrongSoulCheck;
+function GetBirthstoneID;
 
-	set .@price,100000;	// Zeny required for reset
-	set .@death_chance,10;	// Percentage chance of death
+OnInit:
+    setarray .birthstones[0],718,719,720,721,722,723,724,725,726,727,728,729;
+    end;
+
+	.@price = 100000; 	// Zeny required for reset
+	.@death_chance = 10; 	// Percentage chance of death
+	.@is_strong = StrongSoulCheck();
 
 	if (RESET_USED) {
-		mes "[Mystic Channeler]";
-		mes "^990000*The mysterious woman looks at you with knowing eyes*^000000";
-		mes "Your life force... I can see that you have already";
-		mes "undergone the ritual of rechanneling.";
-		mes "Such a dangerous process can only be";
-		mes "attempted once in a lifetime.";
+		if (!.@is_strong) {
+			mes "[Canalizadora Mistica]";
+			mes "^990000*La mujer misteriosa te mira con ojos conocedores*^000000";
+			mes "Tu fuerza vital... puedo ver que ya has";
+			mes "pasado por el ritual de recanalizacion.";
+			mes "Un proceso tan peligroso solo puede";
+			mes "intentarse una vez en la vida.";
+			close;
+			end;
+		}
+
+		mes "[Canalizadora Mistica]";
+		mes "^990000*Tus pasos resuenan con una fuerza poco comun*^000000";
+		mes "Percibo un pulso en tu alma, mas alla de lo que deberia quedar";
+		mes "despues de un renacer. Tal vez pueda forzar otro intento,";
+		mes "pero necesitare un foco raro y tu decision absoluta.";
+		next;
+
+		.@stone_id = GetBirthstoneID();
+		mes "[Canalizadora Mistica]";
+		mes "Necesitare una Birthstone en sintonia con tu ciclo actual.";
+		mes "Para ti ahora es la Birthstone #"+ .@stone_id +".";
+		mes "Tambien requerire "+ .@price +" zeny para preparar el sello.";
+		mes "Intentaras el ritual prohibido?";
+		next;
+
+		if (select("Intentar el ritual prohibido:No arriesgare mi alma") == 2) {
+			mes "[Canalizadora Mistica]";
+			mes "^990000*La intensidad en sus ojos se disipa*^000000";
+			mes "Vuelve si tu determinacion supera al miedo.";
+			close;
+			end;
+		}
+
+		if (countitem(.@stone_id) < 1) {
+			mes "[Canalizadora Mistica]";
+			mes "Te falta la Birthstone que armoniza contigo ahora.";
+			mes "Sin ese catalizador no puedo obligar a tu alma a ceder.";
+			close;
+			end;
+		}
+
+		if (Zeny < .@price) {
+			mes "[Canalizadora Mistica]";
+			mes "Ni siquiera con esa Birthstone podre comenzar.";
+			mes "Necesito "+ .@price +" zeny para los sellos y ofrendas.";
+			close;
+			end;
+		}
+
+		mes "[Canalizadora Mistica]";
+		mes "^990000*Prepara la Birthstone y extiende su luz sobre el circulo*^000000";
+		mes "No te dire que ocurrira. Solo los que aceptan el peso del secreto";
+		mes "pueden intentar doblegar su destino por segunda vez.";
+		next;
+
+		delitem .@stone_id, 1;
+		Zeny -= .@price;
+
+		if (rand(100) < .@death_chance) {
+			mes "[Canalizadora Mistica]";
+			mes "^990000*La Birthstone se agrieta, liberando un eco oscuro*^000000";
+			mes "^FF0000El ritual colapsa y tu cuerpo no resiste...^000000";
+			next;
+			percentheal -100,-100;
+			mes "^FF0000La muerte reclama este intento prohibido.^000000";
+			close;
+			end;
+		}
+
+		resetskill;
+		resetstatus;
+		resetfeel;
+		resethate;
+		sc_end SC_ALL;
+		RESET_USED = 1;
+		RESET_COUNT = RESET_COUNT + 1;
+
+		mes "[Canalizadora Mistica]";
+		mes "^990000*La Birthstone se funde mientras tu esencia se reescribe*^000000";
+		mes "El ritual prohibido ha sido sellado. Has forzado otro renacer,";
+		mes "pero cada ciclo deja cicatrices que no ves.";
 		close;
+		end;
 	}
 
-	mes "[Mystic Channeler]";
-	mes "^990000*A mysterious woman in dark robes studies you carefully*^000000";
-	mes "I sense... potential within you.";
-	mes "I possess the forbidden knowledge to rechannel";
-	mes "your abilities and reshape your very essence.";
+	mes "[Canalizadora Mistica]";
+	mes "^990000*Una mujer misteriosa con tunicas oscuras te estudia con cuidado*^000000";
+	mes "Siento... potencial dentro de ti.";
+	mes "Poseo el conocimiento prohibido para recanalizar";
+	mes "tus habilidades y remodelar tu esencia.";
 	next;
 	
-	mes "[Mystic Channeler]";
-	mes "But be warned, this ancient ritual is";
-	mes "^FF0000extremely dangerous^000000. There is a chance that";
-	mes "your body will not survive the process.";
-	mes "And even if you survive, this can only";
-	mes "be attempted once in your lifetime.";
+	mes "[Canalizadora Mistica]";
+	mes "Pero ten cuidado, este ritual antiguo es";
+	mes "^FF0000extremadamente peligroso^000000. Existe la posibilidad de que";
+	mes "tu cuerpo no sobreviva al proceso.";
+	mes "Y aun si sobrevives, esto solo";
+	mes "puede intentarse una vez en tu vida.";
 	next;
 	
-	mes "[Mystic Channeler]";
-	mes "The ritual requires rare materials and";
-	mes "extensive preparation. My fee is";
-	mes .@price +" zeny. Keep in mind there is a";
-	mes .@death_chance +"% chance of ^FF0000fatal failure^000000.";
-	mes "Do you wish to proceed?";
+	mes "[Canalizadora Mistica]";
+	mes "El ritual requiere materiales raros y";
+	mes "preparacion extensa. Mi tarifa es";
+	mes .@price +" zeny. Ten en cuenta que hay";
+	mes .@death_chance +"% de probabilidad de ^FF0000fallo fatal^000000.";
+	mes "Deseas continuar?";
 	next;
 	
-	if(select("Yes, I accept the risks:No, I'll keep my life") == 2) {
-		mes "[Mystic Channeler]";
-		mes "^990000*The woman nods slowly*^000000";
-		mes "A wise choice perhaps. Return if you";
-		mes "ever feel the need to risk everything";
-		mes "for a new beginning.";
+	if(select("Si, acepto los riesgos:No, me quedo con mi vida") == 2) {
+		mes "[Canalizadora Mistica]";
+		mes "^990000*La mujer asiente lentamente*^000000";
+		mes "Quiza una eleccion sabia. Vuelve si";
+		mes "alguna vez sientes la necesidad de arriesgarlo todo";
+		mes "por un nuevo comienzo.";
 		close;
 	}
 	
 	if (Zeny < .@price) {
-		mes "[Mystic Channeler]";
-		mes "^990000*She shakes her head disapprovingly*^000000";
-		mes "You cannot afford my services and";
-		mes "the required materials. Return when";
-		mes "you have "+ .@price +" zeny.";
+		mes "[Canalizadora Mistica]";
+		mes "^990000*Ella niega con la cabeza desaprobando*^000000";
+		mes "No puedes pagar mis servicios y";
+		mes "los materiales requeridos. Vuelve cuando";
+		mes "tengas "+ .@price +" zeny.";
 		close;
 	}
 	
-	mes "[Mystic Channeler]";
-	mes "^990000*Her eyes begin to glow with an eerie light*^000000";
-	mes "Very well. The ritual will begin.";
-	mes "Are you absolutely certain?";
-	mes "^FF0000There is no turning back after this point.^000000";
+	mes "[Canalizadora Mistica]";
+	mes "^990000*Sus ojos comienzan a brillar con una luz inquietante*^000000";
+	mes "Muy bien. El ritual comenzara.";
+	mes "Estas absolutamente seguro?";
+	mes "^FF0000No hay vuelta atras despues de este punto.^000000";
 	next;
 	
-	if(select("Begin the ritual:Wait, I'm not ready") == 2) {
-		mes "[Mystic Channeler]";
-		mes "^990000*The glow in her eyes fades*^000000";
-		mes "Return when your resolve is stronger.";
+	if(select("Comenzar el ritual:Esperar, no estoy listo") == 2) {
+		mes "[Canalizadora Mistica]";
+		mes "^990000*El brillo en sus ojos se desvanece*^000000";
+		mes "Vuelve cuando tu determinacion sea mas fuerte.";
 		close;
 	}
 	
@@ -91,12 +176,12 @@ prontera,150,186,5	script	Mystic Channeler	4_GEFFEN_09,{
 	
 	// Roll for death chance
 	if (rand(100) < .@death_chance) {
-		mes "[Mystic Channeler]";
-		mes "^990000*The air crackles with dark energy*^000000";
-		mes "^FF0000Something... something has gone terribly wrong!^000000";
+		mes "[Canalizadora Mistica]";
+		mes "^990000*El aire crepita con energia oscura*^000000";
+		mes "^FF0000Algo... algo ha salido terriblemente mal!^000000";
 		next;
 		percentheal -100,-100;
-		mes "^FF0000You have died in the ritual...^000000";
+		mes "^FF0000Has muerto en el ritual...^000000";
 		close;
 	}
 	
@@ -105,12 +190,29 @@ prontera,150,186,5	script	Mystic Channeler	4_GEFFEN_09,{
 	resetfeel;
 	resethate;
 	sc_end SC_ALL;
-	set RESET_USED, 1;
+	RESET_USED = 1;
+	RESET_COUNT = RESET_COUNT + 1;
 	
-	mes "[Mystic Channeler]";
-	mes "^990000*Energy swirls around you as your essence is reshaped*^000000";
-	mes "The ritual... is complete.";
-	mes "You have been reborn, but remember:";
-	mes "this path can never be walked again.";
+	mes "[Canalizadora Mistica]";
+	mes "^990000*La energia gira a tu alrededor mientras tu esencia se reconfigura*^000000";
+	mes "El ritual... esta completo.";
+	mes "Has renacido, pero recuerda:";
+	mes "este camino no puede recorrerse de nuevo.";
 	close;
+}
+
+function StrongSoulCheck {
+	// Trascendentes, tercera clase o expandidos fuertes
+	.@isReborn = (Upper >= 1);
+	.@isThird = (Class >= 4054 && Class <= 4079);
+	.@isExpandedThird = (Class >= 4190 && Class <= 4218);
+	return (.@isReborn || .@isThird || .@isExpandedThird);
+}
+
+function GetBirthstoneID {
+	.@count = RESET_COUNT;
+	.@size = getarraysize(.birthstones);
+	if (.@size <= 0) return 718;
+	.@idx = .@count % .@size;
+	return .birthstones[.@idx];
 }
