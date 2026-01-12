@@ -44,9 +44,10 @@ function GetBirthstoneID;
 		next;
 
 		.@stone_id = GetBirthstoneID();
+		.@stone_name$ = getitemname(.@stone_id);
 		mes "[Canalizadora Mistica]";
 		mes "Necesitare una Birthstone en sintonia con tu ciclo actual.";
-		mes "Para ti ahora es la Birthstone #"+ .@stone_id +".";
+		mes "Para ti ahora es: " + .@stone_name$ + ".";
 		mes "Tambien requerire "+ .@price +" zeny para preparar el sello.";
 		mes "Intentaras el ritual prohibido?";
 		next;
