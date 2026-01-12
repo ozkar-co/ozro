@@ -34,6 +34,7 @@ OnNPCKillEvent:
 	// If player is in a party, give SUPP points to party members
 	if (.@party_id != 0) {
 		getpartymember .@party_id, 2;
+		.@supp_given = 0;
 		
 		for (.@i = 0; .@i < $@partymembercount; .@i = .@i + 1) {
 			// Skip the killer (they already have their KILL point)
@@ -47,17 +48,21 @@ OnNPCKillEvent:
 					setd .@supp_var$, .@supp_count + 1;
 					.@msg$ = "You assisted in defeating " + .@mvp_name$ + "! Support record updated.";
 					dispbottom .@msg$;
+					.@supp_given = .@supp_given + 1;
 				}
 			}
 		}
 		
-		// Party kill announcement (using pre-captured killer name)
-		.@announce_msg$ = "[" + .@killer_name$ + "] has defeated " + .@mvp_name$ + " with the help of their party!";
-		announce .@announce_msg$, bc_all;
-	} else {
-		// Solo kill announcement
-		.@announce_msg$ = .@killer_name$ + " has just hunted " + .@mvp_name$ + "!";
-		announce .@announce_msg$, bc_all;
+		if (.@supp_given > 0) {
+			// Party kill announcement (using pre-captured killer name)
+			.@announce_msg$ = "[" + .@killer_name$ + "] derroto a " + .@mvp_name$ + " con la ayuda de su party!";
+			announce .@announce_msg$, bc_all;
+			end;
+		}
 	}
+
+	// Solo kill announcement (no party or no SUPP awarded)
+	.@announce_msg$ = .@killer_name$ + " acaba de cazar a " + .@mvp_name$ + "!";
+	announce .@announce_msg$, bc_all;
 	end;
 }
