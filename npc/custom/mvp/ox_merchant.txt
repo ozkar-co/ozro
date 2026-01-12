@@ -124,7 +124,7 @@ OnInit:
 		5490, 20,
 		2177, 20;
 	
-	npcshopdelitem "kuma_shop", 0;
+	npcshopdelitem "kuma_shop", 512;
 	for (set .@i, 0; .@i < getarraysize(.Shop); set .@i, .@i + 2)
 		npcshopadditem "kuma_shop", .Shop[.@i], .Shop[.@i + 1];
 	end;
