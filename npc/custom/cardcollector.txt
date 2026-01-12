@@ -52,7 +52,7 @@
 // Returns: "A", "B", ... "MVP", "BOSS" or "" if not found
 function	script	GetCardCategory	{
 	.@id = getarg(0);
-	.@cat$ = getd(".card_cat_" + .@id + "$");
+	.@cat$ = getd(".card_cat_" + .@id + "$);
 	return .@cat$;
 }
 -	script	Card Collector	FAKE_NPC,{
@@ -99,7 +99,6 @@ function	script	GetCardCategory	{
 
 // Subroutine: Register cards from inventory
 S_RegisterCards:
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Scanning inventory for cards...";
 	.@cat_count = getarraysize(.cat_codes$);
 	for (.@k = 0; .@k < .@cat_count; .@k++) .@new_cat[.@k] = 0;
 	.@total_new = 0;
@@ -113,21 +112,17 @@ S_RegisterCards:
 			else {
 				.@seen_var$ = "#CARD_SEEN_" + .@item_id;
 				.@current_value = getd(.@seen_var$);
-				consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Checking " + .@seen_var$ + " current value = " + .@current_value;
 				if (.@current_value == 0) {
 					setd(.@seen_var$, 1);
 					setd("#CARD_CT_" + .@cat$, getd("#CARD_CT_" + .@cat$) + 1);
-					consolemes CONSOLEMES_DEBUG, "[CardCollector v4] NEW card registered: " + .@item_id + " -> " + .@seen_var$ + " = 1, #CARD_CT_" + .@cat$ + " = " + getd("#CARD_CT_" + .@cat$);
 					// Use direct O(1) lookup instead of loop
 					.@idx = getd(".cat_idx_" + .@cat$ + "$");
 					.@new_cat[.@idx]++;
 					.@total_new++;
 				}
 			}
-			consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Card " + .@item_id + " (" + getitemname(.@item_id) + ") -> Category: " + .@cat$;
 		}
 	}
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Scan complete";
 
 	if (.@total_new == 0) {
 		mes .npc_name$;
@@ -147,7 +142,6 @@ S_RegisterCards:
 // Subroutine: View progress per category (counts only)
 S_ViewProgress:
 	.@cat_count = getarraysize(.cat_codes$);
-	consolemes CONSOLEMES_DEBUG, "[CardCollector v4] ViewRegistered: cat_count = " + .@cat_count;
 	
 	// Calculate total progress
 	.@total_obtained = 0;
@@ -182,7 +176,6 @@ S_ViewProgress:
 		if (.@total > 0) {
 			.@pct = (.@cnt * 100) / .@total;
 		}
-		consolemes CONSOLEMES_DEBUG, "[CardCollector v4] Category " + .@code$ + " (#CARD_CT_" + .@code$ + ") = " + .@cnt;
 		mes .@code$ + ": " + .@cnt + "/" + .@total + " (" + .@pct + "%)";
 	}
 	return;
