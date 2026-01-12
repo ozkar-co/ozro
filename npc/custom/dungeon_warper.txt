@@ -109,13 +109,12 @@ end;
 
 // Check if player meets requirements
 function CheckRequirements {
-	// Check job restrictions: Reborn (Upper >= 1) or Extended jobs
-	// Extended jobs: Super Novice, Gunslinger, Ninja, Taekwon, Star Gladiator, Soul Linker
-	.@isReborn = (Upper >= 1); // Transcendent or third class
-	.@isExtended = (BaseJob == Job_SuperNovice || BaseJob == Job_Gunslinger || BaseJob == Job_Ninja || 
-	                BaseJob == Job_Taekwon || BaseJob == Job_Star_Gladiator || BaseJob == Job_Soul_Linker);
+	// Reborn (Upper >= 1), tercera clase y extendidos/expandido
+	.@isReborn = (Upper >= 1); // Trascendentes o tercera clase
+	.@isThird = (Class >= 4054 && Class <= 4079); // Rangos tercera regular + trascendida
+	.@isExpandedThird = (Class >= 4190 && Class <= 4218); // Rebellion, Summoner y otros expandidos 3rd
 	
-	if (!.@isReborn && !.@isExtended) {
+	if (!.@isReborn && !.@isThird && !.@isExpandedThird) {
 		mes "[Teletransportadora Renegada]";
 		mes "¡No! Tu alma es demasiado débil para resistir mi teletransportación experimental.";
 		mes "Solo los trascendentes y aquellos con poder especial pueden usarla.";
