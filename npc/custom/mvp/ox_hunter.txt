@@ -38,15 +38,15 @@ geffen_in,82,62,3	script	Ushi the Ox Hunter	4_M_COWRAIDERS3,{
 			mes "Ah, te interesa mi oferta? Excelente!";
 			next;
 			mes "^8B4513[Ushi el Cazador]^000000";
-			mes "Por cada bestia poderosa que hayas derrotado personalmente,";
-			mes "te dare ^0000FF5 Ox Coins^000000.";
+			mes "Por cada bestia poderosa que hayas vencido,";
+			mes "ya sea dando el golpe final o apoyando a tu party,";
+			mes "te dare un numero especifico de Ox Coins.";
 			next;
 			mes "^8B4513[Ushi el Cazador]^000000";
-			mes "Y por cada batalla donde hayas asistido a tu party,";
-			mes "te dare ^0000FF1 Ox Coin^000000.";
-			next;
-			mes "^8B4513[Ushi el Cazador]^000000";
+			mes "Lo importante es que participaste en la batalla!";
 			mes "Sin embargo, solo recompensare tus hazañas una vez.";
+			next;
+			mes "^8B4513[Ushi el Cazador]^000000";
 			mes "Las monedas que ya te he entregado: ^FF0000" + #OX_COINS_GIVEN + "^000000";
 			break;
 		case 3:
@@ -59,39 +59,61 @@ geffen_in,82,62,3	script	Ushi the Ox Hunter	4_M_COWRAIDERS3,{
 
 // Function to calculate MVP rewards
 function CalculateMVPReward {
-	// Same MVP array as mvp_journal.txt
-	setarray .@all_mvps[0], 1159, 1115, 1150, 1059, 1039, 1112, 1038, 1046,
-	                        1190, 1087, 1086, 1511, 1785, 1685,
-	                        1688, 1272, 1389, 1289, 1623, 1252,
-	                        1768, 1751, 1658, 1779, 2022, 2068,
-	                        2087, 2317, 1832;
+	// MVP array with coin rewards: MVP_ID, coins, MVP_ID, coins, etc
+	// Each MVP gives the same coins whether you killed it or supported
+	setarray .@mvp_rewards[0],
+		1159, 10,
+		1115, 10,
+		1150, 10,
+		1059, 10,
+		1039, 10,
+		1112, 10,
+		1038, 10,
+		1046, 10,
+		1190, 10,
+		1087, 10,
+		1086, 10,
+		1511, 10,
+		1785, 10,
+		1685, 10,
+		1688, 10,
+		1272, 10,
+		1389, 10,
+		1289, 10,
+		1623, 10,
+		1252, 10,
+		1768, 10,
+		1751, 10,
+		1658, 10,
+		1779, 10,
+		2022, 10,
+		2068, 10,
+		2087, 10,
+		2317, 10,
+		1832, 10;
 	
-	.@total_kills = 0;
-	.@total_supps = 0;
-	.@array_size = getarraysize(.@all_mvps);
+	.@total_coins = 0;
+	.@array_size = getarraysize(.@mvp_rewards);
 	
-	// Calculate total MVP stats
-	for (.@i = 0; .@i < .@array_size; .@i++) {
-		.@mvp_id = .@all_mvps[.@i];
+	// Calculate total coins from all MVP participations
+	for (.@i = 0; .@i < .@array_size; .@i += 2) {
+		.@mvp_id = .@mvp_rewards[.@i];
+		.@coin_value = .@mvp_rewards[.@i + 1];
 		.@kill_var$ = "MVP_KILL_" + .@mvp_id;
 		.@supp_var$ = "MVP_SUPP_" + .@mvp_id;
-		.@total_kills += getd(.@kill_var$);
-		.@total_supps += getd(.@supp_var$);
+		.@kill_count = getd(.@kill_var$);
+		.@supp_count = getd(.@supp_var$);
+		.@total_coins += (.@kill_count + .@supp_count) * .@coin_value;
 	}
 	
 	mes "^8B4513[Ushi el Cazador]^000000";
 	
 	// Check if player has any MVP stats
-	if (.@total_kills == 0 && .@total_supps == 0) {
+	if (.@total_coins == 0) {
 		mes "Hmm... veo que aun no has enfrentado bestias poderosas.";
 		mes "Regresa cuando hayas forjado tu leyenda, joven cazador.";
 		return;
 	}
-	
-	// Calculate coins to give
-	.@coins_from_kills = .@total_kills * 5;
-	.@coins_from_supps = .@total_supps * 1;
-	.@total_coins = .@coins_from_kills + .@coins_from_supps;
 	
 	// Check how many coins already given
 	.@coins_pending = .@total_coins - #OX_COINS_GIVEN;
@@ -112,9 +134,6 @@ function CalculateMVPReward {
 	
 	mes "^8B4513[Ushi el Cazador]^000000";
 	mes "^777777Tus hazañas de caza^000000";
-	mes " ";
-	mes "^009900Golpes finales:^000000 " + .@total_kills + " MVPs";
-	mes "^009900Asistencias:^000000 " + .@total_supps + " batallas";
 	mes " ";
 	mes "^0000FFRecompensa total:^000000 " + .@total_coins + " monedas";
 	mes "^FF0000Ya reclamadas:^000000 " + #OX_COINS_GIVEN + " monedas";
