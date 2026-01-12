@@ -43,9 +43,9 @@ geffen,143,70,3	script	Garrett	1_M_SIGN1,{
 	
 	// Check if we have reached the daily spending limit
 	if (#TRSH_DailySpend >= .daily_spending_limit) {
-		mes "Ah, my friend! I've exhausted my coin purse for today.";
-		mes "The market's been quite generous, hasn't it?";
-		mes "Return tomorrow, I'm sure I'll have fresh opportunities for us both.";
+		mes "Ah, amigo mio! He agotado mi bolsa de monedas por hoy.";
+		mes "El mercado ha sido bastante generoso, no crees?";
+		mes "Vuelve otro dia, seguro tendre nuevas oportunidades para ambos.";
 		close;
 	}
 	
@@ -87,34 +87,34 @@ geffen,143,70,3	script	Garrett	1_M_SIGN1,{
 	if (.@price1 < .min_price) .@price1 = .min_price;
 	if (.@price1 > .max_price) .@price1 = .max_price;
 	
-	mes "Ah, welcome friend! They say one person's trash is another's fortune...";
-	mes "And today, I've got my eye on some particularly interesting items.";
+	mes "Ah, bienvenido amigo! Dicen que la basura de un hombre es el tesoro de otro...";
+	mes "Y hoy, tengo mi ojo puesto en algunos articulos particularmente interesantes.";
 	next;
 	
 	mes .npc_name$;
-	mes "My purse still holds " + (.daily_spending_limit - #TRSH_DailySpend) + " zeny for today's ventures.";
+	mes "Mi bolsa aun tiene " + (.daily_spending_limit - #TRSH_DailySpend) + " zeny para las aventuras de hoy.";
 	next;
 	
 	mes .npc_name$;
-	mes "Now, let me tell you what's caught my expert eye:";
-	mes "- A fine " + getitemname(#TodayItem0) + " - I'll offer " + .@price0 + " zeny each";
-	mes "- And any " + getitemname(#TodayItem1) + " - worth " + .@price1 + " zeny to me";
+	mes "Ahora, dejame decirte que ha captado mi ojo experto:";
+	mes "- Un fino " + getitemname(#TodayItem0) + " - ofrecere " + .@price0 + " zeny cada uno";
+	mes "- Y cualquier " + getitemname(#TodayItem1) + " - vale " + .@price1 + " zeny para mi";
 	
 	next;
-	switch(select("Trade with Garrett:Ask about business:Leave")) {
+	switch(select("Comerciar con Garrett:Preguntar sobre el negocio:Marcharse")) {
 		case 1:
 			mes .npc_name$;
-			mes "Excellent! Which treasure would you like to part with?";
+			mes "Excelente! De cual tesoro te gustaria desprenderte?";
 			next;
 			
 			.@menu$ = getitemname(#TodayItem0);
 			.@menu$ += ":" + getitemname(#TodayItem1);
-			.@menu$ += ":Changed my mind";
+			.@menu$ += ":Cambie de opinion";
 			
 			.@selected = select(.@menu$) - 1;
 			if (.@selected == 2) {
 				mes .npc_name$;
-				mes "No rush, friend. Quality trades take time to consider.";
+				mes "Sin prisa, amigo. Los buenos negocios requieren reflexion.";
 				close;
 			}
 			
@@ -122,27 +122,27 @@ geffen,143,70,3	script	Garrett	1_M_SIGN1,{
 			.@price = getd(".@price" + .@selected);
 			
 			mes .npc_name$;
-			mes "Ah, the " + getitemname(.@item_id) + "! How many would you like to trade?";
-			mes "I see you have " + countitem(.@item_id) + " with you.";
+			mes "Ah, el " + getitemname(.@item_id) + "! Cuantos te gustaria comerciar?";
+			mes "Veo que tienes " + countitem(.@item_id) + " contigo.";
 			next;
 			
 			input .@amount;
 			if (.@amount <= 0) {
 				mes .npc_name$;
-				mes "Come now, let's be serious about our business dealings.";
+				mes "Vamos, seamos serios con nuestros negocios.";
 				close;
 			}
 			if (countitem(.@item_id) < .@amount) {
 				mes .npc_name$;
-				mes "Hmm... you seem to be short on stock.";
-				mes "You only have " + countitem(.@item_id) + " " + getitemname(.@item_id) + "(s).";
-				mes "Shall we deal with what you have?";
+				mes "Hmm... pareces estar corto de inventario.";
+				mes "Solo tienes " + countitem(.@item_id) + " " + getitemname(.@item_id) + "(s).";
+				mes "Negociamos con lo que tienes?";
 				next;
-				if(select("Yes, let's do it:No, maybe later") == 1) {
+				if(select("Si, hagamoslo:No, quiza despues") == 1) {
 					.@amount = countitem(.@item_id);
 				} else {
 					mes .npc_name$;
-					mes "Very well. Return when your inventory matches your ambition!";
+					mes "Muy bien. Vuelve cuando tu inventario iguale tu ambicion!";
 					close;
 				}
 			}
@@ -150,20 +150,20 @@ geffen,143,70,3	script	Garrett	1_M_SIGN1,{
 			.@total = .@price * .@amount;
 			if (#TRSH_DailySpend + .@total > .daily_spending_limit) {
 				mes .npc_name$;
-				mes "Ah, I'm afraid that exceeds my daily budget.";
-				mes "I can only spend " + (.daily_spending_limit - #TRSH_DailySpend) + " zeny more today.";
-				mes "Perhaps a smaller quantity?";
+				mes "Ah, me temo que eso excede mi presupuesto diario.";
+				mes "Solo puedo gastar " + (.daily_spending_limit - #TRSH_DailySpend) + " zeny mas hoy.";
+				mes "Quizas una cantidad menor?";
 				close;
 			}
 			
 			mes .npc_name$;
-			mes "For " + .@amount + " " + getitemname(.@item_id) + "(s), I'll pay " + .@total + " zeny.";
-			mes "A fair deal, wouldn't you say?";
+			mes "Por " + .@amount + " " + getitemname(.@item_id) + "(s), pagare " + .@total + " zeny.";
+			mes "Un trato justo, no crees?";
 			next;
 			
-			if(select("Deal!:I'll pass") == 2) {
+			if(select("Trato hecho!:Paso") == 2) {
 				mes .npc_name$;
-				mes "The door to opportunity remains open, friend.";
+				mes "La puerta a la oportunidad permanece abierta, amigo.";
 				close;
 			}
 			
@@ -173,25 +173,25 @@ geffen,143,70,3	script	Garrett	1_M_SIGN1,{
 			#TRSH_TotalSpent += .@total;
 			
 			mes .npc_name$;
-			mes "A pleasure doing business!";
+			mes "Un placer hacer negocios!";
 			if (#TRSH_DailySpend >= .daily_spending_limit) {
-				mes "And with that, I've reached my spending limit for today.";
-				mes "But tomorrow brings new opportunities!";
+				mes "Y con eso, he alcanzado mi limite de gasto por hoy.";
+				mes "Pero manana trae nuevas oportunidades!";
 			} else {
-				mes "I'm always on the lookout for more treasures.";
-				mes "Each day brings new interests!";
+				mes "Siempre estoy al acecho de mas tesoros.";
+				mes "Cada dia trae nuevos intereses!";
 			}
 			break;
 			
 		case 2:
 			mes .npc_name$;
-			mes "Curious about my ventures? I've invested " + #TRSH_TotalSpent + " zeny in treasures from adventurers like yourself.";
-			mes "Every coin well spent, I'd say!";
+			mes "Curioso sobre mis empresas? He invertido " + #TRSH_TotalSpent + " zeny en tesoros de aventureros como tu.";
+			mes "Cada moneda bien gastada, diria yo!";
 			break;
 			
 		case 3:
 			mes .npc_name$;
-			mes "Safe travels, friend. Remember, today's refuse might be tomorrow's riches!";
+			mes "Viajes seguros, amigo. Recuerda, la basura de hoy podria ser la riqueza de manana!";
 			break;
 	}
 	close;
@@ -200,7 +200,7 @@ geffen,143,70,3	script	Garrett	1_M_SIGN1,{
 	Configuration
 	-----------------------------------------------------*/
 	OnInit:
-		.npc_name$ = "[ ^0000FFGarrett the Scavenger^000000 ]";
+		.npc_name$ = "[ ^0000FFGarrett el Recolector^000000 ]";
 		// Price limits configuration
 		.increment = 10;     // Price multiplier
 		.min_price = 100;    // Minimum price for any item
