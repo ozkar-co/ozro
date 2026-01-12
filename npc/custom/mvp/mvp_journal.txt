@@ -73,9 +73,9 @@ function CheckSpecificMVP {
 	mes "^0000FF[Hunting Journal]^000000";
 	.@title$ = "Registros de ^FF0000" + .@name$ + "^000000:";
 	mes .@title$;
-	.@msg1$ = " - Golpes finales: ^00FF00" + .@kills + "^000000";
+	.@msg1$ = " - Golpes finales: ^009900" + .@kills + "^000000";
 	mes .@msg1$;
-	.@msg2$ = " - Batallas asistidas: ^00FF00" + .@supps + "^000000";
+	.@msg2$ = " - Batallas asistidas: ^009900" + .@supps + "^000000";
 	mes .@msg2$;
 	mes " ";
 	
@@ -137,16 +137,16 @@ function GetMVPStats {
 	mes "^777777Tus estadisticas de caza de MVP^000000";
 	
 	mes "^0000FF[Hunting Journal]^000000";
-	.@msg1$ = "^00FF00Total golpes finales:^000000 " + .@total_kills;
+	.@msg1$ = "^009900Total golpes finales:^000000 " + .@total_kills;
 	mes .@msg1$;
-	.@msg2$ = "^00FF00Total asistencias:^000000 " + .@total_supps;
+	.@msg2$ = "^009900Total asistencias:^000000 " + .@total_supps;
 	mes .@msg2$;
-	.@msg3$ = "^00FF00MVP unicos:^000000 " + .@unique_mvps + " / " + .@array_size;
+	.@msg3$ = "^009900MVP unicos:^000000 " + .@unique_mvps + " / " + .@array_size;
 	mes .@msg3$;
 	
 	if (.@most_killed_id > 0) {
 		.@most_killed_name$ = strmobinfo(2, .@most_killed_id);
-		mes "^00FF00MVP mas cazado:^000000";
+		mes "^009900MVP mas cazado:^000000";
 		.@msg4$ = "^FF0000" + .@most_killed_name$ + "^000000";
 		mes .@msg4$;
 		.@msg5$ = "(" + .@most_killed_count + " golpes finales)";
