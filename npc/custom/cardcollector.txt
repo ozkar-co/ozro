@@ -52,7 +52,7 @@
 // Returns: "A", "B", ... "MVP", "BOSS" or "" if not found
 function	script	GetCardCategory	{
 	.@id = getarg(0);
-	.@cat$ = getd(".card_cat_" + .@id + "$);
+	.@cat$ = getd(".card_cat_" + .@id + "$");
 	return .@cat$;
 }
 -	script	Card Collector	FAKE_NPC,{
