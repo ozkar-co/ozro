@@ -41,7 +41,7 @@ geffen_in,82,59,2	script	Kuma el Comerciante	4_M_COWRAIDERS2,{
 				next;
 				callshop "kuma_shop", 1;
 				npcshopattach "kuma_shop";
-				close;
+				end;
 			case 2:
 				mes "^8B4513[Kuma el Comerciante]^000000";
 				mes "Como desees. Vuelve cuando tengas hambre de tesoros.";
@@ -88,7 +88,7 @@ geffen_in,82,59,2	script	Kuma el Comerciante	4_M_COWRAIDERS2,{
 	
 	callshop "kuma_shop", 1;
 	npcshopattach "kuma_shop";
-	close;
+	end;
 
 OnBuyItem:
 	set @cost, 0;
@@ -107,7 +107,7 @@ OnBuyItem:
 		set @cost, 0;
 		deletearray @bought_nameid[0], getarraysize(@bought_nameid);
 		deletearray @bought_quantity[0], getarraysize(@bought_quantity);
-		close;
+		end;
 	}
 	
 	for (set .@i, 0; .@i < getarraysize(@bought_nameid); set .@i, .@i + 1) {
@@ -121,7 +121,7 @@ OnBuyItem:
 	set @cost, 0;
 	deletearray @bought_nameid[0], getarraysize(@bought_nameid);
 	deletearray @bought_quantity[0], getarraysize(@bought_quantity);
-	close;
+	end;
 
 OnInit:
 	setarray .Shop[0],
