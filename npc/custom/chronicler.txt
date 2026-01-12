@@ -13,50 +13,50 @@ Changelog:
 v1.0 - First version.
 =========================================================*/
 
-geffen,139,72,4	script	Kaz the Chronicler	4_M_ZONDAOYAJI,{
+geffen,139,72,4	script	Kaz el Cronista	4_M_ZONDAOYAJI,{
 
-	mes "[Kaz the Chronicler]";
-	mes "^990000*A dignified sage writes in a large tome with a quill*^000000";
+	mes "[Kaz el Cronista]";
+	mes "^990000*Un sabio escribe en un gran tomo con una pluma*^000000";
 	
-	if(select("Ask about his work:Leave him to his duties") == 2) {
-		mes "[Kaz the Chronicler]";
-		mes "^990000*The sage continues writing, deeply focused on his work*^000000";
+	if(select("Preguntarle sobre su trabajo:Dejarlo a sus quehaceres") == 2) {
+		mes "[Kaz el Cronista]";
+		mes "^990000*El sabio continua escribiendo, profundamente concentrado en su labor*^000000";
 		close;
 	}
 	
-	mes "Greetings, adventurer. I am Kaz,";
-	mes "Royal Chronicler of Rune-Midgard.";
+	mes "Saludos, aventurero. Soy Kaz,";
+	mes "Cronista Real de Rune-Midgard.";
 	next;
 	
-	mes "[Kaz the Chronicler]";
-	mes "By decree of His Majesty, I keep";
-	mes "detailed records of all adventurers";
-	mes "who journey through our realm.";
+	mes "[Kaz el Cronista]";
+	mes "Por decreto de Su Majestad, mantengo";
+	mes "registros detallados de todos los aventureros";
+	mes "que viajan a traves de nuestro reino.";
 	next;
 	
-	mes "[Kaz the Chronicler]";
-	mes "Would you like to know more about";
-	mes "my work for the kingdom?";
+	mes "[Kaz el Cronista]";
+	mes "Deseas saber mas sobre";
+	mes "mi trabajo para el reino?";
 	next;
 	
-	if(select("Yes, please tell me more:I should let you work") == 2) {
-		mes "[Kaz the Chronicler]";
-		mes "^990000*He nods politely and returns to his writing*^000000";
-		mes "Very well. May your journey be safe.";
+	if(select("Si, cuéntame mas:Deberia dejarte trabajar") == 2) {
+		mes "[Kaz el Cronista]";
+		mes "^990000*Asiente cortesmente y vuelve a escribir*^000000";
+		mes "Muy bien. Que tu viaje sea seguro.";
 		close;
 	}
 	
-	mes "[Kaz the Chronicler]";
-	mes "^990000*He consults his records carefully*^000000";
-	mes "According to my most recent observations,";
-	mes "I have seen ^0075E9"+ getusers(1) +" adventurers^000000";
-	mes "exploring our lands recently.";
+	mes "[Kaz el Cronista]";
+	mes "^990000*Consulta sus registros cuidadosamente*^000000";
+	mes "Segun mis observaciones mas recientes,";
+	mes "he visto ^0075E9"+ getusers(1) +" aventureros^000000";
+	mes "explorando nuestras tierras recientemente.";
 	next;
 	
-	mes "[Kaz the Chronicler]";
-	mes "^990000*He dips his quill in ink*^000000";
-	mes "Now, let me record your presence...";
-	mes "There! You have been properly documented";
-	mes "in today's chronicles.";
+	mes "[Kaz el Cronista]";
+	mes "^990000*Moja su pluma en tinta*^000000";
+	mes "Ahora, dejaré constancia de tu presencia...";
+	mes "Listo! Has sido documentado correctamente";
+	mes "en las cronicas de hoy.";
 	close;
 } 
