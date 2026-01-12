@@ -41,7 +41,7 @@ if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 	              "Magma Dungeon", "Orc Dungeon", "Payon Dungeon", "Pyramids", "Sphinx",
 	              "Sunken Ship", "Toy Factory", "Turtle Dungeon", "Umbala Dungeon", "Beach Dungeon",
 	              "Amatsu Dungeon", "Ayothaya Dungeon", "Gonryun Dungeon", "Louyang Dungeon", 
-	              "Moscovia Dungeon", "Cancelar")) {
+	              "Moscovia Dungeon", "Nifelheim", "Cancelar")) {
 		case 1: WarpToDungeon("anthell01", 35, 262); break;
 		case 2: WarpToDungeon("iz_dun00", 168, 168); break;
 		case 3: WarpToDungeon("c_tower1", 199, 159); break;
@@ -67,7 +67,8 @@ if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 		case 23: WarpToDungeon("gon_dun01", 153, 53); break;
 		case 24: WarpToDungeon("lou_dun01", 218, 196); break;
 		case 25: WarpToDungeon("mosk_dun01", 189, 48); break;
-		case 26:
+		case 26: WarpToDungeon("nif_fild01", 315, 63); break;
+		case 27:
 			mes "[Teletransportadora Renegada]";
 			mes "?Cambiar de opinion? Vuelve cuando tengas el valor necesario...";
 			close;
