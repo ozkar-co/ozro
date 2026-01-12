@@ -26,10 +26,13 @@ if (!CheckRequirements()) {
 
 // Different menus based on NPC location
 if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
-	mes "[Dungeon Warper]";
-	mes "I can transport you to the entrance of various dungeons in Rune-Midgard.";
+	mes "[Teletransportadora Renegada]";
+	mes "Soy una Kafra que ya no sirve a la Corporación... Uso técnicas de teletransportación ^FF0000EXPERIMENTALES^000000.";
+	mes "Solo las almas más fuertes pueden resistir este poder.";
 	mes " ";
-	mes "^FF0000Fee: 1 Blue Gemstone + 10,000 Zeny^000000";
+	mes "^0000FFDungeons de Rune-Midgard^000000";
+	mes " ";
+	mes "^FF0000Costo: 1 Gema Azul + 10,000 Zeny^000000";
 	next;
 	
 	switch(select("Anthell", "Byalan Dungeon", "Clock Tower", "Coal Mines", "Culvert", 
@@ -37,7 +40,7 @@ if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 	              "Magma Dungeon", "Orc Dungeon", "Payon Dungeon", "Pyramids", "Sphinx",
 	              "Sunken Ship", "Toy Factory", "Turtle Dungeon", "Umbala Dungeon", "Beach Dungeon",
 	              "Amatsu Dungeon", "Ayothaya Dungeon", "Gonryun Dungeon", "Louyang Dungeon", 
-	              "Moscovia Dungeon", "Cancel")) {
+	              "Moscovia Dungeon", "Cancelar")) {
 		case 1: WarpToDungeon("anthell01", 35, 262); break;
 		case 2: WarpToDungeon("iz_dun00", 168, 168); break;
 		case 3: WarpToDungeon("c_tower1", 199, 159); break;
@@ -64,21 +67,24 @@ if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 		case 24: WarpToDungeon("lou_dun01", 218, 196); break;
 		case 25: WarpToDungeon("mosk_dun01", 189, 48); break;
 		case 26:
-			mes "[Dungeon Warper]";
-			mes "Come back anytime!";
+			mes "[Teletransportadora Renegada]";
+			mes "¿Cambiar de opinión? Vuelve cuando tengas el valor necesario...";
 			close;
 	}
 } else {
 	// Juno NPC - Arunafeltz and Schwartzvald dungeons
-	mes "[Dungeon Warper]";
-	mes "I can transport you to the entrance of various dungeons in Arunafeltz and Schwartzvald.";
+	mes "[Teletransportadora Renegada]";
+	mes "Soy una Kafra que ya no sirve a la Corporación... Uso técnicas de teletransportación ^FF0000EXPERIMENTALES^000000.";
+	mes "Solo las almas más fuertes pueden resistir este poder.";
 	mes " ";
-	mes "^FF0000Fee: 1 Blue Gemstone + 10,000 Zeny^000000";
+	mes "^0000FFDungeons de Arunafeltz y Schwartzvald^000000";
+	mes " ";
+	mes "^FF0000Costo: 1 Gema Azul + 10,000 Zeny^000000";
 	next;
 	
 	switch(select("^0000FFRachel Sanctuary^000000", "^0000FFThor Volcano^000000", "^0000FFCursed Abbey^000000", "^0000FFOdin Temple^000000", "^0000FFAbyss Lakes^000000",
 	              "^FF0000Bio Labs^000000", "^FF0000Einbroch Dungeon^000000", "^FF0000Juperos Cave^000000", "^FF0000Kiel Dungeon^000000", "^FF0000Thanatos Tower^000000",
-	              "^FF0000Nidhogg's Dungeon^000000", "Cancel")) {
+	              "^FF0000Nidhogg's Dungeon^000000", "Cancelar")) {
 		// Arunafeltz dungeons (blue)
 		case 1: WarpToDungeon("ra_san01", 140, 11); break;
 		case 2: WarpToDungeon("thor_v01", 21, 228); break;
@@ -93,8 +99,8 @@ if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 		case 10: WarpToDungeon("tha_t01", 150, 39); break;
 		case 11: WarpToDungeon("nyd_dun01", 61, 239); break;
 		case 12:
-			mes "[Dungeon Warper]";
-			mes "Come back anytime!";
+			mes "[Teletransportadora Renegada]";
+			mes "¿Cambiar de opinión? Vuelve cuando tengas el valor necesario...";
 			close;
 	}
 }
@@ -110,8 +116,9 @@ function CheckRequirements {
 	                BaseJob == Job_Taekwon || BaseJob == Job_Star_Gladiator || BaseJob == Job_Soul_Linker);
 	
 	if (!.@isReborn && !.@isExtended) {
-		mes "[Dungeon Warper]";
-		mes "I'm sorry, but my services are only available to transcendent classes and extended job classes.";
+		mes "[Teletransportadora Renegada]";
+		mes "¡No! Tu alma es demasiado débil para resistir mi teletransportación experimental.";
+		mes "Solo los trascendentes y aquellos con poder especial pueden usarla.";
 		close;
 		return 0;
 	}
@@ -123,15 +130,28 @@ function CheckRequirements {
 function WarpToDungeon {
 	// Check if player has required items
 	if (countitem(Blue_Gemstone) < 1) {
-		mes "[Dungeon Warper]";
-		mes "You need ^FF00001 Blue Gemstone^000000 to use this service.";
+		mes "[Teletransportadora Renegada]";
+		mes "Necesitas ^FF00001 Gema Azul^000000 para usar este servicio.";
 		close;
 		return;
 	}
 	
 	if (Zeny < 10000) {
-		mes "[Dungeon Warper]";
-		mes "You need ^FF000010,000 Zeny^000000 to use this service.";
+		mes "[Teletransportadora Renegada]";
+		mes "Necesitas ^FF000010,000 Zeny^000000 para usar este servicio.";
+		close;
+		return;
+	}
+	
+	// Confirmation before warping
+	mes "[Teletransportadora Renegada]";
+	mes "¿Estás seguro? Mi teletransportación experimental es ^FF0000PELIGROSA^000000.";
+	mes "Solo los valientes avanzan...";
+	next;
+	
+	if (select("Adelante, no temo nada", "Espera, mejor luego") == 2) {
+		mes "[Teletransportadora Renegada]";
+		mes "Sabia decisión... Vuelve cuando estés listo.";
 		close;
 		return;
 	}
@@ -140,8 +160,8 @@ function WarpToDungeon {
 	delitem Blue_Gemstone, 1;
 	Zeny -= 10000;
 	
-	mes "[Dungeon Warper]";
-	mes "Have a safe journey!";
+	mes "[Teletransportadora Renegada]";
+	mes "¡Que tu alma aguante el viaje!";
 	close2;
 	warp getarg(0), getarg(1), getarg(2);
 	end;
