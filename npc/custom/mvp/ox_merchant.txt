@@ -3,19 +3,18 @@
 //===== By: ==================================================
 //= Ozcodex
 //===== Current Version: =====================================
-//= 1.0
+//= 1.1
 //===== Description: =========================================
 //= Special event NPC commemorating the Year of the Ox.
 //= A wandering merchant from distant lands selling exotic items.
-//= Trades items for Ox Coins (ox coins).
+//= Trades items for Gold Coins (Ox Coins, id 7606).
 //= Players must pay 1 coin to prove they are experienced hunters.
 //===== Additional Comments: =================================
-//= 1.0 Initial version. Spanish dialogue, English code.
-//=     - Requires 1 coin to unlock shop access
-//=     - Sells exotic items at 20 coins each
+//= 1.0 Initial version with expanded barter (incompatible).
+//= 1.1 Reworked to use npcshop system for compatibility.
 //============================================================
 
-geffen_in,82,59,2	script	Kuma the Ox Merchant	4_M_COWRAIDERS2,{
+geffen_in,82,59,2	script	Kuma el Comerciante	4_M_COWRAIDERS2,{
 	
 	mes "^8B4513[Kuma el Comerciante]^000000";
 	mes "Ah, bienvenido! Soy Kuma, un viajero que ha recorrido";
@@ -31,12 +30,12 @@ geffen_in,82,59,2	script	Kuma the Ox Merchant	4_M_COWRAIDERS2,{
 		case 1:
 			if (countitem(7606) < 1) {
 				mes "^8B4513[Kuma el Comerciante]^000000";
-				mes "Hmm... veo que no llevas Ox Coins.";
+				mes "Hmm... veo que no llevas Gold Coins.";
 				mes "Necesito una prueba de que eres un cazador experimentado.";
 				next;
 				mes "^8B4513[Kuma el Comerciante]^000000";
 				mes "Si quieres ver mis mercancias, deberas pagarme";
-				mes "^0000FF1 Ox Coin^000000 como prueba de tu valor.";
+				mes "^0000FF1 Gold Coin^000000 como prueba de tu valor.";
 				close;
 			}
 			
@@ -45,7 +44,8 @@ geffen_in,82,59,2	script	Kuma the Ox Merchant	4_M_COWRAIDERS2,{
 			mes "Excelente! Veo que eres un verdadero aventurero.";
 			mes "Abre tu bolsa y elige lo que desees...";
 			next;
-			callshop "KumaShop", 1;
+			callshop "kuma_shop", 1;
+			npcshopattach "kuma_shop";
 			end;
 			
 		case 2:
@@ -53,10 +53,10 @@ geffen_in,82,59,2	script	Kuma the Ox Merchant	4_M_COWRAIDERS2,{
 			mes "Ah, deseas saber mis precios? Escucha bien:";
 			next;
 			mes "^8B4513[Kuma el Comerciante]^000000";
-			mes "^FF0000Droping Neko Crew^000000 - ^0000FF20 Ox Coins^000000";
-			mes "^FF0000Lord of Death Helm^000000 - ^0000FF20 Ox Coins^000000";
-			mes "^FF0000Anubis Helm^000000 - ^0000FF20 Ox Coins^000000";
-			mes "^FF0000Shield of Death^000000 - ^0000FF20 Ox Coins^000000";
+			mes "^FF0000Droping Neko Crew^000000 - ^0000FF20 Gold Coins^000000";
+			mes "^FF0000Lord of Death Helm^000000 - ^0000FF20 Gold Coins^000000";
+			mes "^FF0000Anubis Helm^000000 - ^0000FF20 Gold Coins^000000";
+			mes "^FF0000Shield of Death^000000 - ^0000FF20 Gold Coins^000000";
 			next;
 			mes "^8B4513[Kuma el Comerciante]^000000";
 			mes "Estos son items traidos desde tierras muy lejanas.";
@@ -66,37 +66,50 @@ geffen_in,82,59,2	script	Kuma the Ox Merchant	4_M_COWRAIDERS2,{
 		case 3:
 			mes "^8B4513[Kuma el Comerciante]^000000";
 			mes "Como desees, aventurero. Vuelve cuando tengas";
-			mes "Ox Coins y deseos de adquirir lo extraordinario.";
+			mes "Gold Coins y deseos de adquirir lo extraordinario.";
 			close;
 	}
 	close;
 
+OnBuyItem:
+	set @cost, 0;
+	for (set .@i, 0; .@i < getarraysize(@bought_nameid); set .@i, .@i + 1) {
+		for (set .@j, 0; .@j < getarraysize(.Shop); set .@j, .@j + 2) {
+			if (@bought_nameid[.@i] == .Shop[.@j]) {
+				set @cost, @cost + (.Shop[.@j + 1] * @bought_quantity[.@i]);
+				break;
+			}
+		}
+	}
+	
+	mes "^8B4513[Kuma el Comerciante]^000000";
+	if (@cost > countitem(7606)) {
+		mes "No tienes suficientes Gold Coins para esto.";
+	} else {
+		for (set .@i, 0; .@i < getarraysize(@bought_nameid); set .@i, .@i + 1) {
+			getitem @bought_nameid[.@i], @bought_quantity[.@i];
+			dispbottom "Adquiriste " + @bought_quantity[.@i] + "x " + getitemname(@bought_nameid[.@i]) + ".";
+		}
+		delitem 7606, @cost;
+		mes "Transaccion completada!";
+		emotion e_cash;
+	}
+	set @cost, 0;
+	deletearray @bought_nameid[0], getarraysize(@bought_nameid);
+	deletearray @bought_quantity[0], getarraysize(@bought_quantity);
+	close;
+
 OnInit:
-	tradertype(NST_EXPANDED_BARTER);
+	setarray .Shop[0],
+		18528, 20,
+		18574, 20,
+		5490, 20,
+		2177, 20;
 	
-	// Droping Neko Crew
-	startsellitem(18528, 1, 0);
-	sellitemcurrency(7606, 20);
-	endsellitem();
-	
-	// Lord of Death Helm
-	startsellitem(18574, 1, 0);
-	sellitemcurrency(7606, 20);
-	endsellitem();
-	
-	// Anubis Helm
-	startsellitem(5490, 1, 0);
-	sellitemcurrency(7606, 20);
-	endsellitem();
-	
-	// Shield of Death
-	startsellitem(2177, 1, 0);
-	sellitemcurrency(7606, 20);
-	endsellitem();
-	
+	npcshopdelitem "kuma_shop", 512;
+	for (set .@i, 0; .@i < getarraysize(.Shop); set .@i, .@i + 2)
+		npcshopadditem "kuma_shop", .Shop[.@i], .Shop[.@i + 1];
 	end;
 }
 
--	script	KumaShop	FAKE_NPC,{
-	end;
-}
+-	shop	kuma_shop	FAKE_NPC,512:-1
