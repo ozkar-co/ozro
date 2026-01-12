@@ -62,13 +62,13 @@ OnInit:
 	.minstyle[LOOK_HAIR_COLOR] = 0;
 	.maxstyle[LOOK_HAIR_COLOR] = 8;
 	.minstyle[LOOK_CLOTHES_COLOR] = 0;
-	.maxstyle[LOOK_CLOTHES_COLOR] = 4;
+	.maxstyle[LOOK_CLOTHES_COLOR] = 3;
 
 	.summoner_minstyle[LOOK_HAIR] = 0;
 	.summoner_maxstyle[LOOK_HAIR] = 29;
 	.summoner_minstyle[LOOK_HAIR_COLOR] = 0;
 	.summoner_maxstyle[LOOK_HAIR_COLOR] = 8;
 	.summoner_minstyle[LOOK_CLOTHES_COLOR] = 0;
-	.summoner_maxstyle[LOOK_CLOTHES_COLOR] = 4;
+	.summoner_maxstyle[LOOK_CLOTHES_COLOR] = 3;
 	end;
 }
