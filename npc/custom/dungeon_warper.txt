@@ -76,41 +76,26 @@ if (strnpcinfo(NPC_NAME_HIDDEN) == "geffen") {
 	mes "^FF0000Fee: 1 Blue Gemstone + 10,000 Zeny^000000";
 	next;
 	
-	.@menu = select("^0000FFArunafeltz Dungeons^000000", "^FF0000Schwartzvald Dungeons^000000", "Cancel");
-	
-	if (.@menu == 3) {
-		mes "[Dungeon Warper]";
-		mes "Come back anytime!";
-		close;
-	}
-	
-	if (.@menu == 1) {
-		// Arunafeltz dungeons
-		switch(select("Rachel Sanctuary", "Thor Volcano", "Cursed Abbey", "Odin Temple", "Abyss Lakes", "Cancel")) {
-			case 1: WarpToDungeon("ra_san01", 140, 11); break;
-			case 2: WarpToDungeon("thor_v01", 21, 228); break;
-			case 3: WarpToDungeon("abbey01", 51, 14); break;
-			case 4: WarpToDungeon("odin_tem01", 298, 167); break;
-			case 5: WarpToDungeon("abyss_01", 261, 272); break;
-			case 6:
-				mes "[Dungeon Warper]";
-				mes "Come back anytime!";
-				close;
-		}
-	} else {
-		// Schwartzvald dungeons
-		switch(select("Bio Labs", "Einbroch Dungeon", "Juperos Cave", "Kiel Dungeon", "Thanatos Tower", "Nidhogg's Dungeon", "Cancel")) {
-			case 1: WarpToDungeon("lhz_dun01", 150, 288); break;
-			case 2: WarpToDungeon("ein_dun01", 22, 14); break;
-			case 3: WarpToDungeon("jupe_cave", 140, 51); break;
-			case 4: WarpToDungeon("kh_dun01", 28, 226); break;
-			case 5: WarpToDungeon("tha_t01", 150, 39); break;
-			case 6: WarpToDungeon("nyd_dun01", 61, 239); break;
-			case 7:
-				mes "[Dungeon Warper]";
-				mes "Come back anytime!";
-				close;
-		}
+	switch(select("^0000FFRachel Sanctuary^000000", "^0000FFThor Volcano^000000", "^0000FFCursed Abbey^000000", "^0000FFOdin Temple^000000", "^0000FFAbyss Lakes^000000",
+	              "^FF0000Bio Labs^000000", "^FF0000Einbroch Dungeon^000000", "^FF0000Juperos Cave^000000", "^FF0000Kiel Dungeon^000000", "^FF0000Thanatos Tower^000000",
+	              "^FF0000Nidhogg's Dungeon^000000", "Cancel")) {
+		// Arunafeltz dungeons (blue)
+		case 1: WarpToDungeon("ra_san01", 140, 11); break;
+		case 2: WarpToDungeon("thor_v01", 21, 228); break;
+		case 3: WarpToDungeon("abbey01", 51, 14); break;
+		case 4: WarpToDungeon("odin_tem01", 298, 167); break;
+		case 5: WarpToDungeon("abyss_01", 261, 272); break;
+		// Schwartzvald dungeons (red)
+		case 6: WarpToDungeon("lhz_dun01", 150, 288); break;
+		case 7: WarpToDungeon("ein_dun01", 22, 14); break;
+		case 8: WarpToDungeon("jupe_cave", 140, 51); break;
+		case 9: WarpToDungeon("kh_dun01", 28, 226); break;
+		case 10: WarpToDungeon("tha_t01", 150, 39); break;
+		case 11: WarpToDungeon("nyd_dun01", 61, 239); break;
+		case 12:
+			mes "[Dungeon Warper]";
+			mes "Come back anytime!";
+			close;
 	}
 }
 
