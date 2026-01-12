@@ -1,0 +1,150 @@
+//===== Hercules Script ======================================
+//= Ox Hunter - Year of the Ox Commemoration
+//===== By: ==================================================
+//= Ozcodex
+//===== Current Version: =====================================
+//= 1.0
+//===== Description: =========================================
+//= Special event NPC commemorating the Year of the Ox.
+//= An expert MVP hunter who has traveled to Rune Midgard
+//= to hear tales of powerful beasts defeated.
+//= Rewards players with Ox Coins based on their MVP stats.
+//===== Additional Comments: =================================
+//= 1.0 Initial version. Spanish dialogue, English code.
+//=     - Rewards: 5 coins per MVP kill, 1 coin per party assist
+//=     - Tracks total coins given to prevent infinite rewards
+//============================================================
+
+geffen_in,82,62,3	script	Ushi the Ox Hunter	4_M_COWRAIDERS3,{
+	function CalculateMVPReward;
+	
+	mes "^8B4513[Ushi el Cazador]^000000";
+	mes "Saludos, aventurero. Soy Ushi, un cazador que ha recorrido";
+	mes "tierras lejanas en busca de las bestias mas poderosas.";
+	next;
+	
+	mes "^8B4513[Ushi el Cazador]^000000";
+	mes "Este año celebramos al Buey, simbolo de fuerza y tenacidad.";
+	mes "He venido a Rune Midgard para escuchar las historias";
+	mes "de cazadores valientes como tu.";
+	next;
+	
+	switch(select("Contar mis historias de caza:Preguntar sobre recompensas:Despedirse")) {
+		case 1:
+			CalculateMVPReward();
+			break;
+		case 2:
+			mes "^8B4513[Ushi el Cazador]^000000";
+			mes "Ah, te interesa mi oferta? Excelente!";
+			next;
+			mes "^8B4513[Ushi el Cazador]^000000";
+			mes "Por cada bestia poderosa que hayas derrotado personalmente,";
+			mes "te dare ^0000FF5 Ox Coins^000000.";
+			next;
+			mes "^8B4513[Ushi el Cazador]^000000";
+			mes "Y por cada batalla donde hayas asistido a tu party,";
+			mes "te dare ^0000FF1 Ox Coin^000000.";
+			next;
+			mes "^8B4513[Ushi el Cazador]^000000";
+			mes "Sin embargo, solo recompensare tus hazañas una vez.";
+			mes "Las monedas que ya te he entregado: ^FF0000" + #OX_COINS_GIVEN + "^000000";
+			break;
+		case 3:
+			mes "^8B4513[Ushi el Cazador]^000000";
+			mes "Que los vientos te sean favorables, cazador.";
+			mes "Regresa cuando tengas mas historias que compartir.";
+			break;
+	}
+	close;
+
+// Function to calculate MVP rewards
+function CalculateMVPReward {
+	// Same MVP array as mvp_journal.txt
+	setarray .@all_mvps[0], 1159, 1115, 1150, 1059, 1039, 1112, 1038, 1046,
+	                        1190, 1087, 1086, 1511, 1785, 1685,
+	                        1688, 1272, 1389, 1289, 1623, 1252,
+	                        1768, 1751, 1658, 1779, 2022, 2068,
+	                        2087, 2317, 1832;
+	
+	.@total_kills = 0;
+	.@total_supps = 0;
+	.@array_size = getarraysize(.@all_mvps);
+	
+	// Calculate total MVP stats
+	for (.@i = 0; .@i < .@array_size; .@i++) {
+		.@mvp_id = .@all_mvps[.@i];
+		.@kill_var$ = "MVP_KILL_" + .@mvp_id;
+		.@supp_var$ = "MVP_SUPP_" + .@mvp_id;
+		.@total_kills += getd(.@kill_var$);
+		.@total_supps += getd(.@supp_var$);
+	}
+	
+	mes "^8B4513[Ushi el Cazador]^000000";
+	
+	// Check if player has any MVP stats
+	if (.@total_kills == 0 && .@total_supps == 0) {
+		mes "Hmm... veo que aun no has enfrentado bestias poderosas.";
+		mes "Regresa cuando hayas forjado tu leyenda, joven cazador.";
+		return;
+	}
+	
+	// Calculate coins to give
+	.@coins_from_kills = .@total_kills * 5;
+	.@coins_from_supps = .@total_supps * 1;
+	.@total_coins = .@coins_from_kills + .@coins_from_supps;
+	
+	// Check how many coins already given
+	.@coins_pending = .@total_coins - #OX_COINS_GIVEN;
+	
+	if (.@coins_pending <= 0) {
+		mes "Ah, ya has reclamado todas tus recompensas, noble cazador.";
+		mes "No tengo mas monedas que ofrecerte por ahora.";
+		next;
+		mes "^8B4513[Ushi el Cazador]^000000";
+		mes "Monedas ya entregadas: ^009900" + #OX_COINS_GIVEN + "^000000";
+		mes "Sigue cazando para aumentar tu leyenda!";
+		return;
+	}
+	
+	// Show stats
+	mes "Impresionante! Dejame ver tus logros:";
+	next;
+	
+	mes "^8B4513[Ushi el Cazador]^000000";
+	mes "^777777Tus hazañas de caza^000000";
+	mes " ";
+	mes "^009900Golpes finales:^000000 " + .@total_kills + " MVPs";
+	mes "^009900Asistencias:^000000 " + .@total_supps + " batallas";
+	mes " ";
+	mes "^0000FFRecompensa total:^000000 " + .@total_coins + " monedas";
+	mes "^FF0000Ya reclamadas:^000000 " + #OX_COINS_GIVEN + " monedas";
+	mes "^00FF00Por reclamar:^000000 " + .@coins_pending + " monedas";
+	next;
+	
+	mes "^8B4513[Ushi el Cazador]^000000";
+	mes "Eres un guerrero digno de admiracion!";
+	mes "Aceptaras mi humilde ofrenda de " + .@coins_pending + " Ox Coins?";
+	next;
+	
+	if(select("Aceptar las monedas:Rechazar por ahora") == 2) {
+		mes "^8B4513[Ushi el Cazador]^000000";
+		mes "Como desees. Las monedas te esperaran cuando estes listo.";
+		return;
+	}
+	
+	// Give coins
+	getitem 7606, .@coins_pending;
+	#OX_COINS_GIVEN += .@coins_pending;
+	
+	mes "^8B4513[Ushi el Cazador]^000000";
+	mes "Que estas monedas te sirvan en tus futuras aventuras!";
+	mes "Tus historias seran recordadas en mi tierra natal.";
+	next;
+	
+	mes "^8B4513[Ushi el Cazador]^000000";
+	mes "Sigue cazando, guerrero. Cada nueva victoria";
+	mes "te traera mas recompensas cuando regreses.";
+	
+	return;
+}
+}
