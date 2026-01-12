@@ -57,7 +57,7 @@ L_styles:
 OnInit:
 	setarray .look[0], LOOK_HAIR, LOOK_HAIR_COLOR, LOOK_CLOTHES_COLOR;
 
-	.minstyle[LOOK_HAIR] = 0;
+	.minstyle[LOOK_HAIR] = 1;
 	.maxstyle[LOOK_HAIR] = 29;
 	.minstyle[LOOK_HAIR_COLOR] = 0;
 	.maxstyle[LOOK_HAIR_COLOR] = 8;
