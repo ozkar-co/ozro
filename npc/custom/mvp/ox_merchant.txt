@@ -86,8 +86,8 @@ geffen_in,82,59,2	script	Kuma el Comerciante	4_M_COWRAIDERS2,{
 	next;
 	
 	callshop "kuma_shop", 1;
+	npcshopattach "kuma_shop";
 	end;
-}
 
 OnBuyItem:
 	set @cost, 0;
@@ -118,7 +118,14 @@ OnBuyItem:
 	close;
 
 OnInit:
+	setarray .Shop[0],
+		18528, 20,
+		18574, 20,
+		5490, 20,
+		2177, 20;
+	
+	npcshopdelitem "kuma_shop", 0;
+	for (set .@i, 0; .@i < getarraysize(.Shop); set .@i, .@i + 2)
+		npcshopadditem "kuma_shop", .Shop[.@i], .Shop[.@i + 1];
 	end;
 }
-
--	shop	kuma_shop	FAKE_NPC,18528:20,18574:20,5490:20,2177:20
