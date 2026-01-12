@@ -17,24 +17,26 @@
 //= 1.5 Translated to Spanish and add more than one use to third class [Ozkar]
 //============================================================
 
+function StrongSoulCheck {
+	// Trascendentes, tercera clase o expandidos fuertes
+	.@isReborn = (Upper >= 1);
+	.@isThird = (Class >= 4054 && Class <= 4079);
+	.@isExpandedThird = (Class >= 4190 && Class <= 4218);
+	return (.@isReborn || .@isThird || .@isExpandedThird);
+}
+
+function GetBirthstoneID {
+	.@count = RESET_COUNT;
+	.@size = getarraysize(.birthstones);
+	if (.@size <= 0) return 718;
+	.@idx = .@count % .@size;
+	return .birthstones[.@idx];
+}
+
 prontera,150,186,5	script	Canalizadora Mistica	4_GEFFEN_09,{
-function StrongSoulCheck;
-function GetBirthstoneID;
-function S_Main;
-
-OnInit:
-    setarray .birthstones[0],718,719,720,721,722,723,724,725,726,727,728,729;
-    end;
-
-OnTalk:
-    callsub S_Main;
-    end;
-
-function S_Main {
 	.@price = 100000; 	// Zeny required for reset
 	.@death_chance = 10; 	// Percentage chance of death
 	.@is_strong = StrongSoulCheck();
-
 	if (RESET_USED) {
 		if (!.@is_strong) {
 			mes "[Canalizadora Mistica]";
@@ -209,22 +211,9 @@ function S_Main {
 	mes "Has renacido, pero recuerda:";
 	mes "este camino no puede recorrerse de nuevo.";
 	close;
-	return;
-}
 
-function StrongSoulCheck {
-	// Trascendentes, tercera clase o expandidos fuertes
-	.@isReborn = (Upper >= 1);
-	.@isThird = (Class >= 4054 && Class <= 4079);
-	.@isExpandedThird = (Class >= 4190 && Class <= 4218);
-	return (.@isReborn || .@isThird || .@isExpandedThird);
-}
+OnInit:
+	setarray .birthstones[0],718,719,720,721,722,723,724,725,726,727,728,729;
+	end;
 
-function GetBirthstoneID {
-	.@count = RESET_COUNT;
-	.@size = getarraysize(.birthstones);
-	if (.@size <= 0) return 718;
-	.@idx = .@count % .@size;
-	return .birthstones[.@idx];
-}
 }
