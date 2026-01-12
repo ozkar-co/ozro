@@ -134,8 +134,7 @@ function GetMVPStats {
 	}
 	
 	mes "^0000FF[Hunting Journal]^000000";
-	mes "^777777--- Tus estadisticas de caza de MVP ---^000000";
-	next;
+	mes "^777777Tus estadisticas de caza de MVP^000000";
 	
 	mes "^0000FF[Hunting Journal]^000000";
 	.@msg1$ = "^00FF00Total golpes finales:^000000 " + .@total_kills;

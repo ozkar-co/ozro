@@ -20,11 +20,17 @@
 prontera,150,186,5	script	Canalizadora Mistica	4_GEFFEN_09,{
 function StrongSoulCheck;
 function GetBirthstoneID;
+function S_Main;
 
 OnInit:
     setarray .birthstones[0],718,719,720,721,722,723,724,725,726,727,728,729;
     end;
 
+OnTalk:
+    callsub S_Main;
+    end;
+
+function S_Main {
 	.@price = 100000; 	// Zeny required for reset
 	.@death_chance = 10; 	// Percentage chance of death
 	.@is_strong = StrongSoulCheck();
@@ -38,7 +44,7 @@ OnInit:
 			mes "Un proceso tan peligroso solo puede";
 			mes "intentarse una vez en la vida.";
 			close;
-			end;
+			return;
 		}
 
 		mes "[Canalizadora Mistica]";
@@ -61,7 +67,7 @@ OnInit:
 			mes "^990000*La intensidad en sus ojos se disipa*^000000";
 			mes "Vuelve si tu determinacion supera al miedo.";
 			close;
-			end;
+			return;
 		}
 
 		if (countitem(.@stone_id) < 1) {
@@ -69,7 +75,7 @@ OnInit:
 			mes "Te falta la Birthstone que armoniza contigo ahora.";
 			mes "Sin ese catalizador no puedo obligar a tu alma a ceder.";
 			close;
-			end;
+			return;
 		}
 
 		if (Zeny < .@price) {
@@ -77,7 +83,7 @@ OnInit:
 			mes "Ni siquiera con esa Birthstone podre comenzar.";
 			mes "Necesito "+ .@price +" zeny para los sellos y ofrendas.";
 			close;
-			end;
+			return;
 		}
 
 		mes "[Canalizadora Mistica]";
@@ -97,7 +103,7 @@ OnInit:
 			percentheal -100,-100;
 			mes "^FF0000La muerte reclama este intento prohibido.^000000";
 			close;
-			end;
+			return;
 		}
 
 		resetskill;
@@ -113,7 +119,7 @@ OnInit:
 		mes "El ritual prohibido ha sido sellado. Has forzado otro renacer,";
 		mes "pero cada ciclo deja cicatrices que no ves.";
 		close;
-		end;
+		return;
 	}
 
 	mes "[Canalizadora Mistica]";
@@ -146,6 +152,7 @@ OnInit:
 		mes "alguna vez sientes la necesidad de arriesgarlo todo";
 		mes "por un nuevo comienzo.";
 		close;
+		return;
 	}
 	
 	if (Zeny < .@price) {
@@ -155,6 +162,7 @@ OnInit:
 		mes "los materiales requeridos. Vuelve cuando";
 		mes "tengas "+ .@price +" zeny.";
 		close;
+		return;
 	}
 	
 	mes "[Canalizadora Mistica]";
@@ -169,6 +177,7 @@ OnInit:
 		mes "^990000*El brillo en sus ojos se desvanece*^000000";
 		mes "Vuelve cuando tu determinacion sea mas fuerte.";
 		close;
+		return;
 	}
 	
 	// Take payment first
@@ -183,8 +192,9 @@ OnInit:
 		percentheal -100,-100;
 		mes "^FF0000Has muerto en el ritual...^000000";
 		close;
+		return;
 	}
-	
+
 	resetskill;
 	resetstatus;
 	resetfeel;
@@ -199,7 +209,8 @@ OnInit:
 	mes "Has renacido, pero recuerda:";
 	mes "este camino no puede recorrerse de nuevo.";
 	close;
-	end;
+	return;
+}
 
 function StrongSoulCheck {
 	// Trascendentes, tercera clase o expandidos fuertes
