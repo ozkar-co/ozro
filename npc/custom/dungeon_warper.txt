@@ -1,7 +1,7 @@
 //===== Hercules Script ======================================
 //= Dungeon Warper NPCs
 //===== By: ==================================================
-//= Custom
+//= Ozkar
 //===== Current Version: =====================================
 //= 1.0
 //===== Description: =========================================
@@ -167,5 +167,5 @@ function WarpToDungeon {
 // --------------------------------------------------
 //	NPC Duplicates:
 // --------------------------------------------------
-geffen,110,66,4	duplicate(Dungeon_Warper)	Dungeon Warper#geffen	4_F_KAFRA6
-yuno,151,87,4	duplicate(Dungeon_Warper)	Dungeon Warper#juno	4_F_KAFRA6
+geffen,111,67,4	duplicate(Dungeon_Warper)	Dungeon Warper#geffen	4_F_KAFRA6
+yuno,179,162,4	duplicate(Dungeon_Warper)	Dungeon Warper#juno	4_F_KAFRA6
