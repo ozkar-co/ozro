@@ -182,20 +182,21 @@ prontera,115,90,0	script	Putty	4_F_01,{
 	}
 	close;
 
-	function getPlayerCards:
-	.@card_count = 0;
-	for (.@i = 0; .@i < 100; ++.@i) {
-		.@item = getd("@inventorylist_id[" + .@i + "]");
-		if (!.@item) break;
-		.@type = getd("@inventorylist_type[" + .@i + "]");
-		// Tipo 6 = Card
-		if (.@type == 6 && getd("@inventorylist_count[" + .@i + "]") > 0) {
-			.@cards[.@card_count] = .@item;
-			.@card_qty[.@card_count] = getd("@inventorylist_count[" + .@i + "]");
-			.@card_count++;
+	function getPlayerCards{
+		.@card_count = 0;
+		for (.@i = 0; .@i < 100; ++.@i) {
+			.@item = getd("@inventorylist_id[" + .@i + "]");
+			if (!.@item) break;
+			.@type = getd("@inventorylist_type[" + .@i + "]");
+			// Tipo 6 = Card
+			if (.@type == 6 && getd("@inventorylist_count[" + .@i + "]") > 0) {
+				.@cards[.@card_count] = .@item;
+				.@card_qty[.@card_count] = getd("@inventorylist_count[" + .@i + "]");
+				.@card_count++;
+			}
 		}
+		return;
 	}
-	return;
 }
 
 
