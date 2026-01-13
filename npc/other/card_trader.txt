@@ -61,7 +61,7 @@ prontera,115,90,0	script	Putty	4_F_01,{
 		case 1:
 			// Obtener las cartas del inventario
 			getPlayerCards ();
-			if (.@card_count == 0) {
+			if (@card_count == 0) {
 				mes "[Putty]";
 				mes "No veo ninguna carta magica en tu inventario.";
 				mes "Vuelve cuando tengas algunas.";
@@ -74,22 +74,22 @@ prontera,115,90,0	script	Putty	4_F_01,{
 			
 			// Crear menú de selección
 			.@menu$ = "";
-			for (.@i = 0; .@i < .@card_count; ++.@i) {
-				.@name$ = getitemname(.@cards[.@i]);
-				.@menu$ += .@name$ + " (x" + .@card_qty[.@i] + "),";
+			for (.@i = 0; .@i < @card_count; ++.@i) {
+				.@name$ = getitemname(@cards[.@i]);
+				.@menu$ += .@name$ + " (x" + @card_qty[.@i] + "),";
 			}
 			.@menu$ += "Cancelar";
 			
 			.@sel = select(.@menu$);
-			if (.@sel > .@card_count) {
+			if (.@sel > @card_count) {
 				mes "[Putty]";
 				mes "Como quieras, aventurero.";
 				close;
 			}
 			
 			.@sel--; // Ajustar indice
-			.@selected_card = .@cards[.@sel];
-			.@selected_count = .@card_qty[.@sel];
+			.@selected_card = @cards[.@sel];
+			.@selected_count = @card_qty[.@sel];
 			.@card_name$ = getitemname(.@selected_card);
 			
 			mes "[Putty]";
@@ -185,25 +185,19 @@ prontera,115,90,0	script	Putty	4_F_01,{
 	function getPlayerCards{
 		@card_count = 0;
 		getinventorylist;
-		debugmes "[DEBUG] Inventario total: " + @inventorylist_count + " items";
 		
 		for (.@i = 0; .@i < @inventorylist_count; .@i++) {
 			.@item_id = @inventorylist_id[.@i];
 			.@type = getiteminfo(.@item_id, 2);
 			.@qty = @inventorylist_amount[.@i];
-			.@name$ = getitemname(.@item_id);
-			
-			debugmes "[DEBUG] Slot " + .@i + ": ID=" + .@item_id + ", Nombre=" + .@name$ + ", Tipo=" + .@type + ", Cantidad=" + .@qty;
 			
 			// Tipo 6 = IT_CARD
 			if (.@type == 6 && .@qty > 0) {
 				@cards[@card_count] = .@item_id;
 				@card_qty[@card_count] = .@qty;
-				debugmes "[DEBUG] CARTA ENCONTRADA! Index=" + @card_count + ", Card ID=" + .@item_id + ", Nombre=" + .@name$;
 				@card_count++;
 			}
 		}
-		debugmes "[DEBUG] Total cartas encontradas: " + @card_count;
 		return;
 	}
 }
