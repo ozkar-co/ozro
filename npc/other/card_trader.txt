@@ -33,6 +33,21 @@
 //= 1.5
 //=========================================================================
 
+getPlayerCards:
+	.@card_count = 0;
+	for (.@i = 0; .@i < 100; ++.@i) {
+		.@item = getd("@inventorylist_id[" + .@i + "]");
+		if (!.@item) break;
+		.@type = getd("@inventorylist_type[" + .@i + "]");
+		// Tipo 6 = Card
+		if (.@type == 6 && getd("@inventorylist_count[" + .@i + "]") > 0) {
+			.@cards[.@card_count] = .@item;
+			.@card_qty[.@card_count] = getd("@inventorylist_count[" + .@i + "]");
+			.@card_count++;
+		}
+	}
+	return;
+
 prontera,115,90,0	script	Putty	4_F_01,{
 	.@points = oversea_event9;
 	mes "[Putty]";
@@ -56,7 +71,7 @@ prontera,115,90,0	script	Putty	4_F_01,{
 	switch(select("Deseo cambiar mis cartas.","Canjear puntos por objetos.","Cerrar")) {
 		case 1:
 			// Obtener las cartas del inventario
-			callsub fn_getPlayerCards;
+			callsub getPlayerCards;
 			if (.@card_count == 0) {
 				mes "[Putty]";
 				mes "No veo ninguna carta magica en tu inventario.";
@@ -77,7 +92,7 @@ prontera,115,90,0	script	Putty	4_F_01,{
 			.@menu$ += "Cancelar";
 			
 			.@sel = select(.@menu$);
-			if (.@sel > .@count) {
+			if (.@sel > .@card_count) {
 				mes "[Putty]";
 				mes "Como quieras, aventurero.";
 				close;
@@ -179,17 +194,4 @@ prontera,115,90,0	script	Putty	4_F_01,{
 	close;
 }
 
-fn_getPlayerCards:
-	.@card_count = 0;
-	for (.@i = 0; .@i < 100; ++.@i) {
-		.@item = getd("@inventorylist_id[" + .@i + "]");
-		if (!.@item) break;
-		.@type = getd("@inventorylist_type[" + .@i + "]");
-		// Tipo 6 = Card
-		if (.@type == 6 && getd("@inventorylist_count[" + .@i + "]") > 0) {
-			.@cards[.@card_count] = .@item;
-			.@card_qty[.@card_count] = getd("@inventorylist_count[" + .@i + "]");
-			.@card_count++;
-		}
-	}
-	return;
+
