@@ -60,7 +60,7 @@ prontera,115,90,0	script	Putty	4_F_01,{
 	switch(select("Deseo cambiar mis cartas.","Canjear puntos por objetos.","Cerrar")) {
 		case 1:
 			// Obtener las cartas del inventario
-			callsub getPlayerCards;
+			getPlayerCards ();
 			if (.@card_count == 0) {
 				mes "[Putty]";
 				mes "No veo ninguna carta magica en tu inventario.";
