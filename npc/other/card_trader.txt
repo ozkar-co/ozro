@@ -183,7 +183,7 @@ prontera,115,90,0	script	Putty	4_F_01,{
 	close;
 
 	function getPlayerCards{
-		.@card_count = 0;
+		@card_count = 0;
 		getinventorylist;
 		debugmes "[DEBUG] Inventario total: " + @inventorylist_count + " items";
 		
@@ -197,13 +197,13 @@ prontera,115,90,0	script	Putty	4_F_01,{
 			
 			// Tipo 6 = IT_CARD
 			if (.@type == 6 && .@qty > 0) {
-				.@cards[.@card_count] = .@item_id;
-				.@card_qty[.@card_count] = .@qty;
-				debugmes "[DEBUG] CARTA ENCONTRADA! Index=" + .@card_count + ", Card ID=" + .@item_id + ", Nombre=" + .@name$;
-				.@card_count++;
+				@cards[@card_count] = .@item_id;
+				@card_qty[@card_count] = .@qty;
+				debugmes "[DEBUG] CARTA ENCONTRADA! Index=" + @card_count + ", Card ID=" + .@item_id + ", Nombre=" + .@name$;
+				@card_count++;
 			}
 		}
-		debugmes "[DEBUG] Total cartas encontradas: " + .@card_count;
+		debugmes "[DEBUG] Total cartas encontradas: " + @card_count;
 		return;
 	}
 }
