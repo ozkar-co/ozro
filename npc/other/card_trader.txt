@@ -76,7 +76,7 @@ prontera,115,90,0	script	Putty	4_F_01,{
 			.@menu$ = "";
 			for (.@i = 0; .@i < @card_count; ++.@i) {
 				.@name$ = getitemname(@cards[.@i]);
-				.@menu$ += .@name$ + " (x" + @card_qty[.@i] + "),";
+				.@menu$ += .@name$ + " (x" + @card_qty[.@i] + "):";
 			}
 			.@menu$ += "Cancelar";
 			
