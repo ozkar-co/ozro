@@ -36,7 +36,7 @@
 prontera,115,90,0	script	Putty	4_F_01,{
 	.@points = oversea_event9;
 	mes "[Putty]";
-	mes "Hace anos, recolecte cartas magicas de las criaturas que derrotaba...";
+	mes "Hace mucho tiempo, recolecte cartas magicas de las criaturas que derrotaba...";
 	mes "Aquellas fueron tiempos gloriosos. Pero ahora, mi vista no es lo que era.";
 	next;
 	mes "[Putty]";
@@ -151,7 +151,7 @@ prontera,115,90,0	script	Putty	4_F_01,{
 					}
 					mes "[Putty]";
 					mes "Un manual de batalla. Pase noches estudiando estos manuales";
-					mes "en mis anos de aventurero. Te serviran bien.";
+					mes "en mis dias de aventurera. Te serviran bien.";
 					oversea_event9 = .@points - 5;
 					getitem 12208,1;
 					close;
