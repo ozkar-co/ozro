@@ -191,5 +191,6 @@ prontera,115,90,0	script	Putty	4_F_01,{
 			mes "[Putty]";
 			mes "Hasta luego, aventurero. Que tengas buenas aventuras.";
 			close;
+	}
 	close;
 }
