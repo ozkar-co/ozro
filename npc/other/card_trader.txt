@@ -190,7 +190,7 @@ prontera,115,90,0	script	Putty	4_F_01,{
 		for (.@i = 0; .@i < @inventorylist_count; .@i++) {
 			.@item_id = @inventorylist_id[.@i];
 			.@type = getiteminfo(.@item_id, 2);
-			.@qty = @inventorylist_count[.@i];
+			.@qty = @inventorylist_amount[.@i];
 			.@name$ = getitemname(.@item_id);
 			
 			debugmes "[DEBUG] Slot " + .@i + ": ID=" + .@item_id + ", Nombre=" + .@name$ + ", Tipo=" + .@type + ", Cantidad=" + .@qty;
