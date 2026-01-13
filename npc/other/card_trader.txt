@@ -184,17 +184,22 @@ prontera,115,90,0	script	Putty	4_F_01,{
 
 	function getPlayerCards{
 		.@card_count = 0;
-		for (.@i = 0; .@i < 100; ++.@i) {
-			.@item = getd("@inventorylist_id[" + .@i + "]");
-			if (!.@item) break;
-			.@type = getd("@inventorylist_type[" + .@i + "]");
-			.@qty = getd("@inventorylist_count[" + .@i + "]");
-			debugmes "[DEBUG] Item " + .@i + ": ID=" + .@item + ", Type=" + .@type + ", Qty=" + .@qty;
-			// Tipo 6 = Card
+		getinventorylist;
+		debugmes "[DEBUG] Inventario total: " + @inventorylist_count + " items";
+		
+		for (.@i = 0; .@i < @inventorylist_count; .@i++) {
+			.@item_id = @inventorylist_id[.@i];
+			.@type = getiteminfo(.@item_id, 2);
+			.@qty = @inventorylist_count[.@i];
+			.@name$ = getitemname(.@item_id);
+			
+			debugmes "[DEBUG] Slot " + .@i + ": ID=" + .@item_id + ", Nombre=" + .@name$ + ", Tipo=" + .@type + ", Cantidad=" + .@qty;
+			
+			// Tipo 6 = IT_CARD
 			if (.@type == 6 && .@qty > 0) {
-				.@cards[.@card_count] = .@item;
+				.@cards[.@card_count] = .@item_id;
 				.@card_qty[.@card_count] = .@qty;
-				debugmes "[DEBUG] Carta encontrada! Index=" + .@card_count + ", Card ID=" + .@item;
+				debugmes "[DEBUG] CARTA ENCONTRADA! Index=" + .@card_count + ", Card ID=" + .@item_id + ", Nombre=" + .@name$;
 				.@card_count++;
 			}
 		}
