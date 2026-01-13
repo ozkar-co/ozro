@@ -188,13 +188,17 @@ prontera,115,90,0	script	Putty	4_F_01,{
 			.@item = getd("@inventorylist_id[" + .@i + "]");
 			if (!.@item) break;
 			.@type = getd("@inventorylist_type[" + .@i + "]");
+			.@qty = getd("@inventorylist_count[" + .@i + "]");
+			debugmes "[DEBUG] Item " + .@i + ": ID=" + .@item + ", Type=" + .@type + ", Qty=" + .@qty;
 			// Tipo 6 = Card
-			if (.@type == 6 && getd("@inventorylist_count[" + .@i + "]") > 0) {
+			if (.@type == 6 && .@qty > 0) {
 				.@cards[.@card_count] = .@item;
-				.@card_qty[.@card_count] = getd("@inventorylist_count[" + .@i + "]");
+				.@card_qty[.@card_count] = .@qty;
+				debugmes "[DEBUG] Carta encontrada! Index=" + .@card_count + ", Card ID=" + .@item;
 				.@card_count++;
 			}
 		}
+		debugmes "[DEBUG] Total cartas encontradas: " + .@card_count;
 		return;
 	}
 }
