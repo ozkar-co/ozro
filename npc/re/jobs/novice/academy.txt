@@ -30,9 +30,9 @@
 //================= File Encoding =========================================
 //= CP-949 (EUC-KR compatible). Do NOT read/save it as UTF-8.
 //= -If the encoding is correct, the next three lines have the same length-
-//= ============ ¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä ============
+//= ============ ï¿½Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡Ä¡ï¿½ ============
 //= ============ ============================================= ============
-//= ============ ¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á¡Á ============
+//= ============ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ============
 //================= Description ===========================================
 //= Teaches the player about the basics.
 //= Also contains Novice skill quests for First Aid and Trick Dead.
@@ -4295,11 +4295,11 @@ iz_ac01,147,50,3	script	Dacquoise#ac	4_COOK,{
 				mes("[Mille Feuille]");
 				mes("Ingredients- ^0000cd 1 Clover, 1 Green Herb, 1 Red Herb^000000.");
 				next();
-				cutin("·ç³ªÆ½Ä«µå", 3);
+				cutin("ï¿½ç³ªÆ½Ä«ï¿½ï¿½", 3);
 				mes("[Dacquoise]");
 				mes("Clover and the Red Herb are dropped by Lunatic or Fabre monsters wandering everywhere on the field outside Izlude.");
 				next();
-				cutin("ÆÄºê¸£Ä«µå", 3);
+				cutin("ï¿½Äºê¸£Ä«ï¿½ï¿½", 3);
 				mes("[Eclaire]");
 				mes("Green Herbs are dropped by Fabres.");
 				next();
@@ -4321,11 +4321,11 @@ iz_ac01,147,50,3	script	Dacquoise#ac	4_COOK,{
 				mes("[Mille Feuille]");
 				mes("Ingredients are ^0000cd 1 Apple & 2 Carrots^000000.");
 				next();
-				cutin("Æ÷¸µÄ«µå", 3);
+				cutin("ï¿½ï¿½ï¿½ï¿½Ä«ï¿½ï¿½", 3);
 				mes("[Dacquoise]");
 				mes("Apples are dropped by Porings bouncing around the field outside of Izlude.");
 				next();
-				cutin("·ç³ªÆ½Ä«µå", 3);
+				cutin("ï¿½ç³ªÆ½Ä«ï¿½ï¿½", 3);
 				mes("[Eclaire]");
 				mes("Carrots are given by Lunatics.");
 				next();
@@ -4347,15 +4347,15 @@ iz_ac01,147,50,3	script	Dacquoise#ac	4_COOK,{
 				mes("[Mille Feuille]");
 				mes("Ingredients are ^0000cd 1 Jellopy, 1 Fluff, 1 Feather^000000.");
 				next();
-				cutin("Æ÷¸µÄ«µå", 3);
+				cutin("ï¿½ï¿½ï¿½ï¿½Ä«ï¿½ï¿½", 3);
 				mes("[Dacquoise]");
 				mes("Jellopy are dropped by Porings bouncing around the field of Izlude.");
 				next();
-				cutin("ÆÄºê¸£Ä«µå", 3);
+				cutin("ï¿½Äºê¸£Ä«ï¿½ï¿½", 3);
 				mes("[Eclaire]");
 				mes("Fluff can be received from Fabre or Lunatic.");
 				next();
-				cutin("·ç³ªÆ½Ä«µå", 3);
+				cutin("ï¿½ç³ªÆ½Ä«ï¿½ï¿½", 3);
 				mes("[Mille Feuille]");
 				mes("Feathers are dropped by Lunatics or Fabres.");
 				next();
@@ -4377,11 +4377,11 @@ iz_ac01,147,50,3	script	Dacquoise#ac	4_COOK,{
 				mes("[Mille Feuille]");
 				mes("Ingredients are-^0000cd 1 Apple & 1 Clover^000000.");
 				next();
-				cutin("Æ÷¸µÄ«µå", 3);
+				cutin("ï¿½ï¿½ï¿½ï¿½Ä«ï¿½ï¿½", 3);
 				mes("[Dacquoise]");
 				mes("Apple can be found in Porings in the field outside of Izlude.");
 				next();
-				cutin("·ç³ªÆ½Ä«µå", 3);
+				cutin("ï¿½ç³ªÆ½Ä«ï¿½ï¿½", 3);
 				mes("[Eclaire]");
 				mes("Clovers are dropped by Lunatics or Fabre in the field outside Izlude.");
 				next();
@@ -4974,9 +4974,6 @@ iz_ac01_a,43,80,7	duplicate(Adventurer's Pet#ac)	Adventurer's Pet#ac_a	4_DEVIRUC
 iz_ac01_b,43,80,7	duplicate(Adventurer's Pet#ac)	Adventurer's Pet#ac_b	4_DEVIRUCHI
 iz_ac01_c,43,80,7	duplicate(Adventurer's Pet#ac)	Adventurer's Pet#ac_c	4_DEVIRUCHI
 iz_ac01_d,43,80,7	duplicate(Adventurer's Pet#ac)	Adventurer's Pet#ac_d	4_DEVIRUCHI
-
-//- Monster Spawn -
-new_1-3,0,0,0,0	monster	Little Poring	2398,30,50000,0,0
 
 //- Adept Adventurer (Cont...) -
 new_1-3,92,169,5	script	Adept Adventurer#new_1-3	4_M_JOB_BLACKSMITH,{
