@@ -72,60 +72,47 @@ geffen,170,63,5	script	Crimson Enchanter	4_M_ALCHE_D,{
 		close;
 	}
 	
-	// Get inventory list and filter for Crimson weapons
-	getinventorylist();
-	set .@j, 0;
+	// Check equipped weapon in right hand
+	.@equipped_id = getequipid(EQI_HAND_R);
 	
-	for(.@i = 0; .@i < @inventorylist_count; .@i++) {
-		for(.@w = 0; .@w < getarraysize(.crimson_id); .@w++) {
-			if (@inventorylist_id[.@i] == .crimson_id[.@w]) {
-				mes "[DEBUG] Match at .@w=" + .@w + ": name=" + .crimson_name$[.@w];
-				if (.@j > 0)
-					set .@weapon_list$, .@weapon_list$ + ":";
-				set .@weapon_list$, .@weapon_list$ + .crimson_name$[.@w];
-				set .@weapon_idx[.@j], .@i;
-				set .@j, .@j + 1;
-				break;
-			}
+	if (.@equipped_id <= 0) {
+		mes "[Crimson Enchanter]";
+		mes "^FF0000You need to equip a Crimson weapon first.^000000";
+		mes "Please equip one and come back.";
+		close;
+	}
+	
+	// Check if equipped weapon is a Crimson weapon
+	.@is_crimson = 0;
+	.@crimson_idx = -1;
+	
+	for(.@w = 0; .@w < getarraysize(.crimson_id); .@w++) {
+		if (.@equipped_id == .crimson_id[.@w]) {
+			.@is_crimson = 1;
+			.@crimson_idx = .@w;
+			break;
 		}
 	}
 	
-	mes "[DEBUG] Total weapons found: " + .@j;
-	mes "[DEBUG] Weapon list string: '" + .@weapon_list$ + "'";
-	next;
-	
-	if (.@j == 0) {
+	if (!.@is_crimson) {
 		mes "[Crimson Enchanter]";
-		mes "^FF0000You don't have any Crimson weapons in your inventory.^000000";
-		mes "Come back when you have one to enchant.";
+		mes "^FF0000The weapon you're equipping is not a Crimson weapon.^000000";
+		mes "Come back when you have a Crimson weapon equipped.";
 		close;
 	}
 	
-	mes "[Crimson Enchanter]";
-	mes "Which Crimson weapon would you like to enchant?";
-	mes "^FF6B00(Slot 3 and Slot 4 will be enchanted with random cards)^000000";
-	next;
-	
-	.@selected = select(.@weapon_list$) - 1;
-	
-	if (.@selected < 0 || .@selected >= .@j) {
-		mes "[Crimson Enchanter]";
-		mes "Invalid selection.";
-		close;
-	}
-	
-	.@inv_idx = .@weapon_idx[.@selected];
-	.@item_id = @inventorylist_id[.@inv_idx];
-	.@item_qty = @inventorylist_amount[.@inv_idx];
-	.@item_refine = @inventorylist_refine[.@inv_idx];
-	.@item_attr = @inventorylist_attribute[.@inv_idx];
-	.@item_c1 = @inventorylist_card1[.@inv_idx];
-	.@item_c2 = @inventorylist_card2[.@inv_idx];
-	.@item_c3 = @inventorylist_card3[.@inv_idx];
-	.@item_c4 = @inventorylist_card4[.@inv_idx];
+	// Get weapon details from equipped item
+	.@item_id = .@equipped_id;
+	.@item_qty = 1;
+	.@item_refine = getequiprefine(EQI_HAND_R);
+	.@item_attr = getequipattribute(EQI_HAND_R);
+	.@item_c1 = getequipcardid(EQI_HAND_R, 0);
+	.@item_c2 = getequipcardid(EQI_HAND_R, 1);
+	.@item_c3 = getequipcardid(EQI_HAND_R, 2);
+	.@item_c4 = getequipcardid(EQI_HAND_R, 3);
 	
 	mes "[Crimson Enchanter]";
-	mes "You selected: " + .@crimson_name$[.@selected];
+	mes "You're equipping: " + .crimson_name$[.@crimson_idx];
 	mes "^FF0000*The crimson essence begins to swirl...*^000000";
 	mes "Processing enchantment...";
 	next;
