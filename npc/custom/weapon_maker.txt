@@ -1,4 +1,4 @@
-geffen,160,88,5	script	CustomWeaponMaker	4_M_WEAPON,{
+geffen,160,88,5	script	CustomWeaponMaker	4_F_KAFRA,{
     mes "[Weapon Maker]";
     mes "Hola GM. Selecciona el elemento para tu item 28106 (con carta 4702):";
     next;
@@ -11,13 +11,10 @@ geffen,160,88,5	script	CustomWeaponMaker	4_M_WEAPON,{
     if (.@opt == 3) .@id_opt = 178;
     if (.@opt == 4) .@id_opt = 179;
 
-    // 1. Entregamos el arma con la carta High Wizard (4702)
-    getitem2(28106, 1, 1, 0, 0, 4702, 0, 0, 0);
-    
-    // 2. Aplicamos la opción del elemento al arma recién creada
-    // setitemoption <index>, <id_opcion>, <valor>;
-    // El valor '1' es solo para activar el script del option.
-    setitemoption 0, .@id_opt, 1;
+    // Sintaxis extendida de getitem2:
+    // getitem2(ID, cant, ident, ref, roto, card1, card2, card3, card4, opt_id0, opt_val0, opt_id1, opt_val1...)
+    // Usamos 4702 en card1 y nuestra opción en opt_id0 con valor 1
+    getitem2(28106, 1, 1, 0, 0, 4702, 0, 0, 0, .@id_opt, 1, 0, 0, 0, 0);
     
     mes "¡Arma entregada con éxito!";
     close;
